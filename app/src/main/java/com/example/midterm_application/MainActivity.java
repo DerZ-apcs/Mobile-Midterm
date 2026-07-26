@@ -1,19 +1,19 @@
 package com.example.midterm_application;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.midterm_application.data.repository.CoffeeRepository;
+import com.example.midterm_application.ui.CoffeeAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends Activity {
     private static final int SCREEN_HOME = 1;
@@ -99,6 +99,12 @@ public class MainActivity extends Activity {
         navigateTo(SCREEN_DETAILS);
     }
 
+    private void openCoffeeDetails(int coffeeId) {
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra(DetailActivity.EXTRA_COFFEE_ID, coffeeId);
+        startActivity(intent);
+    }
+
     private void showScreen(int screen) {
         currentScreen = screen;
 
@@ -136,7 +142,8 @@ public class MainActivity extends Activity {
 
         RecyclerView coffeeGrid = findViewById(R.id.rvCoffeeGrid);
         if (coffeeGrid != null) {
-            coffeeGrid.setAdapter(new CoffeeAdapter(createNavigationCoffeeItems(), this::navigateToDetails));
+            coffeeGrid.setAdapter(new CoffeeAdapter(CoffeeRepository.getAllCoffees(),
+                    coffee -> openCoffeeDetails(coffee.getId())));
         }
 
         setClickListener(R.id.btnCart, () -> navigateTo(SCREEN_CART));
@@ -240,69 +247,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    private List<CoffeeItem> createNavigationCoffeeItems() {
-        ArrayList<CoffeeItem> items = new ArrayList<>();
-        items.add(new CoffeeItem(1, getString(R.string.coffee_americano)));
-        items.add(new CoffeeItem(2, getString(R.string.coffee_cappuccino)));
-        items.add(new CoffeeItem(3, getString(R.string.coffee_mocha)));
-        items.add(new CoffeeItem(4, getString(R.string.coffee_flat_white)));
-        return items;
-    }
-
     private interface ClickAction {
         void run();
-    }
-
-    private interface CoffeeClickListener {
-        void onCoffeeClicked(int coffeeId, String coffeeName);
-    }
-
-    private static class CoffeeItem {
-        final int id;
-        final String name;
-
-        CoffeeItem(int id, String name) {
-            this.id = id;
-            this.name = name;
-        }
-    }
-
-    private static class CoffeeAdapter extends RecyclerView.Adapter<CoffeeAdapter.CoffeeViewHolder> {
-        private final List<CoffeeItem> items;
-        private final CoffeeClickListener clickListener;
-
-        CoffeeAdapter(List<CoffeeItem> items, CoffeeClickListener clickListener) {
-            this.items = items;
-            this.clickListener = clickListener;
-        }
-
-        @NonNull
-        @Override
-        public CoffeeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_coffee_card, parent, false);
-            return new CoffeeViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull CoffeeViewHolder holder, int position) {
-            CoffeeItem item = items.get(position);
-            holder.name.setText(item.name);
-            holder.itemView.setOnClickListener(v -> clickListener.onCoffeeClicked(item.id, item.name));
-        }
-
-        @Override
-        public int getItemCount() {
-            return items.size();
-        }
-
-        static class CoffeeViewHolder extends RecyclerView.ViewHolder {
-            final TextView name;
-
-            CoffeeViewHolder(@NonNull View itemView) {
-                super(itemView);
-                name = itemView.findViewById(R.id.tvCoffeeName);
-            }
-        }
     }
 }
