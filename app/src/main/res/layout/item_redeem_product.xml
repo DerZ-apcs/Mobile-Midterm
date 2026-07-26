@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingTop="24dp"
+    android:paddingBottom="24dp">
+
+    <ImageView
+        android:id="@+id/imgRedeemItem"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="@string/coffee_image_desc"
+        android:padding="18dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_cup_outline"
+        android:tint="@color/brand_dark" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvRedeemItemName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_body"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:text="Cafe Latte" />
+
+        <TextView
+            android:id="@+id/tvRedeemValidUntil"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/gray_500"
+            android:textSize="14sp"
+            tools:text="Valid until 04.07.21" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/btnRedeemPoints"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_points_pill"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:minWidth="120dp"
+        android:paddingStart="20dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="12dp"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        tools:text="1340 pts" />
+
+</LinearLayout>
