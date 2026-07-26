@@ -4,7 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.example.midterm_application.data.model.RewardTransaction;
+
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RewardCalculatorTest {
     @Test
@@ -82,11 +87,132 @@ public class RewardCalculatorTest {
     }
 
     @Test
+    public void redeemCost120From200Leaves80() {
+        RewardLedger ledger = new RewardLedger(200, 3);
+
+        assertTrue(ledger.redeem(120, "Americano"));
+
+        assertEquals(80, ledger.totalPoints);
+    }
+
+    @Test
+    public void redeemCost120From100IsRejectedAndLeavesBalanceUnchanged() {
+        RewardLedger ledger = new RewardLedger(100, 3);
+
+        assertFalse(ledger.redeem(120, "Americano"));
+
+        assertEquals(100, ledger.totalPoints);
+        assertEquals(0, ledger.countTransactions(RewardTransaction.TYPE_REDEEM));
+    }
+
+    @Test
+    public void redeemCost120From120LeavesZero() {
+        RewardLedger ledger = new RewardLedger(120, 3);
+
+        assertTrue(ledger.redeem(120, "Americano"));
+
+        assertEquals(0, ledger.totalPoints);
+    }
+
+    @Test
+    public void repeatedRedeemCannotCreateNegativeBalance() {
+        RewardLedger ledger = new RewardLedger(200, 3);
+
+        assertTrue(ledger.redeem(120, "Americano"));
+        assertFalse(ledger.redeem(120, "Americano"));
+
+        assertEquals(80, ledger.totalPoints);
+        assertEquals(1, ledger.countTransactions(RewardTransaction.TYPE_REDEEM));
+    }
+
+    @Test
+    public void successfulRedeemCreatesExactlyOneRedeemTransaction() {
+        RewardLedger ledger = new RewardLedger(200, 3);
+
+        assertTrue(ledger.redeem(120, "Americano"));
+
+        assertEquals(1, ledger.countTransactions(RewardTransaction.TYPE_REDEEM));
+        RewardTransaction transaction = ledger.transactions.get(0);
+        assertEquals(RewardTransaction.TYPE_REDEEM, transaction.getType());
+        assertEquals(-120, transaction.getPoints());
+        assertEquals("Americano", transaction.getDescription());
+    }
+
+    @Test
+    public void failedRedeemCreatesZeroRedeemTransactions() {
+        RewardLedger ledger = new RewardLedger(100, 3);
+
+        assertFalse(ledger.redeem(120, "Americano"));
+
+        assertEquals(0, ledger.countTransactions(RewardTransaction.TYPE_REDEEM));
+    }
+
+    @Test
+    public void redeemDoesNotAlterStampCount() {
+        RewardLedger ledger = new RewardLedger(200, 7);
+
+        assertTrue(ledger.redeem(120, "Americano"));
+
+        assertEquals(7, ledger.stampCount);
+    }
+
+    @Test
+    public void earnThenRedeemSequenceProducesCorrectFinalPoints() {
+        RewardLedger ledger = new RewardLedger(0, 0);
+
+        ledger.earn(20.00, 15L);
+        assertTrue(ledger.redeem(120, "Americano"));
+
+        assertEquals(80, ledger.totalPoints);
+        assertEquals(1, ledger.countTransactions(RewardTransaction.TYPE_EARN));
+        assertEquals(1, ledger.countTransactions(RewardTransaction.TYPE_REDEEM));
+    }
+
+    @Test
     public void capsStampCountWithinAllowedRange() {
         assertEquals(0, RewardCalculator.capStampCount(-1));
         assertEquals(0, RewardCalculator.capStampCount(0));
         assertEquals(4, RewardCalculator.capStampCount(4));
         assertEquals(8, RewardCalculator.capStampCount(8));
         assertEquals(8, RewardCalculator.capStampCount(9));
+    }
+
+    private static class RewardLedger {
+        int totalPoints;
+        int stampCount;
+        final List<RewardTransaction> transactions = new ArrayList<>();
+
+        RewardLedger(int totalPoints, int stampCount) {
+            this.totalPoints = totalPoints;
+            this.stampCount = stampCount;
+        }
+
+        void earn(double orderTotal, long orderId) {
+            int earnedPoints = RewardCalculator.calculateEarnedPoints(orderTotal);
+            totalPoints = RewardCalculator.calculateTotalPointsAfterEarn(totalPoints, earnedPoints);
+            stampCount = RewardCalculator.calculateStampCountAfterEarn(stampCount);
+            transactions.add(new RewardTransaction(orderId, 1L, RewardTransaction.TYPE_EARN,
+                    earnedPoints, "Order #" + orderId + " completed"));
+        }
+
+        boolean redeem(int pointCost, String name) {
+            if (!RewardCalculator.canRedeem(totalPoints, pointCost)) {
+                return false;
+            }
+            totalPoints = RewardCalculator.calculateTotalPointsAfterRedeem(totalPoints, pointCost);
+            transactions.add(new RewardTransaction(null, 2L, RewardTransaction.TYPE_REDEEM,
+                    -pointCost, name));
+            return true;
+        }
+
+        int countTransactions(String type) {
+            int count = 0;
+            for (RewardTransaction transaction : transactions) {
+                if (type.equals(transaction.getType())) {
+                    count++;
+                }
+            }
+            return count;
+        }
     }
 }

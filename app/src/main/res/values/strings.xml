@@ -78,4 +78,7 @@
     <string name="profile_email_placeholder">Anderson@email.com</string>
     <string name="profile_address_placeholder">3 Addersion Court\nChino Hills, HO56824, United State</string>
     <string name="edit_profile_field_desc">Edit profile field</string>
+    <string name="cta_save_profile">Save</string>
+    <string name="cta_cancel_profile">Cancel</string>
+    <string name="profile_saved_message">Profile saved</string>
 </resources>

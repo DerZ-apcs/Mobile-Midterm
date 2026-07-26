@@ -3,6 +3,7 @@ package com.example.midterm_application;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +19,7 @@ import com.example.midterm_application.data.model.CartItem;
 import com.example.midterm_application.data.model.OrderListItem;
 import com.example.midterm_application.data.model.RewardState;
 import com.example.midterm_application.data.model.RewardTransaction;
+import com.example.midterm_application.data.model.UserProfile;
 import com.example.midterm_application.data.repository.RewardCatalog;
 import com.example.midterm_application.data.repository.RewardRepository;
 import com.example.midterm_application.data.repository.CoffeeRepository;
@@ -29,6 +31,7 @@ import com.example.midterm_application.ui.RewardTransactionAdapter;
 import com.example.midterm_application.utils.RewardCalculator;
 import com.example.midterm_application.viewmodel.CartViewModel;
 import com.example.midterm_application.viewmodel.OrderViewModel;
+import com.example.midterm_application.viewmodel.ProfileViewModel;
 import com.example.midterm_application.viewmodel.RewardViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -55,6 +58,7 @@ public class MainActivity extends ComponentActivity {
     private static final String STATE_SELECTED_COFFEE_NAME = "selected_coffee_name";
     private static final String STATE_BACK_STACK = "back_stack";
     private static final String STATE_SHOWING_HISTORY_ORDERS = "showing_history_orders";
+    private static final String STATE_PROFILE_EDIT_MODE = "profile_edit_mode";
 
     private final ArrayList<Integer> backStack = new ArrayList<>();
     private int currentScreen = SCREEN_HOME;
@@ -62,10 +66,12 @@ public class MainActivity extends ComponentActivity {
     private String selectedCoffeeName = "Americano";
     private CartViewModel cartViewModel;
     private OrderViewModel orderViewModel;
+    private ProfileViewModel profileViewModel;
     private RewardViewModel rewardViewModel;
     private List<CartItem> currentCartItems = new ArrayList<>();
     private boolean checkoutInProgress;
     private boolean showingHistoryOrders;
+    private boolean profileEditMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +82,7 @@ public class MainActivity extends ComponentActivity {
             selectedCoffeeId = savedInstanceState.getInt(STATE_SELECTED_COFFEE_ID, 1);
             selectedCoffeeName = savedInstanceState.getString(STATE_SELECTED_COFFEE_NAME, "Americano");
             showingHistoryOrders = savedInstanceState.getBoolean(STATE_SHOWING_HISTORY_ORDERS, false);
+            profileEditMode = savedInstanceState.getBoolean(STATE_PROFILE_EDIT_MODE, false);
             ArrayList<Integer> restoredStack = savedInstanceState.getIntegerArrayList(STATE_BACK_STACK);
             if (restoredStack != null) {
                 backStack.addAll(restoredStack);
@@ -93,10 +100,14 @@ public class MainActivity extends ComponentActivity {
         outState.putString(STATE_SELECTED_COFFEE_NAME, selectedCoffeeName);
         outState.putIntegerArrayList(STATE_BACK_STACK, backStack);
         outState.putBoolean(STATE_SHOWING_HISTORY_ORDERS, showingHistoryOrders);
+        outState.putBoolean(STATE_PROFILE_EDIT_MODE, profileEditMode);
     }
 
     @Override
     public void onBackPressed() {
+        if (currentScreen == SCREEN_PROFILE) {
+            profileEditMode = false;
+        }
         if (!backStack.isEmpty()) {
             int previousScreen = backStack.remove(backStack.size() - 1);
             showScreen(previousScreen);
@@ -449,7 +460,127 @@ public class MainActivity extends ComponentActivity {
     private void showProfile() {
         setContentView(R.layout.activity_profile);
 
+        getProfileViewModel().getProfile().removeObservers(this);
+        getProfileViewModel().getValidationResult().removeObservers(this);
+        getProfileViewModel().getProfile().observe(this, this::updateProfileViews);
+        getProfileViewModel().getValidationResult().observe(this, this::showProfileValidationResult);
+
+        setClickListener(R.id.btnEditName, this::enterProfileEditMode);
+        setClickListener(R.id.btnEditPhone, this::enterProfileEditMode);
+        setClickListener(R.id.btnEditEmail, this::enterProfileEditMode);
+        setClickListener(R.id.btnEditAddress, this::enterProfileEditMode);
+        setClickListener(R.id.btnSaveProfile, this::saveProfileEdits);
+        setClickListener(R.id.btnCancelProfile, this::cancelProfileEdits);
+        setProfileEditing(profileEditMode);
+        getProfileViewModel().reloadProfile();
         setClickListener(R.id.btnBack, this::goBackOrHome);
+    }
+
+    private void updateProfileViews(UserProfile profile) {
+        if (profile == null) {
+            return;
+        }
+        setText(R.id.tvFullName, profile.getFullName());
+        setText(R.id.tvPhoneNumber, profile.getPhone());
+        setText(R.id.tvEmail, profile.getEmail());
+        setText(R.id.tvAddress, profile.getAddress());
+        if (!profileEditMode) {
+            setEditText(R.id.etFullName, profile.getFullName());
+            setEditText(R.id.etPhoneNumber, profile.getPhone());
+            setEditText(R.id.etEmail, profile.getEmail());
+            setEditText(R.id.etAddress, profile.getAddress());
+        }
+    }
+
+    private void enterProfileEditMode() {
+        profileEditMode = true;
+        clearProfileErrors();
+        UserProfile profile = getProfileViewModel().getProfile().getValue();
+        if (profile != null) {
+            setEditText(R.id.etFullName, profile.getFullName());
+            setEditText(R.id.etPhoneNumber, profile.getPhone());
+            setEditText(R.id.etEmail, profile.getEmail());
+            setEditText(R.id.etAddress, profile.getAddress());
+        }
+        setProfileEditing(true);
+    }
+
+    private void saveProfileEdits() {
+        clearProfileErrors();
+        boolean saved = getProfileViewModel().saveProfile(
+                getEditText(R.id.etFullName),
+                getEditText(R.id.etPhoneNumber),
+                getEditText(R.id.etEmail),
+                getEditText(R.id.etAddress));
+        if (saved) {
+            profileEditMode = false;
+            setProfileEditing(false);
+            Toast.makeText(this, R.string.profile_saved_message, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void cancelProfileEdits() {
+        profileEditMode = false;
+        clearProfileErrors();
+        getProfileViewModel().reloadProfile();
+        setProfileEditing(false);
+    }
+
+    private void showProfileValidationResult(ProfileViewModel.ValidationResult result) {
+        if (result == null || result.isValid()) {
+            return;
+        }
+        int fieldId = getProfileFieldId(result.getField());
+        if (fieldId != 0) {
+            EditText field = findViewById(fieldId);
+            if (field != null) {
+                field.setError(result.getMessage());
+                field.requestFocus();
+            }
+        }
+        Toast.makeText(this, result.getMessage(), Toast.LENGTH_SHORT).show();
+        getProfileViewModel().clearValidationResult();
+    }
+
+    private int getProfileFieldId(ProfileViewModel.Field field) {
+        if (field == ProfileViewModel.Field.FULL_NAME) {
+            return R.id.etFullName;
+        }
+        if (field == ProfileViewModel.Field.PHONE) {
+            return R.id.etPhoneNumber;
+        }
+        if (field == ProfileViewModel.Field.EMAIL) {
+            return R.id.etEmail;
+        }
+        if (field == ProfileViewModel.Field.ADDRESS) {
+            return R.id.etAddress;
+        }
+        return 0;
+    }
+
+    private void setProfileEditing(boolean editing) {
+        int textVisibility = editing ? View.GONE : View.VISIBLE;
+        int editVisibility = editing ? View.VISIBLE : View.GONE;
+        setVisibility(R.id.tvFullName, textVisibility);
+        setVisibility(R.id.tvPhoneNumber, textVisibility);
+        setVisibility(R.id.tvEmail, textVisibility);
+        setVisibility(R.id.tvAddress, textVisibility);
+        setVisibility(R.id.etFullName, editVisibility);
+        setVisibility(R.id.etPhoneNumber, editVisibility);
+        setVisibility(R.id.etEmail, editVisibility);
+        setVisibility(R.id.etAddress, editVisibility);
+        setVisibility(R.id.layoutProfileActions, editVisibility);
+        setVisibility(R.id.btnEditName, textVisibility);
+        setVisibility(R.id.btnEditPhone, textVisibility);
+        setVisibility(R.id.btnEditEmail, textVisibility);
+        setVisibility(R.id.btnEditAddress, textVisibility);
+    }
+
+    private void clearProfileErrors() {
+        clearEditTextError(R.id.etFullName);
+        clearEditTextError(R.id.etPhoneNumber);
+        clearEditTextError(R.id.etEmail);
+        clearEditTextError(R.id.etAddress);
     }
 
     private void setupPrimaryBottomNavigation(int selectedItemId) {
@@ -478,6 +609,9 @@ public class MainActivity extends ComponentActivity {
     }
 
     private void goBackOrHome() {
+        if (currentScreen == SCREEN_PROFILE) {
+            profileEditMode = false;
+        }
         if (!backStack.isEmpty()) {
             int previousScreen = backStack.remove(backStack.size() - 1);
             showScreen(previousScreen);
@@ -522,6 +656,48 @@ public class MainActivity extends ComponentActivity {
                     .get(RewardViewModel.class);
         }
         return rewardViewModel;
+    }
+
+    private ProfileViewModel getProfileViewModel() {
+        if (profileViewModel == null) {
+            profileViewModel = new ViewModelProvider(this,
+                    ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
+                    .get(ProfileViewModel.class);
+        }
+        return profileViewModel;
+    }
+
+    private void setText(int viewId, String value) {
+        TextView view = findViewById(viewId);
+        if (view != null) {
+            view.setText(value);
+        }
+    }
+
+    private void setEditText(int viewId, String value) {
+        EditText view = findViewById(viewId);
+        if (view != null) {
+            view.setText(value);
+        }
+    }
+
+    private String getEditText(int viewId) {
+        EditText view = findViewById(viewId);
+        return view == null ? "" : view.getText().toString();
+    }
+
+    private void clearEditTextError(int viewId) {
+        EditText view = findViewById(viewId);
+        if (view != null) {
+            view.setError(null);
+        }
+    }
+
+    private void setVisibility(int viewId, int visibility) {
+        View view = findViewById(viewId);
+        if (view != null) {
+            view.setVisibility(visibility);
+        }
     }
 
     private void updateCartSummary(List<CartItem> items) {
