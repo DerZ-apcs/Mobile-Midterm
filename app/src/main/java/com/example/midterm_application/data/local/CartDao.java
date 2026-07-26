@@ -21,6 +21,9 @@ public interface CartDao {
     @Insert
     void insert(CartItem item);
 
+    @Insert
+    void insertAll(List<CartItem> items);
+
     @Delete
     void delete(CartItem item);
 

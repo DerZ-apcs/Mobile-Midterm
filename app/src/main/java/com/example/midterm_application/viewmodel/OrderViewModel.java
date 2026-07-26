@@ -15,7 +15,9 @@ import java.util.List;
 public class OrderViewModel extends AndroidViewModel {
     private final OrderRepository repository;
     private final MutableLiveData<CheckoutState> checkoutState = new MutableLiveData<>(CheckoutState.idle());
+    private final MutableLiveData<ReorderState> reorderState = new MutableLiveData<>();
     private volatile boolean checkoutInProgress;
+    private volatile boolean reorderInProgress;
 
     public OrderViewModel(@NonNull Application application) {
         super(application);
@@ -24,6 +26,10 @@ public class OrderViewModel extends AndroidViewModel {
 
     public LiveData<CheckoutState> getCheckoutState() {
         return checkoutState;
+    }
+
+    public LiveData<ReorderState> getReorderState() {
+        return reorderState;
     }
 
     public LiveData<List<OrderListItem>> getOngoingOrders() {
@@ -57,6 +63,26 @@ public class OrderViewModel extends AndroidViewModel {
 
     public void completeOrder(long orderId) {
         repository.markOrderCompleted(orderId);
+    }
+
+    public void reorderCompletedOrder(long orderId) {
+        if (reorderInProgress) {
+            return;
+        }
+
+        reorderInProgress = true;
+        repository.reorderCompletedOrder(orderId, (addedItems, errorMessage) -> {
+            reorderInProgress = false;
+            if (errorMessage == null) {
+                reorderState.postValue(ReorderState.success(addedItems));
+            } else {
+                reorderState.postValue(ReorderState.error(errorMessage));
+            }
+        });
+    }
+
+    public void consumeReorderResult() {
+        reorderState.setValue(null);
     }
 
     public static class CheckoutState {
@@ -98,6 +124,38 @@ public class OrderViewModel extends AndroidViewModel {
 
         public long getOrderId() {
             return orderId;
+        }
+
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+    }
+
+    public static class ReorderState {
+        private final boolean success;
+        private final int addedItems;
+        private final String errorMessage;
+
+        private ReorderState(boolean success, int addedItems, String errorMessage) {
+            this.success = success;
+            this.addedItems = addedItems;
+            this.errorMessage = errorMessage;
+        }
+
+        public static ReorderState success(int addedItems) {
+            return new ReorderState(true, addedItems, null);
+        }
+
+        public static ReorderState error(String errorMessage) {
+            return new ReorderState(false, 0, errorMessage);
+        }
+
+        public boolean isSuccess() {
+            return success;
+        }
+
+        public int getAddedItems() {
+            return addedItems;
         }
 
         public String getErrorMessage() {

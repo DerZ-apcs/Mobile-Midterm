@@ -9,11 +9,16 @@ import com.example.midterm_application.data.local.CartDao;
 import com.example.midterm_application.data.local.OrderDao;
 import com.example.midterm_application.data.local.RewardDao;
 import com.example.midterm_application.data.model.CartItem;
+import com.example.midterm_application.data.model.Coffee;
 import com.example.midterm_application.data.model.Order;
 import com.example.midterm_application.data.model.OrderItem;
 import com.example.midterm_application.data.model.OrderListItem;
 import com.example.midterm_application.data.model.RewardState;
 import com.example.midterm_application.data.model.RewardTransaction;
+import com.example.midterm_application.utils.PriceCalculator;
+import com.example.midterm_application.utils.PriceCalculator.Ice;
+import com.example.midterm_application.utils.PriceCalculator.Shot;
+import com.example.midterm_application.utils.PriceCalculator.Size;
 import com.example.midterm_application.utils.RewardCalculator;
 
 import java.util.ArrayList;
@@ -76,10 +81,11 @@ public class OrderRepository {
                                     item.getImageResId(),
                                     item.getShot(),
                                     item.getSize(),
-                                    item.getIce(),
-                                    item.getQuantity(),
-                                    item.getUnitPrice(),
-                                    item.getTotalPrice()));
+                                     item.getIce(),
+                                     item.getQuantity(),
+                                     item.getUnitPrice(),
+                                     item.getTotalPrice(),
+                                     item.getNote()));
                         }
 
                         orderDao.insertOrderItems(orderItems);
@@ -98,6 +104,90 @@ public class OrderRepository {
 
     public interface CheckoutCallback {
         void onCheckoutComplete(long orderId, String errorMessage);
+    }
+
+    public void reorderCompletedOrder(long orderId, ReorderCallback callback) {
+        databaseExecutor.execute(() -> {
+            try {
+                int addedItems = database.runInTransaction(new Callable<Integer>() {
+                    @Override
+                    public Integer call() {
+                        Order order = orderDao.getOrderByIdSync(orderId);
+                        if (order == null || !Order.STATUS_COMPLETED.equals(order.getStatus())) {
+                            throw new ReorderException();
+                        }
+
+                        List<OrderItem> orderItems = orderDao.getOrderItemsByOrderIdSync(orderId);
+                        if (orderItems == null || orderItems.isEmpty()) {
+                            throw new ReorderException();
+                        }
+
+                        List<CartItem> cartItems = new ArrayList<>();
+                        for (OrderItem orderItem : orderItems) {
+                            cartItems.add(createCartItemFromOrderItem(orderItem));
+                        }
+                        cartDao.insertAll(cartItems);
+                        return cartItems.size();
+                    }
+                });
+                callback.onReorderComplete(addedItems, null);
+            } catch (Exception exception) {
+                callback.onReorderComplete(0, "Could not reorder this order");
+            }
+        });
+    }
+
+    private CartItem createCartItemFromOrderItem(OrderItem orderItem) {
+        int quantity = PriceCalculator.normalizeQuantity(orderItem.getQuantity());
+        Coffee coffee = CoffeeRepository.getCoffeeById(orderItem.getCoffeeId());
+        double unitPrice = orderItem.getUnitPrice();
+        double totalPrice = orderItem.getTotalPrice();
+        if (coffee != null) {
+            Shot shot = parseShot(orderItem.getShot());
+            Size size = parseSize(orderItem.getSize());
+            Ice ice = parseIce(orderItem.getIce());
+            unitPrice = PriceCalculator.calculateTotal(coffee.getBasePrice(), shot, size, ice, 1);
+            totalPrice = PriceCalculator.calculateTotal(coffee.getBasePrice(), shot, size, ice, quantity);
+        }
+        return new CartItem(
+                orderItem.getCoffeeId(),
+                orderItem.getCoffeeName(),
+                orderItem.getImageResId(),
+                orderItem.getShot(),
+                orderItem.getSize(),
+                orderItem.getIce(),
+                quantity,
+                unitPrice,
+                totalPrice,
+                orderItem.getNote());
+    }
+
+    private Shot parseShot(String value) {
+        try {
+            return Shot.valueOf(value);
+        } catch (Exception exception) {
+            return Shot.SINGLE;
+        }
+    }
+
+    private Size parseSize(String value) {
+        try {
+            return Size.valueOf(value);
+        } catch (Exception exception) {
+            return Size.SMALL;
+        }
+    }
+
+    private Ice parseIce(String value) {
+        try {
+            return Ice.valueOf(value);
+        } catch (Exception exception) {
+            return Ice.NORMAL;
+        }
+    }
+
+    public interface ReorderCallback {
+        void onReorderComplete(int addedItems, String errorMessage);
     }
 
     public void markOrderCompleted(long orderId) {
@@ -128,5 +218,8 @@ public class OrderRepository {
     }
 
     private static class EmptyCartException extends RuntimeException {
+    }
+
+    private static class ReorderException extends RuntimeException {
     }
 }

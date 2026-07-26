@@ -179,6 +179,20 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
+            <EditText
+                android:id="@+id/etOrderNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="28dp"
+                android:backgroundTint="@color/brand_dark"
+                android:hint="@string/order_note_hint"
+                android:inputType="textCapSentences|textMultiLine"
+                android:maxLength="120"
+                android:maxLines="3"
+                android:textColor="@color/text_body"
+                android:textColorHint="@color/gray_500"
+                android:textSize="15sp" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -79,6 +79,17 @@
             android:textSize="14sp"
             tools:text="x 1" />
 
+        <TextView
+            android:id="@+id/tvCartItemNote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textColor="@color/gray_500"
+            android:textSize="13sp"
+            android:visibility="gone"
+            tools:text="Note: No sugar"
+            tools:visibility="visible" />
+
     </LinearLayout>
 
 </LinearLayout>

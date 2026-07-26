@@ -50,6 +50,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         holder.variant.setText(formatVariant(item));
         holder.quantity.setText(String.format(Locale.US, "x %d", item.getQuantity()));
         holder.price.setText(String.format(Locale.US, "$%.2f", item.getTotalPrice()));
+        bindNote(holder.note, item.getNote());
     }
 
     @Override
@@ -72,12 +73,22 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         return normalized.substring(0, 1).toUpperCase(Locale.US) + normalized.substring(1);
     }
 
+    private void bindNote(TextView noteView, String note) {
+        if (note == null || note.trim().isEmpty()) {
+            noteView.setVisibility(View.GONE);
+            return;
+        }
+        noteView.setText(noteView.getContext().getString(R.string.order_note_label_format, note.trim()));
+        noteView.setVisibility(View.VISIBLE);
+    }
+
     static class CartViewHolder extends RecyclerView.ViewHolder {
         final ImageView image;
         final TextView name;
         final TextView variant;
         final TextView quantity;
         final TextView price;
+        final TextView note;
 
         CartViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -86,6 +97,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             variant = itemView.findViewById(R.id.tvCartItemVariant);
             quantity = itemView.findViewById(R.id.tvCartItemQty);
             price = itemView.findViewById(R.id.tvCartItemPrice);
+            note = itemView.findViewById(R.id.tvCartItemNote);
         }
     }
 }

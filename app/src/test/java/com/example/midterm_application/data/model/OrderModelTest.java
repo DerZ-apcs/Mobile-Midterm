@@ -37,7 +37,8 @@ public class OrderModelTest {
                 "LESS_ICE",
                 3,
                 5.50,
-                16.50);
+                16.50,
+                "No sugar");
 
         assertEquals(42L, item.getOrderId());
         assertEquals(7, item.getCoffeeId());
@@ -49,5 +50,40 @@ public class OrderModelTest {
         assertEquals(3, item.getQuantity());
         assertEquals(5.50, item.getUnitPrice(), DELTA);
         assertEquals(16.50, item.getTotalPrice(), DELTA);
+        assertEquals("No sugar", item.getNote());
+    }
+
+    @Test
+    public void cartItemPreservesOptionalNote() {
+        CartItem item = new CartItem(
+                7,
+                "Mocha",
+                101,
+                "DOUBLE",
+                "LARGE",
+                "LESS_ICE",
+                3,
+                5.50,
+                16.50,
+                "Extra hot");
+
+        assertEquals("Extra hot", item.getNote());
+    }
+
+    @Test
+    public void cartItemAllowsEmptyNote() {
+        CartItem item = new CartItem(
+                7,
+                "Mocha",
+                101,
+                "DOUBLE",
+                "LARGE",
+                "LESS_ICE",
+                3,
+                5.50,
+                16.50,
+                "");
+
+        assertEquals("", item.getNote());
     }
 }

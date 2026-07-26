@@ -25,6 +25,7 @@ public class OrderItem {
     private int quantity;
     private double unitPrice;
     private double totalPrice;
+    private String note;
 
     public OrderItem() {
     }
@@ -33,6 +34,14 @@ public class OrderItem {
     public OrderItem(long orderId, int coffeeId, String coffeeName, int imageResId,
                      String shot, String size, String ice, int quantity,
                      double unitPrice, double totalPrice) {
+        this(orderId, coffeeId, coffeeName, imageResId, shot, size, ice, quantity,
+                unitPrice, totalPrice, "");
+    }
+
+    @Ignore
+    public OrderItem(long orderId, int coffeeId, String coffeeName, int imageResId,
+                     String shot, String size, String ice, int quantity,
+                     double unitPrice, double totalPrice, String note) {
         this.orderId = orderId;
         this.coffeeId = coffeeId;
         this.coffeeName = coffeeName;
@@ -43,6 +52,7 @@ public class OrderItem {
         this.quantity = quantity;
         this.unitPrice = unitPrice;
         this.totalPrice = totalPrice;
+        this.note = note;
     }
 
     public long getId() {
@@ -131,5 +141,13 @@ public class OrderItem {
 
     public void setTotalPrice(double totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 }

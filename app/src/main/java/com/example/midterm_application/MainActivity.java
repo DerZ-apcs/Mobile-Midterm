@@ -328,7 +328,9 @@ public class MainActivity extends ComponentActivity {
     private void showOrders() {
         setContentView(R.layout.activity_my_order);
 
-        OrderAdapter orderAdapter = new OrderAdapter(order -> getOrderViewModel().completeOrder(order.getId()));
+        OrderAdapter orderAdapter = new OrderAdapter(
+                order -> getOrderViewModel().completeOrder(order.getId()),
+                order -> getOrderViewModel().reorderCompletedOrder(order.getId()));
         RecyclerView orderList = findViewById(R.id.rvOrderList);
         if (orderList != null) {
             orderList.setLayoutManager(new LinearLayoutManager(this));
@@ -346,7 +348,24 @@ public class MainActivity extends ComponentActivity {
         }
         showOrderTab(showingHistoryOrders, orderAdapter, emptyOrders, tabOngoing, tabHistory);
 
+        getOrderViewModel().getReorderState().removeObservers(this);
+        getOrderViewModel().getReorderState().observe(this, this::showReorderResult);
+
         setupPrimaryBottomNavigation(R.id.navOrders);
+    }
+
+    private void showReorderResult(OrderViewModel.ReorderState state) {
+        if (state == null) {
+            return;
+        }
+        if (state.isSuccess()) {
+            Toast.makeText(this,
+                    getString(R.string.reorder_success_format, state.getAddedItems()),
+                    Toast.LENGTH_SHORT).show();
+        } else if (state.getErrorMessage() != null) {
+            Toast.makeText(this, state.getErrorMessage(), Toast.LENGTH_SHORT).show();
+        }
+        getOrderViewModel().consumeReorderResult();
     }
 
     private void showOrderTab(boolean showHistory, OrderAdapter adapter, TextView emptyOrders,

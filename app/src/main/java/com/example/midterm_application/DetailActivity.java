@@ -4,7 +4,10 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -56,10 +59,34 @@ public class DetailActivity extends ComponentActivity {
         }
 
         bindCoffee(coffee);
+        setupNoteInput();
         setupCustomizationControls(coffee);
         refreshCustomizationUi(coffee);
+        cartViewModel.getCartItems().observe(this, this::updateCartBadge);
         setClickListener(R.id.btnCart, this::showCartPreview);
         setClickListener(R.id.btnAddToCart, () -> addCurrentCoffeeToCart(coffee));
+    }
+
+    private void setupNoteInput() {
+        EditText noteInput = findViewById(R.id.etOrderNote);
+        if (noteInput == null) {
+            return;
+        }
+        noteInput.setText(detailViewModel.getNote());
+        noteInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                detailViewModel.setNote(s == null ? "" : s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
     }
 
     private void bindCoffee(Coffee coffee) {
@@ -162,7 +189,8 @@ public class DetailActivity extends ComponentActivity {
                 detailViewModel.getSelectedIce().name(),
                 detailViewModel.getQuantity(),
                 unitPrice,
-                totalPrice);
+                totalPrice,
+                detailViewModel.getNote());
 
         cartViewModel.insertCartItem(cartItem);
         Intent result = new Intent();
@@ -208,11 +236,29 @@ public class DetailActivity extends ComponentActivity {
             total += item.getTotalPrice();
             builder.append(item.getCoffeeName())
                     .append("  x")
-                    .append(item.getQuantity())
-                    .append("\n");
+                    .append(item.getQuantity());
+            if (item.getNote() != null && !item.getNote().trim().isEmpty()) {
+                builder.append("\n")
+                        .append(getString(R.string.order_note_label_format, item.getNote().trim()));
+            }
+            builder.append("\n");
         }
         builder.append("\nTotal: ").append(String.format(Locale.US, "$%.2f", total));
         return builder.toString();
+    }
+
+    private void updateCartBadge(List<CartItem> items) {
+        int badgeCount = 0;
+        if (items != null) {
+            for (CartItem item : items) {
+                badgeCount += item.getQuantity();
+            }
+        }
+        TextView badge = findViewById(R.id.tvCartBadge);
+        if (badge != null) {
+            badge.setText(String.valueOf(badgeCount));
+            badge.setVisibility(badgeCount > 0 ? View.VISIBLE : View.GONE);
+        }
     }
 
     private void updateShotOption(int viewId, boolean selected) {

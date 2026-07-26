@@ -21,9 +21,12 @@ import java.util.Locale;
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
     private final List<OrderListItem> orders = new ArrayList<>();
     private final OnCompleteClickListener completeClickListener;
+    private final OnReorderClickListener reorderClickListener;
 
-    public OrderAdapter(OnCompleteClickListener completeClickListener) {
+    public OrderAdapter(OnCompleteClickListener completeClickListener,
+                        OnReorderClickListener reorderClickListener) {
         this.completeClickListener = completeClickListener;
+        this.reorderClickListener = reorderClickListener;
     }
 
     public void submitOrders(List<OrderListItem> orderItems) {
@@ -51,10 +54,17 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         holder.details.setText(formatDetails(order));
 
         boolean canComplete = Order.STATUS_ONGOING.equals(order.getStatus());
-        holder.complete.setVisibility(canComplete ? View.VISIBLE : View.GONE);
-        holder.complete.setOnClickListener(canComplete
-                ? v -> completeClickListener.onCompleteClicked(order)
-                : null);
+        boolean canReorder = Order.STATUS_COMPLETED.equals(order.getStatus());
+        holder.complete.setVisibility(canComplete || canReorder ? View.VISIBLE : View.GONE);
+        if (canComplete) {
+            holder.complete.setText(R.string.cta_complete_order);
+            holder.complete.setOnClickListener(v -> completeClickListener.onCompleteClicked(order));
+        } else if (canReorder) {
+            holder.complete.setText(R.string.cta_order_again);
+            holder.complete.setOnClickListener(v -> reorderClickListener.onReorderClicked(order));
+        } else {
+            holder.complete.setOnClickListener(null);
+        }
     }
 
     @Override
@@ -77,6 +87,10 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
 
     public interface OnCompleteClickListener {
         void onCompleteClicked(OrderListItem order);
+    }
+
+    public interface OnReorderClickListener {
+        void onReorderClicked(OrderListItem order);
     }
 
     static class OrderViewHolder extends RecyclerView.ViewHolder {

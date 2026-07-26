@@ -84,4 +84,9 @@
     <string name="favorite_coffee_desc">Toggle favorite coffee</string>
     <string name="search_coffee_hint">Search coffee</string>
     <string name="empty_search_results">No coffee matches your search</string>
+    <string name="order_note_hint">Special instructions (optional)</string>
+    <string name="order_note_label_format">Note: %1$s</string>
+    <string name="cta_order_again">Order Again</string>
+    <string name="reorder_success_format">Added %1$d item(s) to cart</string>
+    <string name="reorder_failed_message">Could not reorder this order</string>
 </resources>
