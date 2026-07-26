@@ -9,6 +9,7 @@
     <string name="profile_desc">User profile</string>
     <string name="coffee_image_desc">Coffee image</string>
     <string name="nav_home_desc">Home</string>
+    <string name="nav_orders_desc">Orders</string>
     <string name="nav_rewards_desc">Rewards</string>
     <string name="nav_history_desc">Order history</string>
     <string name="coffee_americano">Americano</string>

@@ -10,6 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,12 +63,6 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (currentScreen == SCREEN_DETAILS) {
-            backStack.clear();
-            showScreen(SCREEN_HOME);
-            return;
-        }
-
         if (!backStack.isEmpty()) {
             int previousScreen = backStack.remove(backStack.size() - 1);
             showScreen(previousScreen);
@@ -85,6 +81,15 @@ public class MainActivity extends Activity {
         if (currentScreen != screen) {
             backStack.add(currentScreen);
         }
+        showScreen(screen);
+    }
+
+    private void navigateToPrimary(int screen) {
+        if (!isPrimaryScreen(screen) || currentScreen == screen) {
+            return;
+        }
+
+        backStack.clear();
         showScreen(screen);
     }
 
@@ -136,9 +141,7 @@ public class MainActivity extends Activity {
 
         setClickListener(R.id.btnCart, () -> navigateTo(SCREEN_CART));
         setClickListener(R.id.btnProfile, () -> navigateTo(SCREEN_PROFILE));
-        setClickListener(R.id.navHome, () -> showScreen(SCREEN_HOME));
-        setClickListener(R.id.navRewards, () -> navigateTo(SCREEN_REWARDS));
-        setClickListener(R.id.navHistory, () -> navigateTo(SCREEN_ORDERS));
+        setupPrimaryBottomNavigation(R.id.navHome);
     }
 
     private void showDetails() {
@@ -149,10 +152,7 @@ public class MainActivity extends Activity {
             coffeeName.setText(selectedCoffeeName);
         }
 
-        setClickListener(R.id.btnBack, () -> {
-            backStack.clear();
-            showScreen(SCREEN_HOME);
-        });
+        setClickListener(R.id.btnBack, this::goBackOrHome);
         setClickListener(R.id.btnCart, () -> navigateTo(SCREEN_CART));
         setClickListener(R.id.btnAddToCart, () -> navigateTo(SCREEN_CART));
     }
@@ -167,24 +167,20 @@ public class MainActivity extends Activity {
     private void showOrderSuccess() {
         setContentView(R.layout.activity_order_success);
 
-        setClickListener(R.id.btnTrackOrder, () -> navigateTo(SCREEN_ORDERS));
+        setClickListener(R.id.btnTrackOrder, () -> navigateToPrimary(SCREEN_ORDERS));
     }
 
     private void showOrders() {
         setContentView(R.layout.activity_my_order);
 
-        setClickListener(R.id.navHome, () -> navigateTo(SCREEN_HOME));
-        setClickListener(R.id.navRewards, () -> navigateTo(SCREEN_REWARDS));
-        setClickListener(R.id.navHistory, () -> showScreen(SCREEN_ORDERS));
+        setupPrimaryBottomNavigation(R.id.navOrders);
     }
 
     private void showRewards() {
         setContentView(R.layout.activity_rewards);
 
         setClickListener(R.id.btnRedeemDrinks, () -> navigateTo(SCREEN_REDEEM));
-        setClickListener(R.id.navOrders, () -> navigateTo(SCREEN_ORDERS));
-        setClickListener(R.id.navRewards, () -> showScreen(SCREEN_REWARDS));
-        setClickListener(R.id.navAccount, () -> navigateTo(SCREEN_PROFILE));
+        setupPrimaryBottomNavigation(R.id.navRewards);
     }
 
     private void showRedeem() {
@@ -195,6 +191,33 @@ public class MainActivity extends Activity {
 
     private void showProfile() {
         setContentView(R.layout.activity_profile);
+
+        setClickListener(R.id.btnBack, this::goBackOrHome);
+    }
+
+    private void setupPrimaryBottomNavigation(int selectedItemId) {
+        BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
+        if (bottomNavigation == null) {
+            return;
+        }
+
+        bottomNavigation.setSelectedItemId(selectedItemId);
+        bottomNavigation.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.navHome) {
+                navigateToPrimary(SCREEN_HOME);
+                return true;
+            }
+            if (itemId == R.id.navOrders) {
+                navigateToPrimary(SCREEN_ORDERS);
+                return true;
+            }
+            if (itemId == R.id.navRewards) {
+                navigateToPrimary(SCREEN_REWARDS);
+                return true;
+            }
+            return false;
+        });
     }
 
     private void goBackOrHome() {
@@ -204,6 +227,10 @@ public class MainActivity extends Activity {
         } else {
             showScreen(SCREEN_HOME);
         }
+    }
+
+    private boolean isPrimaryScreen(int screen) {
+        return screen == SCREEN_HOME || screen == SCREEN_ORDERS || screen == SCREEN_REWARDS;
     }
 
     private void setClickListener(int viewId, ClickAction action) {

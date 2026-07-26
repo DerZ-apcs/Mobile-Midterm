@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -72,69 +73,22 @@
             android:paddingStart="24dp"
             android:paddingTop="32dp"
             android:paddingEnd="24dp"
-            android:paddingBottom="120dp"
+            android:paddingBottom="@dimen/bottom_nav_height"
             tools:itemCount="3"
             tools:listitem="@layout/item_order" />
 
     </LinearLayout>
 
-    <LinearLayout
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/bottom_nav_height"
         android:layout_gravity="bottom"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="32dp"
-        android:background="@drawable/bg_nav_floating_card"
+        android:background="@color/white"
         android:elevation="12dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="24dp">
-
-        <ImageButton
-            android:id="@+id/navHome"
-            android:layout_width="0dp"
-            android:layout_height="32dp"
-            android:layout_weight="1"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/nav_home_desc_order"
-            android:src="@drawable/ic_home_outline" />
-
-        <ImageButton
-            android:id="@+id/navRewards"
-            android:layout_width="0dp"
-            android:layout_height="32dp"
-            android:layout_weight="1"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/nav_rewards_desc_order"
-            android:src="@drawable/ic_gift_box" />
-
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="32dp"
-            android:layout_weight="1">
-
-            <ImageButton
-                android:id="@+id/navHistory"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_gravity="center"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/nav_history_desc_order"
-                android:src="@drawable/ic_order_history" />
-
-            <ImageView
-                android:layout_width="14dp"
-                android:layout_height="14dp"
-                android:layout_gravity="bottom|end"
-                android:background="@drawable/bg_clock_badge_bg"
-                android:contentDescription="@null"
-                android:padding="1dp"
-                android:src="@drawable/ic_clock_badge" />
-
-        </FrameLayout>
-
-    </LinearLayout>
+        app:itemIconTint="@color/bottom_nav_item_color"
+        app:itemTextColor="@color/bottom_nav_item_color"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/menu_primary_bottom_nav" />
 
 </FrameLayout>
