@@ -309,13 +309,13 @@
                     android:textSize="18sp" />
 
                 <ImageButton
-                    android:id="@+id/btnIceFull"
+                    android:id="@+id/btnIceNone"
                     android:layout_width="56dp"
                     android:layout_height="56dp"
-                    android:background="@drawable/bg_option_active"
+                    android:background="@drawable/bg_option_inactive"
                     android:padding="14dp"
-                    android:src="@drawable/ic_ice_full"
-                    android:tint="@color/brand_dark" />
+                    android:src="@drawable/ic_ice_light"
+                    android:tint="@color/gray_400" />
 
                 <ImageButton
                     android:id="@+id/btnIceLight"
@@ -326,6 +326,16 @@
                     android:padding="14dp"
                     android:src="@drawable/ic_ice_light"
                     android:tint="@color/gray_400" />
+
+                <ImageButton
+                    android:id="@+id/btnIceFull"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_marginStart="12dp"
+                    android:background="@drawable/bg_option_active"
+                    android:padding="14dp"
+                    android:src="@drawable/ic_ice_full"
+                    android:tint="@color/brand_dark" />
 
             </LinearLayout>
 

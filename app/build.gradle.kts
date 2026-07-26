@@ -37,4 +37,5 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.material)
     implementation(libs.androidx.lifecycle.viewmodel)
+    testImplementation(libs.junit)
 }
