@@ -14,10 +14,11 @@ import androidx.room.PrimaryKey;
         indices = {@Index(value = {"orderId", "type"}, unique = true)})
 public class RewardTransaction {
     public static final String TYPE_EARN = "EARN";
+    public static final String TYPE_REDEEM = "REDEEM";
 
     @PrimaryKey(autoGenerate = true)
     private long id;
-    private long orderId;
+    private Long orderId;
     private long createdAt;
     private String type;
     private int points;
@@ -27,7 +28,7 @@ public class RewardTransaction {
     }
 
     @Ignore
-    public RewardTransaction(long orderId, long createdAt, String type, int points, String description) {
+    public RewardTransaction(Long orderId, long createdAt, String type, int points, String description) {
         this.orderId = orderId;
         this.createdAt = createdAt;
         this.type = type;
@@ -43,11 +44,11 @@ public class RewardTransaction {
         this.id = id;
     }
 
-    public long getOrderId() {
+    public Long getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(long orderId) {
+    public void setOrderId(Long orderId) {
         this.orderId = orderId;
     }
 

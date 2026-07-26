@@ -16,6 +16,9 @@ public interface RewardDao {
     @Query("SELECT * FROM reward_state WHERE id = 1")
     LiveData<RewardState> getRewardState();
 
+    @Query("SELECT * FROM reward_state WHERE id = 1")
+    RewardState getRewardStateSync();
+
     @Query("SELECT * FROM reward_transactions ORDER BY createdAt DESC, id DESC")
     LiveData<List<RewardTransaction>> getRewardTransactions();
 
@@ -25,6 +28,9 @@ public interface RewardDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long insertRewardTransaction(RewardTransaction transaction);
 
+    @Insert
+    long insertRewardTransactionStrict(RewardTransaction transaction);
+
     @Query("UPDATE reward_state "
             + "SET totalPoints = totalPoints + :points, "
             + "stampCount = CASE WHEN stampCount < 8 THEN stampCount + 1 ELSE 8 END "
@@ -33,4 +39,8 @@ public interface RewardDao {
 
     @Query("UPDATE reward_state SET stampCount = 0 WHERE id = 1 AND stampCount = 8")
     int claimFullStampCard();
+
+    @Query("UPDATE reward_state SET totalPoints = totalPoints - :pointCost "
+            + "WHERE id = 1 AND totalPoints >= :pointCost AND :pointCost > 0")
+    int deductPointsIfAvailable(int pointCost);
 }

@@ -62,6 +62,9 @@
     <string name="redeem_title">Redeem</string>
     <string name="valid_until_format">Valid until %1$s</string>
     <string name="points_format">%1$d pts</string>
+    <string name="redeem_points_available_format">Available points: %1$d</string>
+    <string name="redeem_cost_format">Cost: %1$d pts</string>
+    <string name="cta_redeem">Redeem</string>
     <string name="order_success_title">Order Success</string>
     <string name="order_success_desc">Your order has been placed successfully.\nFor more details, go to my orders.</string>
     <string name="cta_track_order">Track My Order</string>

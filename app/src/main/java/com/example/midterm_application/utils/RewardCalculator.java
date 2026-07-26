@@ -30,6 +30,17 @@ public final class RewardCalculator {
         return orderTransitioned && earnTransactionInserted;
     }
 
+    public static boolean canRedeem(int currentTotalPoints, int pointCost) {
+        return pointCost > 0 && currentTotalPoints >= pointCost;
+    }
+
+    public static int calculateTotalPointsAfterRedeem(int currentTotalPoints, int pointCost) {
+        if (!canRedeem(currentTotalPoints, pointCost)) {
+            return currentTotalPoints;
+        }
+        return currentTotalPoints - pointCost;
+    }
+
     public static int capStampCount(int stampCount) {
         if (stampCount < 0) {
             return 0;

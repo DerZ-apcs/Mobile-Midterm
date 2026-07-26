@@ -1,6 +1,8 @@
 package com.example.midterm_application.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -62,6 +64,21 @@ public class RewardCalculatorTest {
     public void claimResetsOnlyFullStampCard() {
         assertEquals(0, RewardCalculator.calculateStampCountAfterClaim(8));
         assertEquals(7, RewardCalculator.calculateStampCountAfterClaim(7));
+    }
+
+    @Test
+    public void allowsRedeemOnlyWhenPointsCoverCost() {
+        assertTrue(RewardCalculator.canRedeem(160, 160));
+        assertTrue(RewardCalculator.canRedeem(200, 160));
+        assertFalse(RewardCalculator.canRedeem(159, 160));
+        assertFalse(RewardCalculator.canRedeem(160, 0));
+    }
+
+    @Test
+    public void redeemDeductsCostWithoutGoingNegative() {
+        assertEquals(40, RewardCalculator.calculateTotalPointsAfterRedeem(200, 160));
+        assertEquals(159, RewardCalculator.calculateTotalPointsAfterRedeem(159, 160));
+        assertEquals(100, RewardCalculator.calculateTotalPointsAfterRedeem(100, -1));
     }
 
     @Test

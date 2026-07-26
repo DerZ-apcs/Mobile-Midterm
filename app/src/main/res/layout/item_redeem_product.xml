@@ -35,13 +35,13 @@
             tools:text="Cafe Latte" />
 
         <TextView
-            android:id="@+id/tvRedeemValidUntil"
+            android:id="@+id/tvRedeemPointCost"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:textColor="@color/gray_500"
             android:textSize="14sp"
-            tools:text="Valid until 04.07.21" />
+            tools:text="Cost: 120 pts" />
 
     </LinearLayout>
 
@@ -59,8 +59,8 @@
         android:paddingEnd="20dp"
         android:paddingBottom="12dp"
         android:textColor="@color/white"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:textStyle="bold"
-        tools:text="1340 pts" />
+        tools:text="Redeem" />
 
 </LinearLayout>

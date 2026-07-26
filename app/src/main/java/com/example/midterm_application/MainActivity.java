@@ -18,10 +18,13 @@ import com.example.midterm_application.data.model.CartItem;
 import com.example.midterm_application.data.model.OrderListItem;
 import com.example.midterm_application.data.model.RewardState;
 import com.example.midterm_application.data.model.RewardTransaction;
+import com.example.midterm_application.data.repository.RewardCatalog;
+import com.example.midterm_application.data.repository.RewardRepository;
 import com.example.midterm_application.data.repository.CoffeeRepository;
 import com.example.midterm_application.ui.CartAdapter;
 import com.example.midterm_application.ui.CoffeeAdapter;
 import com.example.midterm_application.ui.OrderAdapter;
+import com.example.midterm_application.ui.RewardProductAdapter;
 import com.example.midterm_application.ui.RewardTransactionAdapter;
 import com.example.midterm_application.utils.RewardCalculator;
 import com.example.midterm_application.viewmodel.CartViewModel;
@@ -329,7 +332,11 @@ public class MainActivity extends ComponentActivity {
             rewardsHistory.setAdapter(rewardAdapter);
         }
 
-        View claimCard = findViewById(R.id.btnRedeemDrinks);
+        View redeemDrinks = findViewById(R.id.btnRedeemDrinks);
+        if (redeemDrinks != null) {
+            redeemDrinks.setOnClickListener(v -> navigateTo(SCREEN_REDEEM));
+        }
+        View claimCard = findViewById(R.id.btnClaimLoyalty);
         if (claimCard != null) {
             claimCard.setOnClickListener(v -> getRewardViewModel().claimFullStampCard());
         }
@@ -348,7 +355,7 @@ public class MainActivity extends ComponentActivity {
 
         TextView stampCountText = findViewById(R.id.tvRewardStampCount);
         TextView pointsValue = findViewById(R.id.tvPointsValue);
-        TextView claimCard = findViewById(R.id.btnRedeemDrinks);
+        TextView claimCard = findViewById(R.id.btnClaimLoyalty);
 
         if (stampCountText != null) {
             stampCountText.setText(String.valueOf(stampCount));
@@ -403,7 +410,40 @@ public class MainActivity extends ComponentActivity {
     private void showRedeem() {
         setContentView(R.layout.activity_redeem);
 
+        RewardProductAdapter rewardProductAdapter = new RewardProductAdapter(
+                RewardCatalog.getRewards(),
+                rewardProduct -> getRewardViewModel().redeemReward(rewardProduct));
+        RecyclerView redeemList = findViewById(R.id.rvRedeemList);
+        if (redeemList != null) {
+            redeemList.setLayoutManager(new LinearLayoutManager(this));
+            redeemList.setAdapter(rewardProductAdapter);
+        }
+
+        getRewardViewModel().getRewardState().removeObservers(this);
+        getRewardViewModel().getRedemptionInProgress().removeObservers(this);
+        getRewardViewModel().getRedemptionResult().removeObservers(this);
+        getRewardViewModel().getRewardState().observe(this, this::updateRedeemPoints);
+        getRewardViewModel().getRedemptionInProgress().observe(this,
+                inProgress -> rewardProductAdapter.setRedeemEnabled(!Boolean.TRUE.equals(inProgress)));
+        getRewardViewModel().getRedemptionResult().observe(this, this::showRedemptionResult);
+
         setClickListener(R.id.btnBack, this::goBackOrHome);
+    }
+
+    private void updateRedeemPoints(RewardState rewardState) {
+        TextView pointsValue = findViewById(R.id.tvRedeemPointsValue);
+        if (pointsValue != null) {
+            int totalPoints = rewardState == null ? 0 : rewardState.getTotalPoints();
+            pointsValue.setText(getString(R.string.redeem_points_available_format, totalPoints));
+        }
+    }
+
+    private void showRedemptionResult(RewardRepository.RedemptionResult result) {
+        if (result == null) {
+            return;
+        }
+        Toast.makeText(this, result.getMessage(), Toast.LENGTH_SHORT).show();
+        getRewardViewModel().clearRedemptionResult();
     }
 
     private void showProfile() {

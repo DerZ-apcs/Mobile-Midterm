@@ -143,6 +143,24 @@
 
                 </LinearLayout>
 
+                <TextView
+                    android:id="@+id/btnClaimLoyalty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="24dp"
+                    android:background="@drawable/bg_redeem_pill"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingStart="16dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="10dp"
+                    android:text="@string/cta_complete_loyalty"
+                    android:textColor="@color/navy_rewards"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
             </LinearLayout>
 
             <LinearLayout

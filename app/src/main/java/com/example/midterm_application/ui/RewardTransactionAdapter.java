@@ -41,7 +41,7 @@ public class RewardTransactionAdapter extends RecyclerView.Adapter<RewardTransac
         RewardTransaction transaction = transactions.get(position);
         holder.description.setText(transaction.getDescription());
         holder.date.setText(formatDate(transaction.getCreatedAt()));
-        holder.points.setText(String.format(Locale.US, "+ %d Pts", transaction.getPoints()));
+        holder.points.setText(formatPoints(transaction.getPoints()));
     }
 
     @Override
@@ -52,6 +52,11 @@ public class RewardTransactionAdapter extends RecyclerView.Adapter<RewardTransac
     private String formatDate(long createdAt) {
         SimpleDateFormat formatter = new SimpleDateFormat("dd MMM | h:mm a", Locale.US);
         return formatter.format(new Date(createdAt));
+    }
+
+    private String formatPoints(int points) {
+        String sign = points < 0 ? "-" : "+";
+        return String.format(Locale.US, "%s %d Pts", sign, Math.abs(points));
     }
 
     static class RewardViewHolder extends RecyclerView.ViewHolder {
