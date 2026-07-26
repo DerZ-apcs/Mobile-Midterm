@@ -1,21 +1,29 @@
 package com.example.midterm_application;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.activity.ComponentActivity;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.midterm_application.data.model.CartItem;
 import com.example.midterm_application.data.repository.CoffeeRepository;
+import com.example.midterm_application.ui.CartAdapter;
 import com.example.midterm_application.ui.CoffeeAdapter;
+import com.example.midterm_application.viewmodel.CartViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ComponentActivity {
     public static final String EXTRA_OPEN_CART = "com.example.midterm_application.EXTRA_OPEN_CART";
 
     private static final int REQUEST_COFFEE_DETAILS = 1001;
@@ -38,6 +46,7 @@ public class MainActivity extends Activity {
     private int currentScreen = SCREEN_HOME;
     private int selectedCoffeeId = 1;
     private String selectedCoffeeName = "Americano";
+    private CartViewModel cartViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,7 +192,24 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_cart);
 
         setClickListener(R.id.btnBack, this::goBackOrHome);
-        setClickListener(R.id.btnCheckout, () -> navigateTo(SCREEN_ORDER_SUCCESS));
+        View checkout = findViewById(R.id.btnCheckout);
+        if (checkout != null) {
+            checkout.setOnClickListener(null);
+        }
+
+        CartAdapter cartAdapter = new CartAdapter();
+        RecyclerView cartItems = findViewById(R.id.rvCartItems);
+        if (cartItems != null) {
+            cartItems.setLayoutManager(new LinearLayoutManager(this));
+            cartItems.setAdapter(cartAdapter);
+            attachSwipeToDelete(cartItems, cartAdapter);
+        }
+
+        getCartViewModel().getCartItems().removeObservers(this);
+        getCartViewModel().getCartItems().observe(this, items -> {
+            cartAdapter.submitItems(items);
+            updateCartSummary(items);
+        });
     }
 
     private void showOrderSuccess() {
@@ -260,6 +286,61 @@ public class MainActivity extends Activity {
         if (view != null) {
             view.setOnClickListener(v -> action.run());
         }
+    }
+
+    private CartViewModel getCartViewModel() {
+        if (cartViewModel == null) {
+            cartViewModel = new ViewModelProvider(this,
+                    ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
+                    .get(CartViewModel.class);
+        }
+        return cartViewModel;
+    }
+
+    private void updateCartSummary(List<CartItem> items) {
+        boolean isEmpty = items == null || items.isEmpty();
+        double total = 0.00;
+        if (items != null) {
+            for (CartItem item : items) {
+                total += item.getTotalPrice();
+            }
+        }
+
+        TextView totalPrice = findViewById(R.id.tvTotalPrice);
+        TextView emptyCart = findViewById(R.id.tvEmptyCart);
+        View checkout = findViewById(R.id.btnCheckout);
+
+        if (totalPrice != null) {
+            totalPrice.setText(String.format(Locale.US, "$%.2f", total));
+        }
+        if (emptyCart != null) {
+            emptyCart.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+        }
+        if (checkout != null) {
+            checkout.setEnabled(!isEmpty);
+            checkout.setAlpha(isEmpty ? 0.45f : 1.00f);
+        }
+    }
+
+    private void attachSwipeToDelete(RecyclerView recyclerView, CartAdapter cartAdapter) {
+        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
+                0, ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView,
+                                  @NonNull RecyclerView.ViewHolder viewHolder,
+                                  @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                CartItem item = cartAdapter.getItemAt(viewHolder.getBindingAdapterPosition());
+                if (item != null) {
+                    getCartViewModel().deleteCartItem(item);
+                }
+            }
+        });
+        helper.attachToRecyclerView(recyclerView);
     }
 
     private interface ClickAction {

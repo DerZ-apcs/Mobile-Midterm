@@ -32,6 +32,9 @@
     <string name="coffee_description_placeholder">Rich espresso coffee with hot water for a smooth, bold taste.</string>
     <string name="coffee_price_placeholder">$3.00</string>
     <string name="cart_title">My Cart</string>
+    <string name="cart_empty_message">Your cart is empty</string>
+    <string name="cart_preview_title">Cart Preview</string>
+    <string name="cart_preview_close">Close</string>
     <string name="label_total_price">Total Price</string>
     <string name="cta_checkout">Checkout</string>
     <string name="delete_desc">Delete item</string>

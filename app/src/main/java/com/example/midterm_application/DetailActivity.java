@@ -1,16 +1,19 @@
 package com.example.midterm_application;
 
-import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.activity.ComponentActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelStore;
 
 import com.example.midterm_application.data.model.Coffee;
 import com.example.midterm_application.data.model.CartItem;
@@ -22,12 +25,12 @@ import com.example.midterm_application.utils.PriceCalculator;
 import com.example.midterm_application.viewmodel.CartViewModel;
 import com.example.midterm_application.viewmodel.DetailViewModel;
 
+import java.util.List;
 import java.util.Locale;
 
-public class DetailActivity extends Activity {
+public class DetailActivity extends ComponentActivity {
     public static final String EXTRA_COFFEE_ID = "com.example.midterm_application.EXTRA_COFFEE_ID";
 
-    private ViewModelStore viewModelStore;
     private DetailViewModel detailViewModel;
     private CartViewModel cartViewModel;
 
@@ -35,8 +38,10 @@ public class DetailActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_coffee_details);
-        detailViewModel = getDetailViewModel();
-        cartViewModel = getCartViewModel();
+        detailViewModel = new ViewModelProvider(this).get(DetailViewModel.class);
+        cartViewModel = new ViewModelProvider(this,
+                ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
+                .get(CartViewModel.class);
 
         ImageButton backButton = findViewById(R.id.btnBack);
         if (backButton != null) {
@@ -53,40 +58,8 @@ public class DetailActivity extends Activity {
         bindCoffee(coffee);
         setupCustomizationControls(coffee);
         refreshCustomizationUi(coffee);
+        setClickListener(R.id.btnCart, this::showCartPreview);
         setClickListener(R.id.btnAddToCart, () -> addCurrentCoffeeToCart(coffee));
-    }
-
-    @Override
-    public Object onRetainNonConfigurationInstance() {
-        return viewModelStore;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (isFinishing() && viewModelStore != null) {
-            viewModelStore.clear();
-        }
-    }
-
-    private DetailViewModel getDetailViewModel() {
-        Object lastInstance = getLastNonConfigurationInstance();
-        if (lastInstance instanceof ViewModelStore) {
-            viewModelStore = (ViewModelStore) lastInstance;
-        } else {
-            viewModelStore = new ViewModelStore();
-        }
-        return new ViewModelProvider(viewModelStore, new ViewModelProvider.NewInstanceFactory())
-                .get(DetailViewModel.class);
-    }
-
-    private CartViewModel getCartViewModel() {
-        if (viewModelStore == null) {
-            getDetailViewModel();
-        }
-        return new ViewModelProvider(viewModelStore,
-                ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
-                .get(CartViewModel.class);
     }
 
     private void bindCoffee(Coffee coffee) {
@@ -196,6 +169,50 @@ public class DetailActivity extends Activity {
         result.putExtra(MainActivity.EXTRA_OPEN_CART, true);
         setResult(RESULT_OK, result);
         finish();
+    }
+
+    private void showCartPreview() {
+        TextView content = new TextView(this);
+        int padding = (int) (24 * getResources().getDisplayMetrics().density);
+        content.setPadding(padding, padding, padding, padding);
+        content.setTextColor(getColor(R.color.text_body));
+        content.setTextSize(16);
+
+        ScrollView scrollView = new ScrollView(this);
+        LinearLayout wrapper = new LinearLayout(this);
+        wrapper.setOrientation(LinearLayout.VERTICAL);
+        wrapper.addView(content);
+        scrollView.addView(wrapper);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.cart_preview_title)
+                .setView(scrollView)
+                .setPositiveButton(R.string.cart_preview_close, null)
+                .create();
+
+        Observer<List<CartItem>> observer = items -> content.setText(formatCartPreview(items));
+        dialog.setOnShowListener(dialogInterface -> cartViewModel.getCartItems().observe(this, observer));
+        dialog.setOnDismissListener(dialogInterface -> cartViewModel.getCartItems().removeObserver(observer));
+        dialog.show();
+    }
+
+    private String formatCartPreview(List<CartItem> items) {
+        if (items == null || items.isEmpty()) {
+            return getString(R.string.cart_empty_message);
+        }
+
+        double total = 0.00;
+        StringBuilder builder = new StringBuilder();
+        builder.append("Items: ").append(items.size()).append("\n\n");
+        for (CartItem item : items) {
+            total += item.getTotalPrice();
+            builder.append(item.getCoffeeName())
+                    .append("  x")
+                    .append(item.getQuantity())
+                    .append("\n");
+        }
+        builder.append("\nTotal: ").append(String.format(Locale.US, "$%.2f", total));
+        return builder.toString();
     }
 
     private void updateShotOption(int viewId, boolean selected) {
