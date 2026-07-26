@@ -121,7 +121,7 @@ public class OrderRepository {
                     earnedPoints,
                     "Order #" + orderId + " completed");
             long insertedId = rewardDao.insertRewardTransaction(transaction);
-            if (insertedId != -1L) {
+            if (RewardCalculator.shouldApplyEarnReward(true, insertedId != -1L)) {
                 rewardDao.addEarnedReward(earnedPoints);
             }
         }));

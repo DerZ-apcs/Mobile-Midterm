@@ -357,7 +357,7 @@ public class MainActivity extends ComponentActivity {
             pointsValue.setText(String.valueOf(totalPoints));
         }
         updateStampImages(stampCount);
-        updateClaimCardButton(claimCard, stampCount == RewardCalculator.MAX_STAMPS);
+        updateClaimCardButton(claimCard, RewardCalculator.canClaimStampCard(stampCount));
     }
 
     private void updateStampImages(int stampCount) {
