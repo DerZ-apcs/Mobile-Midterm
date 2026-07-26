@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.activity.ComponentActivity;
@@ -17,6 +18,7 @@ import com.example.midterm_application.data.repository.CoffeeRepository;
 import com.example.midterm_application.ui.CartAdapter;
 import com.example.midterm_application.ui.CoffeeAdapter;
 import com.example.midterm_application.viewmodel.CartViewModel;
+import com.example.midterm_application.viewmodel.OrderViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -47,6 +49,9 @@ public class MainActivity extends ComponentActivity {
     private int selectedCoffeeId = 1;
     private String selectedCoffeeName = "Americano";
     private CartViewModel cartViewModel;
+    private OrderViewModel orderViewModel;
+    private List<CartItem> currentCartItems = new ArrayList<>();
+    private boolean checkoutInProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,7 +199,7 @@ public class MainActivity extends ComponentActivity {
         setClickListener(R.id.btnBack, this::goBackOrHome);
         View checkout = findViewById(R.id.btnCheckout);
         if (checkout != null) {
-            checkout.setOnClickListener(null);
+            checkout.setOnClickListener(v -> getOrderViewModel().checkout());
         }
 
         CartAdapter cartAdapter = new CartAdapter();
@@ -207,8 +212,28 @@ public class MainActivity extends ComponentActivity {
 
         getCartViewModel().getCartItems().removeObservers(this);
         getCartViewModel().getCartItems().observe(this, items -> {
+            currentCartItems = items == null ? new ArrayList<>() : new ArrayList<>(items);
             cartAdapter.submitItems(items);
             updateCartSummary(items);
+        });
+
+        getOrderViewModel().getCheckoutState().removeObservers(this);
+        getOrderViewModel().getCheckoutState().observe(this, state -> {
+            if (state == null) {
+                return;
+            }
+
+            checkoutInProgress = state.isLoading();
+            updateCartSummary(currentCartItems);
+            if (state.isSuccess()) {
+                getOrderViewModel().consumeCheckoutResult();
+                navigateTo(SCREEN_ORDER_SUCCESS);
+                return;
+            }
+            if (state.getErrorMessage() != null) {
+                Toast.makeText(this, state.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                getOrderViewModel().consumeCheckoutResult();
+            }
         });
     }
 
@@ -297,6 +322,15 @@ public class MainActivity extends ComponentActivity {
         return cartViewModel;
     }
 
+    private OrderViewModel getOrderViewModel() {
+        if (orderViewModel == null) {
+            orderViewModel = new ViewModelProvider(this,
+                    ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
+                    .get(OrderViewModel.class);
+        }
+        return orderViewModel;
+    }
+
     private void updateCartSummary(List<CartItem> items) {
         boolean isEmpty = items == null || items.isEmpty();
         double total = 0.00;
@@ -317,8 +351,9 @@ public class MainActivity extends ComponentActivity {
             emptyCart.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
         }
         if (checkout != null) {
-            checkout.setEnabled(!isEmpty);
-            checkout.setAlpha(isEmpty ? 0.45f : 1.00f);
+            boolean checkoutEnabled = !isEmpty && !checkoutInProgress;
+            checkout.setEnabled(checkoutEnabled);
+            checkout.setAlpha(checkoutEnabled ? 1.00f : 0.45f);
         }
     }
 

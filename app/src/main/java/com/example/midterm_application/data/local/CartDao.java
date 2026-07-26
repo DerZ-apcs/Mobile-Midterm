@@ -15,6 +15,9 @@ public interface CartDao {
     @Query("SELECT * FROM cart_items ORDER BY id DESC")
     LiveData<List<CartItem>> getAllCartItems();
 
+    @Query("SELECT * FROM cart_items ORDER BY id DESC")
+    List<CartItem> getAllCartItemsSync();
+
     @Insert
     void insert(CartItem item);
 
