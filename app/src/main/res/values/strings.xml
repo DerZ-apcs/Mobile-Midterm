@@ -1,3 +1,33 @@
 <resources>
-    <string name="app_name">Midterm-Application</string>
+    <string name="app_name">The Code Cup</string>
+    <string name="setup_screen_message">Java/XML foundation is ready.</string>
+    <string name="greeting_morning">Good morning,</string>
+    <string name="loyalty_card_title">Loyalty card</string>
+    <string name="stamp_total"> / 8</string>
+    <string name="choose_coffee_title">Choose your coffee</string>
+    <string name="cart_desc">Shopping cart</string>
+    <string name="profile_desc">User profile</string>
+    <string name="coffee_image_desc">Coffee image</string>
+    <string name="nav_home_desc">Home</string>
+    <string name="nav_rewards_desc">Rewards</string>
+    <string name="nav_history_desc">Order history</string>
+    <string name="coffee_americano">Americano</string>
+    <string name="coffee_cappuccino">Cappuccino</string>
+    <string name="coffee_mocha">Mocha</string>
+    <string name="coffee_flat_white">Flat White</string>
+    <string name="details_title">Details</string>
+    <string name="back_desc">Go back</string>
+    <string name="view_cart_desc">View cart</string>
+    <string name="decrease_qty_desc">Decrease quantity</string>
+    <string name="increase_qty_desc">Increase quantity</string>
+    <string name="label_shot">Shot</string>
+    <string name="shot_single">Single</string>
+    <string name="shot_double">Double</string>
+    <string name="label_select_temp">Select</string>
+    <string name="label_size">Size</string>
+    <string name="label_ice">Ice</string>
+    <string name="label_total_amount">Total Amount</string>
+    <string name="cta_add_to_cart">Add to cart</string>
+    <string name="coffee_description_placeholder">Rich espresso coffee with hot water for a smooth, bold taste.</string>
+    <string name="coffee_price_placeholder">$3.00</string>
 </resources>

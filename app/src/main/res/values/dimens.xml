@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="radius_3xl">24dp</dimen>
+    <dimen name="radius_card">24dp</dimen>
+    <dimen name="padding_screen">24dp</dimen>
+    <dimen name="bottom_nav_height">80dp</dimen>
+</resources>
