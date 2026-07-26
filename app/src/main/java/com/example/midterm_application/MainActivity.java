@@ -2,6 +2,8 @@ package com.example.midterm_application;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -16,10 +18,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.midterm_application.data.model.CartItem;
+import com.example.midterm_application.data.model.Coffee;
 import com.example.midterm_application.data.model.OrderListItem;
 import com.example.midterm_application.data.model.RewardState;
 import com.example.midterm_application.data.model.RewardTransaction;
 import com.example.midterm_application.data.model.UserProfile;
+import com.example.midterm_application.data.repository.FavoriteRepository;
 import com.example.midterm_application.data.repository.RewardCatalog;
 import com.example.midterm_application.data.repository.RewardRepository;
 import com.example.midterm_application.data.repository.CoffeeRepository;
@@ -38,6 +42,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 public class MainActivity extends ComponentActivity {
     public static final String EXTRA_OPEN_CART = "com.example.midterm_application.EXTRA_OPEN_CART";
@@ -59,6 +64,7 @@ public class MainActivity extends ComponentActivity {
     private static final String STATE_BACK_STACK = "back_stack";
     private static final String STATE_SHOWING_HISTORY_ORDERS = "showing_history_orders";
     private static final String STATE_PROFILE_EDIT_MODE = "profile_edit_mode";
+    private static final String STATE_COFFEE_SEARCH_QUERY = "coffee_search_query";
 
     private final ArrayList<Integer> backStack = new ArrayList<>();
     private int currentScreen = SCREEN_HOME;
@@ -68,10 +74,12 @@ public class MainActivity extends ComponentActivity {
     private OrderViewModel orderViewModel;
     private ProfileViewModel profileViewModel;
     private RewardViewModel rewardViewModel;
+    private FavoriteRepository favoriteRepository;
     private List<CartItem> currentCartItems = new ArrayList<>();
     private boolean checkoutInProgress;
     private boolean showingHistoryOrders;
     private boolean profileEditMode;
+    private String coffeeSearchQuery = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +91,7 @@ public class MainActivity extends ComponentActivity {
             selectedCoffeeName = savedInstanceState.getString(STATE_SELECTED_COFFEE_NAME, "Americano");
             showingHistoryOrders = savedInstanceState.getBoolean(STATE_SHOWING_HISTORY_ORDERS, false);
             profileEditMode = savedInstanceState.getBoolean(STATE_PROFILE_EDIT_MODE, false);
+            coffeeSearchQuery = savedInstanceState.getString(STATE_COFFEE_SEARCH_QUERY, "");
             ArrayList<Integer> restoredStack = savedInstanceState.getIntegerArrayList(STATE_BACK_STACK);
             if (restoredStack != null) {
                 backStack.addAll(restoredStack);
@@ -101,6 +110,7 @@ public class MainActivity extends ComponentActivity {
         outState.putIntegerArrayList(STATE_BACK_STACK, backStack);
         outState.putBoolean(STATE_SHOWING_HISTORY_ORDERS, showingHistoryOrders);
         outState.putBoolean(STATE_PROFILE_EDIT_MODE, profileEditMode);
+        outState.putString(STATE_COFFEE_SEARCH_QUERY, coffeeSearchQuery);
     }
 
     @Override
@@ -196,15 +206,57 @@ public class MainActivity extends ComponentActivity {
     private void showHome() {
         setContentView(R.layout.activity_home);
 
+        EditText searchInput = findViewById(R.id.etCoffeeSearch);
+        TextView emptyResults = findViewById(R.id.tvEmptyCoffeeResults);
         RecyclerView coffeeGrid = findViewById(R.id.rvCoffeeGrid);
+        Set<Integer> favoriteCoffeeIds = getFavoriteRepository().getFavoriteCoffeeIds();
+        final CoffeeAdapter[] adapterRef = new CoffeeAdapter[1];
+        CoffeeAdapter coffeeAdapter = new CoffeeAdapter(
+                CoffeeRepository.searchByName(coffeeSearchQuery),
+                favoriteCoffeeIds,
+                coffee -> openCoffeeDetails(coffee.getId()),
+                coffee -> {
+                    Set<Integer> updatedFavorites = getFavoriteRepository().toggleFavorite(coffee.getId());
+                    adapterRef[0].setFavoriteCoffeeIds(updatedFavorites);
+                });
+        adapterRef[0] = coffeeAdapter;
         if (coffeeGrid != null) {
-            coffeeGrid.setAdapter(new CoffeeAdapter(CoffeeRepository.getAllCoffees(),
-                    coffee -> openCoffeeDetails(coffee.getId())));
+            coffeeGrid.setAdapter(coffeeAdapter);
+        }
+        updateCoffeeEmptyState(CoffeeRepository.searchByName(coffeeSearchQuery), emptyResults);
+        if (searchInput != null) {
+            searchInput.setText(coffeeSearchQuery);
+            searchInput.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    coffeeSearchQuery = s == null ? "" : s.toString();
+                    List<Coffee> filteredCoffees = CoffeeRepository.searchByName(coffeeSearchQuery);
+                    coffeeAdapter.submitCoffees(filteredCoffees);
+                    updateCoffeeEmptyState(filteredCoffees, emptyResults);
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                }
+            });
         }
 
+        getCartViewModel().getCartItems().removeObservers(this);
+        getCartViewModel().getCartItems().observe(this, this::updateCartBadge);
         setClickListener(R.id.btnCart, () -> navigateTo(SCREEN_CART));
         setClickListener(R.id.btnProfile, () -> navigateTo(SCREEN_PROFILE));
         setupPrimaryBottomNavigation(R.id.navHome);
+    }
+
+    private void updateCoffeeEmptyState(List<Coffee> coffees, TextView emptyResults) {
+        if (emptyResults != null) {
+            boolean isEmpty = coffees == null || coffees.isEmpty();
+            emptyResults.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+        }
     }
 
     private void showDetails() {
@@ -665,6 +717,32 @@ public class MainActivity extends ComponentActivity {
                     .get(ProfileViewModel.class);
         }
         return profileViewModel;
+    }
+
+    private FavoriteRepository getFavoriteRepository() {
+        if (favoriteRepository == null) {
+            favoriteRepository = new FavoriteRepository(getApplication());
+        }
+        return favoriteRepository;
+    }
+
+    private void updateCartBadge(List<CartItem> items) {
+        int badgeCount = calculateCartBadgeCount(items);
+        TextView badge = findViewById(R.id.tvCartBadge);
+        if (badge != null) {
+            badge.setText(String.valueOf(badgeCount));
+            badge.setVisibility(badgeCount > 0 ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    private int calculateCartBadgeCount(List<CartItem> items) {
+        int badgeCount = 0;
+        if (items != null) {
+            for (CartItem item : items) {
+                badgeCount += item.getQuantity();
+            }
+        }
+        return badgeCount;
     }
 
     private void setText(int viewId, String value) {

@@ -81,4 +81,7 @@
     <string name="cta_save_profile">Save</string>
     <string name="cta_cancel_profile">Cancel</string>
     <string name="profile_saved_message">Profile saved</string>
+    <string name="favorite_coffee_desc">Toggle favorite coffee</string>
+    <string name="search_coffee_hint">Search coffee</string>
+    <string name="empty_search_results">No coffee matches your search</string>
 </resources>

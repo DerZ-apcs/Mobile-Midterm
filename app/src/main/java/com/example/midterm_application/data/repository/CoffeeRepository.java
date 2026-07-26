@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public final class CoffeeRepository {
     private static final List<Coffee> COFFEES = Collections.unmodifiableList(Arrays.asList(
@@ -21,6 +22,21 @@ public final class CoffeeRepository {
 
     public static List<Coffee> getAllCoffees() {
         return new ArrayList<>(COFFEES);
+    }
+
+    public static List<Coffee> searchByName(String query) {
+        String normalizedQuery = query == null ? "" : query.trim().toLowerCase(Locale.US);
+        if (normalizedQuery.isEmpty()) {
+            return getAllCoffees();
+        }
+
+        List<Coffee> results = new ArrayList<>();
+        for (Coffee coffee : COFFEES) {
+            if (coffee.getName().toLowerCase(Locale.US).contains(normalizedQuery)) {
+                results.add(coffee);
+            }
+        }
+        return results;
     }
 
     public static Coffee getCoffeeById(int id) {

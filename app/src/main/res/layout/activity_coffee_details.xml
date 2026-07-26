@@ -35,16 +35,36 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <ImageButton
-            android:id="@+id/btnCart"
+        <FrameLayout
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/view_cart_desc"
-            android:padding="8dp"
-            android:src="@drawable/ic_cart_outline" />
+            android:layout_centerVertical="true">
+
+            <ImageButton
+                android:id="@+id/btnCart"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/view_cart_desc"
+                android:padding="8dp"
+                android:src="@drawable/ic_cart_outline" />
+
+            <TextView
+                android:id="@+id/tvCartBadge"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="top|end"
+                android:background="@drawable/bg_cart_badge"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                tools:text="3"
+                tools:visibility="visible" />
+
+        </FrameLayout>
 
     </RelativeLayout>
 
