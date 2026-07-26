@@ -44,4 +44,14 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="app_background">#FFFFFFFF</color>
+    <color name="app_surface">#FFFFFFFF</color>
+    <color name="app_card_surface">#FFFFFFFF</color>
+    <color name="text_primary">#1A1A1A</color>
+    <color name="text_secondary">#6B7280</color>
+    <color name="divider">#F3F4F6</color>
+    <color name="primary">#204D54</color>
+    <color name="input_tint">#204D54</color>
+    <color name="nav_bar_background">#FFFFFFFF</color>
+    <color name="light_chip_surface">#F3F4F6</color>
 </resources>

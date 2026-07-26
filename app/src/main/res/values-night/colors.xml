@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="app_background">#111827</color>
+    <color name="app_surface">#1F2937</color>
+    <color name="app_card_surface">#273449</color>
+    <color name="text_primary">#F9FAFB</color>
+    <color name="text_secondary">#CBD5E1</color>
+    <color name="divider">#374151</color>
+    <color name="primary">#8DB5C0</color>
+    <color name="input_tint">#8DB5C0</color>
+    <color name="nav_bar_background">#1F2937</color>
+    <color name="light_chip_surface">#334155</color>
+    <color name="coffee_dark">#E5E7EB</color>
+    <color name="coffee_text_heading">#F9FAFB</color>
+    <color name="coffee_text_muted">#CBD5E1</color>
+    <color name="gray_50">#1F2937</color>
+    <color name="gray_100">#374151</color>
+    <color name="gray_200">#334155</color>
+    <color name="gray_400">#CBD5E1</color>
+    <color name="gray_500">#CBD5E1</color>
+    <color name="gray_800">#F3F4F6</color>
+    <color name="gray_900">#F9FAFB</color>
+    <color name="brand_dark">#8DB5C0</color>
+    <color name="text_body">#F9FAFB</color>
+    <color name="cart_bg">#111827</color>
+    <color name="text_navy_heading">#F9FAFB</color>
+    <color name="text_navy_dark">#E5E7EB</color>
+    <color name="order_text">#F9FAFB</color>
+    <color name="navy_rewards">#F9FAFB</color>
+    <color name="text_gray_muted">#CBD5E1</color>
+    <color name="redeem_pill_bg">#D9E2EC</color>
+    <color name="navy_primary">#F9FAFB</color>
+    <color name="grey_secondary">#CBD5E1</color>
+    <color name="teal_primary">#8DB5C0</color>
+</resources>

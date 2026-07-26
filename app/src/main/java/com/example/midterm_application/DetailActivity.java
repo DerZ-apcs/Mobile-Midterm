@@ -14,13 +14,15 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import androidx.activity.ComponentActivity;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.midterm_application.data.model.Coffee;
 import com.example.midterm_application.data.model.CartItem;
 import com.example.midterm_application.data.repository.CoffeeRepository;
+import com.example.midterm_application.data.repository.ThemeRepository;
 import com.example.midterm_application.utils.PriceCalculator.Ice;
 import com.example.midterm_application.utils.PriceCalculator.Shot;
 import com.example.midterm_application.utils.PriceCalculator.Size;
@@ -31,7 +33,7 @@ import com.example.midterm_application.viewmodel.DetailViewModel;
 import java.util.List;
 import java.util.Locale;
 
-public class DetailActivity extends ComponentActivity {
+public class DetailActivity extends AppCompatActivity {
     public static final String EXTRA_COFFEE_ID = "com.example.midterm_application.EXTRA_COFFEE_ID";
 
     private DetailViewModel detailViewModel;
@@ -39,6 +41,7 @@ public class DetailActivity extends ComponentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        applySavedThemeMode();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_coffee_details);
         detailViewModel = new ViewModelProvider(this).get(DetailViewModel.class);
@@ -65,6 +68,13 @@ public class DetailActivity extends ComponentActivity {
         cartViewModel.getCartItems().observe(this, this::updateCartBadge);
         setClickListener(R.id.btnCart, this::showCartPreview);
         setClickListener(R.id.btnAddToCart, () -> addCurrentCoffeeToCart(coffee));
+    }
+
+    private void applySavedThemeMode() {
+        boolean darkModeEnabled = new ThemeRepository(getApplication()).isDarkModeEnabled();
+        AppCompatDelegate.setDefaultNightMode(darkModeEnabled
+                ? AppCompatDelegate.MODE_NIGHT_YES
+                : AppCompatDelegate.MODE_NIGHT_NO);
     }
 
     private void setupNoteInput() {

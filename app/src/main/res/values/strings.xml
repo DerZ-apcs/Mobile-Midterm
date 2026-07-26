@@ -89,4 +89,6 @@
     <string name="cta_order_again">Order Again</string>
     <string name="reorder_success_format">Added %1$d item(s) to cart</string>
     <string name="reorder_failed_message">Could not reorder this order</string>
+    <string name="dark_mode_label">Dark mode</string>
+    <string name="dark_mode_desc">Use a darker app theme</string>
 </resources>

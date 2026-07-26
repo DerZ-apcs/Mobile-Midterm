@@ -7,11 +7,13 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.activity.ComponentActivity;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -27,6 +29,7 @@ import com.example.midterm_application.data.repository.FavoriteRepository;
 import com.example.midterm_application.data.repository.RewardCatalog;
 import com.example.midterm_application.data.repository.RewardRepository;
 import com.example.midterm_application.data.repository.CoffeeRepository;
+import com.example.midterm_application.data.repository.ThemeRepository;
 import com.example.midterm_application.ui.CartAdapter;
 import com.example.midterm_application.ui.CoffeeAdapter;
 import com.example.midterm_application.ui.OrderAdapter;
@@ -44,7 +47,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-public class MainActivity extends ComponentActivity {
+public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_OPEN_CART = "com.example.midterm_application.EXTRA_OPEN_CART";
 
     private static final int REQUEST_COFFEE_DETAILS = 1001;
@@ -75,6 +78,7 @@ public class MainActivity extends ComponentActivity {
     private ProfileViewModel profileViewModel;
     private RewardViewModel rewardViewModel;
     private FavoriteRepository favoriteRepository;
+    private ThemeRepository themeRepository;
     private List<CartItem> currentCartItems = new ArrayList<>();
     private boolean checkoutInProgress;
     private boolean showingHistoryOrders;
@@ -83,6 +87,7 @@ public class MainActivity extends ComponentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        applySavedThemeMode();
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
@@ -542,9 +547,23 @@ public class MainActivity extends ComponentActivity {
         setClickListener(R.id.btnEditAddress, this::enterProfileEditMode);
         setClickListener(R.id.btnSaveProfile, this::saveProfileEdits);
         setClickListener(R.id.btnCancelProfile, this::cancelProfileEdits);
+        setupDarkModeSwitch();
         setProfileEditing(profileEditMode);
         getProfileViewModel().reloadProfile();
         setClickListener(R.id.btnBack, this::goBackOrHome);
+    }
+
+    private void setupDarkModeSwitch() {
+        Switch darkModeSwitch = findViewById(R.id.switchDarkMode);
+        if (darkModeSwitch == null) {
+            return;
+        }
+        darkModeSwitch.setOnCheckedChangeListener(null);
+        darkModeSwitch.setChecked(getThemeRepository().isDarkModeEnabled());
+        darkModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            getThemeRepository().setDarkModeEnabled(isChecked);
+            applyThemeMode(isChecked);
+        });
     }
 
     private void updateProfileViews(UserProfile profile) {
@@ -743,6 +762,23 @@ public class MainActivity extends ComponentActivity {
             favoriteRepository = new FavoriteRepository(getApplication());
         }
         return favoriteRepository;
+    }
+
+    private ThemeRepository getThemeRepository() {
+        if (themeRepository == null) {
+            themeRepository = new ThemeRepository(getApplication());
+        }
+        return themeRepository;
+    }
+
+    private void applySavedThemeMode() {
+        applyThemeMode(getThemeRepository().isDarkModeEnabled());
+    }
+
+    private void applyThemeMode(boolean darkModeEnabled) {
+        AppCompatDelegate.setDefaultNightMode(darkModeEnabled
+                ? AppCompatDelegate.MODE_NIGHT_YES
+                : AppCompatDelegate.MODE_NIGHT_NO);
     }
 
     private void updateCartBadge(List<CartItem> items) {
