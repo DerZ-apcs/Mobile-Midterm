@@ -1,6 +1,7 @@
 package com.example.midterm_application;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.View;
@@ -12,10 +13,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStore;
 
 import com.example.midterm_application.data.model.Coffee;
+import com.example.midterm_application.data.model.CartItem;
 import com.example.midterm_application.data.repository.CoffeeRepository;
 import com.example.midterm_application.utils.PriceCalculator.Ice;
 import com.example.midterm_application.utils.PriceCalculator.Shot;
 import com.example.midterm_application.utils.PriceCalculator.Size;
+import com.example.midterm_application.utils.PriceCalculator;
+import com.example.midterm_application.viewmodel.CartViewModel;
 import com.example.midterm_application.viewmodel.DetailViewModel;
 
 import java.util.Locale;
@@ -25,12 +29,14 @@ public class DetailActivity extends Activity {
 
     private ViewModelStore viewModelStore;
     private DetailViewModel detailViewModel;
+    private CartViewModel cartViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_coffee_details);
         detailViewModel = getDetailViewModel();
+        cartViewModel = getCartViewModel();
 
         ImageButton backButton = findViewById(R.id.btnBack);
         if (backButton != null) {
@@ -47,6 +53,7 @@ public class DetailActivity extends Activity {
         bindCoffee(coffee);
         setupCustomizationControls(coffee);
         refreshCustomizationUi(coffee);
+        setClickListener(R.id.btnAddToCart, () -> addCurrentCoffeeToCart(coffee));
     }
 
     @Override
@@ -71,6 +78,15 @@ public class DetailActivity extends Activity {
         }
         return new ViewModelProvider(viewModelStore, new ViewModelProvider.NewInstanceFactory())
                 .get(DetailViewModel.class);
+    }
+
+    private CartViewModel getCartViewModel() {
+        if (viewModelStore == null) {
+            getDetailViewModel();
+        }
+        return new ViewModelProvider(viewModelStore,
+                ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
+                .get(CartViewModel.class);
     }
 
     private void bindCoffee(Coffee coffee) {
@@ -154,6 +170,32 @@ public class DetailActivity extends Activity {
         updateImageOption(R.id.btnIceNone, detailViewModel.getSelectedIce() == Ice.NO_ICE);
         updateImageOption(R.id.btnIceLight, detailViewModel.getSelectedIce() == Ice.LESS_ICE);
         updateImageOption(R.id.btnIceFull, detailViewModel.getSelectedIce() == Ice.NORMAL);
+    }
+
+    private void addCurrentCoffeeToCart(Coffee coffee) {
+        double unitPrice = PriceCalculator.calculateTotal(
+                coffee.getBasePrice(),
+                detailViewModel.getSelectedShot(),
+                detailViewModel.getSelectedSize(),
+                detailViewModel.getSelectedIce(),
+                1);
+        double totalPrice = detailViewModel.calculateTotal(coffee.getBasePrice());
+        CartItem cartItem = new CartItem(
+                coffee.getId(),
+                coffee.getName(),
+                coffee.getImageResId(),
+                detailViewModel.getSelectedShot().name(),
+                detailViewModel.getSelectedSize().name(),
+                detailViewModel.getSelectedIce().name(),
+                detailViewModel.getQuantity(),
+                unitPrice,
+                totalPrice);
+
+        cartViewModel.insertCartItem(cartItem);
+        Intent result = new Intent();
+        result.putExtra(MainActivity.EXTRA_OPEN_CART, true);
+        setResult(RESULT_OK, result);
+        finish();
     }
 
     private void updateShotOption(int viewId, boolean selected) {

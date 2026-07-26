@@ -16,6 +16,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.ArrayList;
 
 public class MainActivity extends Activity {
+    public static final String EXTRA_OPEN_CART = "com.example.midterm_application.EXTRA_OPEN_CART";
+
+    private static final int REQUEST_COFFEE_DETAILS = 1001;
+
     private static final int SCREEN_HOME = 1;
     private static final int SCREEN_DETAILS = 2;
     private static final int SCREEN_CART = 3;
@@ -102,7 +106,18 @@ public class MainActivity extends Activity {
     private void openCoffeeDetails(int coffeeId) {
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra(DetailActivity.EXTRA_COFFEE_ID, coffeeId);
-        startActivity(intent);
+        startActivityForResult(intent, REQUEST_COFFEE_DETAILS);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_COFFEE_DETAILS
+                && resultCode == RESULT_OK
+                && data != null
+                && data.getBooleanExtra(EXTRA_OPEN_CART, false)) {
+            navigateTo(SCREEN_CART);
+        }
     }
 
     private void showScreen(int screen) {
