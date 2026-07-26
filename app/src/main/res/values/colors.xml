@@ -19,6 +19,14 @@
     <color name="brand_dark">#204D54</color>
     <color name="icon_gray">#E5E7EB</color>
     <color name="text_body">#1A1A1A</color>
+    <color name="cart_bg">#F9FAFB</color>
+    <color name="text_navy_dark">#1A2B3C</color>
+    <color name="text_navy_heading">#1E3354</color>
+    <color name="delete_red">#EE584E</color>
+    <color name="checkout_dark">#2D404F</color>
+    <color name="order_text">#001833</color>
+    <color name="gray_600">#6B7280</color>
+    <color name="gray_900">#111827</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>

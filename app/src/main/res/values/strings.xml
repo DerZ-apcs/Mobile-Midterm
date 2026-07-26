@@ -30,4 +30,15 @@
     <string name="cta_add_to_cart">Add to cart</string>
     <string name="coffee_description_placeholder">Rich espresso coffee with hot water for a smooth, bold taste.</string>
     <string name="coffee_price_placeholder">$3.00</string>
+    <string name="cart_title">My Cart</string>
+    <string name="label_total_price">Total Price</string>
+    <string name="cta_checkout">Checkout</string>
+    <string name="delete_desc">Delete item</string>
+    <string name="qty_format">x %1$d</string>
+    <string name="my_order_title">My Order</string>
+    <string name="tab_ongoing">On going</string>
+    <string name="tab_history">History</string>
+    <string name="nav_home_desc_order">Home</string>
+    <string name="nav_rewards_desc_order">Rewards</string>
+    <string name="nav_history_desc_order">History</string>
 </resources>

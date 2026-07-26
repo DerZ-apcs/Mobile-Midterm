@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardCartItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:background="@drawable/bg_card_white_shadow"
+    android:elevation="2dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/imgCartItem"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="@string/coffee_image_desc"
+        android:padding="16dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_cup_outline"
+        android:tint="@color/brand_dark" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvCartItemName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_navy_heading"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    tools:text="Americano" />
+
+                <TextView
+                    android:id="@+id/tvCartItemVariant"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="@color/gray_500"
+                    android:textSize="12sp"
+                    tools:text="single | iced | medium | full ice" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvCartItemPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_navy_heading"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:text="$3.00" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvCartItemQty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/gray_400"
+            android:textSize="14sp"
+            tools:text="x 1" />
+
+    </LinearLayout>
+
+</LinearLayout>
