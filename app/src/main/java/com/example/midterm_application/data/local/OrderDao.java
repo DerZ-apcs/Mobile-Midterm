@@ -31,6 +31,9 @@ public interface OrderDao {
             + "ORDER BY orders.createdAt DESC")
     LiveData<List<OrderListItem>> getCompletedOrders();
 
+    @Query("SELECT * FROM orders WHERE id = :orderId LIMIT 1")
+    Order getOrderByIdSync(long orderId);
+
     @Insert
     long insertOrder(Order order);
 

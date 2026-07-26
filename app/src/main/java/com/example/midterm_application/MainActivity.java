@@ -3,6 +3,7 @@ package com.example.midterm_application;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,12 +16,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.midterm_application.data.model.CartItem;
 import com.example.midterm_application.data.model.OrderListItem;
+import com.example.midterm_application.data.model.RewardState;
+import com.example.midterm_application.data.model.RewardTransaction;
 import com.example.midterm_application.data.repository.CoffeeRepository;
 import com.example.midterm_application.ui.CartAdapter;
 import com.example.midterm_application.ui.CoffeeAdapter;
 import com.example.midterm_application.ui.OrderAdapter;
+import com.example.midterm_application.ui.RewardTransactionAdapter;
+import com.example.midterm_application.utils.RewardCalculator;
 import com.example.midterm_application.viewmodel.CartViewModel;
 import com.example.midterm_application.viewmodel.OrderViewModel;
+import com.example.midterm_application.viewmodel.RewardViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -53,6 +59,7 @@ public class MainActivity extends ComponentActivity {
     private String selectedCoffeeName = "Americano";
     private CartViewModel cartViewModel;
     private OrderViewModel orderViewModel;
+    private RewardViewModel rewardViewModel;
     private List<CartItem> currentCartItems = new ArrayList<>();
     private boolean checkoutInProgress;
     private boolean showingHistoryOrders;
@@ -315,8 +322,82 @@ public class MainActivity extends ComponentActivity {
     private void showRewards() {
         setContentView(R.layout.activity_rewards);
 
-        setClickListener(R.id.btnRedeemDrinks, () -> navigateTo(SCREEN_REDEEM));
+        RewardTransactionAdapter rewardAdapter = new RewardTransactionAdapter();
+        RecyclerView rewardsHistory = findViewById(R.id.rvRewardsHistory);
+        if (rewardsHistory != null) {
+            rewardsHistory.setLayoutManager(new LinearLayoutManager(this));
+            rewardsHistory.setAdapter(rewardAdapter);
+        }
+
+        View claimCard = findViewById(R.id.btnRedeemDrinks);
+        if (claimCard != null) {
+            claimCard.setOnClickListener(v -> getRewardViewModel().claimFullStampCard());
+        }
+
+        getRewardViewModel().getRewardState().removeObservers(this);
+        getRewardViewModel().getRewardTransactions().removeObservers(this);
+        getRewardViewModel().getRewardState().observe(this, this::updateRewardState);
+        getRewardViewModel().getRewardTransactions().observe(this,
+                transactions -> updateRewardHistory(transactions, rewardAdapter));
         setupPrimaryBottomNavigation(R.id.navRewards);
+    }
+
+    private void updateRewardState(RewardState rewardState) {
+        int stampCount = rewardState == null ? 0 : RewardCalculator.capStampCount(rewardState.getStampCount());
+        int totalPoints = rewardState == null ? 0 : rewardState.getTotalPoints();
+
+        TextView stampCountText = findViewById(R.id.tvRewardStampCount);
+        TextView pointsValue = findViewById(R.id.tvPointsValue);
+        TextView claimCard = findViewById(R.id.btnRedeemDrinks);
+
+        if (stampCountText != null) {
+            stampCountText.setText(String.valueOf(stampCount));
+        }
+        if (pointsValue != null) {
+            pointsValue.setText(String.valueOf(totalPoints));
+        }
+        updateStampImages(stampCount);
+        updateClaimCardButton(claimCard, stampCount == RewardCalculator.MAX_STAMPS);
+    }
+
+    private void updateStampImages(int stampCount) {
+        int[] stampIds = {
+                R.id.imgStamp1,
+                R.id.imgStamp2,
+                R.id.imgStamp3,
+                R.id.imgStamp4,
+                R.id.imgStamp5,
+                R.id.imgStamp6,
+                R.id.imgStamp7,
+                R.id.imgStamp8
+        };
+        for (int index = 0; index < stampIds.length; index++) {
+            ImageView stamp = findViewById(stampIds[index]);
+            if (stamp != null) {
+                stamp.setImageResource(index < stampCount
+                        ? R.drawable.ic_stamp_cup_filled
+                        : R.drawable.ic_stamp_cup_empty);
+            }
+        }
+    }
+
+    private void updateClaimCardButton(TextView claimCard, boolean canClaim) {
+        if (claimCard == null) {
+            return;
+        }
+        claimCard.setEnabled(canClaim);
+        claimCard.setAlpha(canClaim ? 1.00f : 0.55f);
+        claimCard.setText(canClaim ? R.string.cta_claim_loyalty : R.string.cta_complete_loyalty);
+    }
+
+    private void updateRewardHistory(List<RewardTransaction> transactions,
+                                     RewardTransactionAdapter adapter) {
+        adapter.submitTransactions(transactions);
+        boolean isEmpty = transactions == null || transactions.isEmpty();
+        View emptyHistory = findViewById(R.id.tvEmptyRewardHistory);
+        if (emptyHistory != null) {
+            emptyHistory.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+        }
     }
 
     private void showRedeem() {
@@ -392,6 +473,15 @@ public class MainActivity extends ComponentActivity {
                     .get(OrderViewModel.class);
         }
         return orderViewModel;
+    }
+
+    private RewardViewModel getRewardViewModel() {
+        if (rewardViewModel == null) {
+            rewardViewModel = new ViewModelProvider(this,
+                    ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
+                    .get(RewardViewModel.class);
+        }
+        return rewardViewModel;
     }
 
     private void updateCartSummary(List<CartItem> items) {

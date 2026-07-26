@@ -51,7 +51,10 @@
     <string name="rewards_title">Rewards</string>
     <string name="my_points_label">My Points:</string>
     <string name="cta_redeem_drinks">Redeem drinks</string>
+    <string name="cta_claim_loyalty">Claim card</string>
+    <string name="cta_complete_loyalty">8 stamps to claim</string>
     <string name="history_rewards_title">History Rewards</string>
+    <string name="empty_reward_history">No reward history yet</string>
     <string name="points_earned_format">+ %1$d Pts</string>
     <string name="bottom_nav_orders">Orders</string>
     <string name="bottom_nav_rewards">Rewards</string>

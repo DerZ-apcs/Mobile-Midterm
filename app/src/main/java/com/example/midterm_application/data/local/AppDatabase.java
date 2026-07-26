@@ -11,8 +11,11 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.example.midterm_application.data.model.CartItem;
 import com.example.midterm_application.data.model.Order;
 import com.example.midterm_application.data.model.OrderItem;
+import com.example.midterm_application.data.model.RewardState;
+import com.example.midterm_application.data.model.RewardTransaction;
 
-@Database(entities = {CartItem.class, Order.class, OrderItem.class}, version = 2, exportSchema = false)
+@Database(entities = {CartItem.class, Order.class, OrderItem.class, RewardState.class,
+        RewardTransaction.class}, version = 3, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase instance;
 
@@ -43,9 +46,35 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
+    private static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS `reward_state` "
+                    + "(`id` INTEGER NOT NULL, "
+                    + "`stampCount` INTEGER NOT NULL, "
+                    + "`totalPoints` INTEGER NOT NULL, "
+                    + "PRIMARY KEY(`id`))");
+            database.execSQL("CREATE TABLE IF NOT EXISTS `reward_transactions` "
+                    + "(`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                    + "`orderId` INTEGER NOT NULL, "
+                    + "`createdAt` INTEGER NOT NULL, "
+                    + "`type` TEXT, "
+                    + "`points` INTEGER NOT NULL, "
+                    + "`description` TEXT, "
+                    + "FOREIGN KEY(`orderId`) REFERENCES `orders`(`id`) "
+                    + "ON UPDATE NO ACTION ON DELETE CASCADE)");
+            database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_reward_transactions_orderId_type` "
+                    + "ON `reward_transactions` (`orderId`, `type`)");
+            database.execSQL("INSERT OR IGNORE INTO `reward_state` "
+                    + "(`id`, `stampCount`, `totalPoints`) VALUES (1, 0, 0)");
+        }
+    };
+
     public abstract CartDao cartDao();
 
     public abstract OrderDao orderDao();
+
+    public abstract RewardDao rewardDao();
 
     public static AppDatabase getInstance(Context context) {
         if (instance == null) {
@@ -53,7 +82,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 if (instance == null) {
                     instance = Room.databaseBuilder(context.getApplicationContext(),
                                     AppDatabase.class, "code_cup.db")
-                            .addMigrations(MIGRATION_1_2)
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                             .build();
                 }
             }

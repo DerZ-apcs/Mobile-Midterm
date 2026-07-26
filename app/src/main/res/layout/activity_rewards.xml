@@ -78,6 +78,7 @@
                     android:orientation="horizontal">
 
                     <ImageView
+                        android:id="@+id/imgStamp1"
                         android:layout_width="0dp"
                         android:layout_height="36dp"
                         android:layout_weight="1"
@@ -85,6 +86,7 @@
                         android:src="@drawable/ic_stamp_cup_filled" />
 
                     <ImageView
+                        android:id="@+id/imgStamp2"
                         android:layout_width="0dp"
                         android:layout_height="36dp"
                         android:layout_weight="1"
@@ -92,6 +94,7 @@
                         android:src="@drawable/ic_stamp_cup_filled" />
 
                     <ImageView
+                        android:id="@+id/imgStamp3"
                         android:layout_width="0dp"
                         android:layout_height="36dp"
                         android:layout_weight="1"
@@ -99,6 +102,7 @@
                         android:src="@drawable/ic_stamp_cup_filled" />
 
                     <ImageView
+                        android:id="@+id/imgStamp4"
                         android:layout_width="0dp"
                         android:layout_height="36dp"
                         android:layout_weight="1"
@@ -106,6 +110,7 @@
                         android:src="@drawable/ic_stamp_cup_filled" />
 
                     <ImageView
+                        android:id="@+id/imgStamp5"
                         android:layout_width="0dp"
                         android:layout_height="36dp"
                         android:layout_weight="1"
@@ -113,6 +118,7 @@
                         android:src="@drawable/ic_stamp_cup_empty" />
 
                     <ImageView
+                        android:id="@+id/imgStamp6"
                         android:layout_width="0dp"
                         android:layout_height="36dp"
                         android:layout_weight="1"
@@ -120,6 +126,7 @@
                         android:src="@drawable/ic_stamp_cup_empty" />
 
                     <ImageView
+                        android:id="@+id/imgStamp7"
                         android:layout_width="0dp"
                         android:layout_height="36dp"
                         android:layout_weight="1"
@@ -127,6 +134,7 @@
                         android:src="@drawable/ic_stamp_cup_empty" />
 
                     <ImageView
+                        android:id="@+id/imgStamp8"
                         android:layout_width="0dp"
                         android:layout_height="36dp"
                         android:layout_weight="1"
@@ -206,6 +214,17 @@
                 android:nestedScrollingEnabled="false"
                 tools:itemCount="4"
                 tools:listitem="@layout/item_reward_history" />
+
+            <TextView
+                android:id="@+id/tvEmptyRewardHistory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:text="@string/empty_reward_history"
+                android:textColor="@color/text_gray_muted"
+                android:textSize="16sp"
+                android:visibility="gone" />
 
         </LinearLayout>
 

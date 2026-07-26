@@ -7,10 +7,14 @@ import androidx.lifecycle.LiveData;
 import com.example.midterm_application.data.local.AppDatabase;
 import com.example.midterm_application.data.local.CartDao;
 import com.example.midterm_application.data.local.OrderDao;
+import com.example.midterm_application.data.local.RewardDao;
 import com.example.midterm_application.data.model.CartItem;
 import com.example.midterm_application.data.model.Order;
 import com.example.midterm_application.data.model.OrderItem;
 import com.example.midterm_application.data.model.OrderListItem;
+import com.example.midterm_application.data.model.RewardState;
+import com.example.midterm_application.data.model.RewardTransaction;
+import com.example.midterm_application.utils.RewardCalculator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +28,7 @@ public class OrderRepository {
     private final AppDatabase database;
     private final CartDao cartDao;
     private final OrderDao orderDao;
+    private final RewardDao rewardDao;
     private final LiveData<List<OrderListItem>> ongoingOrders;
     private final LiveData<List<OrderListItem>> completedOrders;
 
@@ -31,6 +36,7 @@ public class OrderRepository {
         database = AppDatabase.getInstance(application);
         cartDao = database.cartDao();
         orderDao = database.orderDao();
+        rewardDao = database.rewardDao();
         ongoingOrders = orderDao.getOngoingOrders();
         completedOrders = orderDao.getCompletedOrders();
     }
@@ -95,7 +101,30 @@ public class OrderRepository {
     }
 
     public void markOrderCompleted(long orderId) {
-        databaseExecutor.execute(() -> orderDao.markOrderCompleted(orderId));
+        databaseExecutor.execute(() -> database.runInTransaction(() -> {
+            rewardDao.insertRewardState(RewardState.initial());
+            Order order = orderDao.getOrderByIdSync(orderId);
+            if (order == null || !Order.STATUS_ONGOING.equals(order.getStatus())) {
+                return;
+            }
+
+            int updatedRows = orderDao.markOrderCompleted(orderId);
+            if (updatedRows != 1) {
+                return;
+            }
+
+            int earnedPoints = RewardCalculator.calculateEarnedPoints(order.getTotalPrice());
+            RewardTransaction transaction = new RewardTransaction(
+                    orderId,
+                    System.currentTimeMillis(),
+                    RewardTransaction.TYPE_EARN,
+                    earnedPoints,
+                    "Order #" + orderId + " completed");
+            long insertedId = rewardDao.insertRewardTransaction(transaction);
+            if (insertedId != -1L) {
+                rewardDao.addEarnedReward(earnedPoints);
+            }
+        }));
     }
 
     private static class EmptyCartException extends RuntimeException {
