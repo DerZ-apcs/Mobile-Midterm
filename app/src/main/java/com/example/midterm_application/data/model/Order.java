@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "orders")
 public class Order {
     public static final String STATUS_ONGOING = "ONGOING";
+    public static final String STATUS_COMPLETED = "COMPLETED";
 
     @PrimaryKey(autoGenerate = true)
     private long id;

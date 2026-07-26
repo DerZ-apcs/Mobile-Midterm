@@ -54,7 +54,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="16dp"
         android:orientation="horizontal">
 
         <ImageView
@@ -76,6 +76,23 @@
             tools:text="3 Addersian Court Chino Hills,\nHO56824, United States" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/btnCompleteOrder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/bg_button_teal_pill"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingStart="18dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="18dp"
+        android:paddingBottom="10dp"
+        android:text="@string/cta_complete_order"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:textStyle="bold" />
 
     <View
         android:layout_width="match_parent"

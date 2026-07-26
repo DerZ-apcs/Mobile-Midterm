@@ -7,7 +7,10 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.midterm_application.data.model.OrderListItem;
 import com.example.midterm_application.data.repository.OrderRepository;
+
+import java.util.List;
 
 public class OrderViewModel extends AndroidViewModel {
     private final OrderRepository repository;
@@ -21,6 +24,14 @@ public class OrderViewModel extends AndroidViewModel {
 
     public LiveData<CheckoutState> getCheckoutState() {
         return checkoutState;
+    }
+
+    public LiveData<List<OrderListItem>> getOngoingOrders() {
+        return repository.getOngoingOrders();
+    }
+
+    public LiveData<List<OrderListItem>> getCompletedOrders() {
+        return repository.getCompletedOrders();
     }
 
     public void checkout() {
@@ -42,6 +53,10 @@ public class OrderViewModel extends AndroidViewModel {
 
     public void consumeCheckoutResult() {
         checkoutState.setValue(CheckoutState.idle());
+    }
+
+    public void completeOrder(long orderId) {
+        repository.markOrderCompleted(orderId);
     }
 
     public static class CheckoutState {

@@ -2,12 +2,15 @@ package com.example.midterm_application.data.repository;
 
 import android.app.Application;
 
+import androidx.lifecycle.LiveData;
+
 import com.example.midterm_application.data.local.AppDatabase;
 import com.example.midterm_application.data.local.CartDao;
 import com.example.midterm_application.data.local.OrderDao;
 import com.example.midterm_application.data.model.CartItem;
 import com.example.midterm_application.data.model.Order;
 import com.example.midterm_application.data.model.OrderItem;
+import com.example.midterm_application.data.model.OrderListItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +24,23 @@ public class OrderRepository {
     private final AppDatabase database;
     private final CartDao cartDao;
     private final OrderDao orderDao;
+    private final LiveData<List<OrderListItem>> ongoingOrders;
+    private final LiveData<List<OrderListItem>> completedOrders;
 
     public OrderRepository(Application application) {
         database = AppDatabase.getInstance(application);
         cartDao = database.cartDao();
         orderDao = database.orderDao();
+        ongoingOrders = orderDao.getOngoingOrders();
+        completedOrders = orderDao.getCompletedOrders();
+    }
+
+    public LiveData<List<OrderListItem>> getOngoingOrders() {
+        return ongoingOrders;
+    }
+
+    public LiveData<List<OrderListItem>> getCompletedOrders() {
+        return completedOrders;
     }
 
     public void checkout(CheckoutCallback callback) {
@@ -77,6 +92,10 @@ public class OrderRepository {
 
     public interface CheckoutCallback {
         void onCheckoutComplete(long orderId, String errorMessage);
+    }
+
+    public void markOrderCompleted(long orderId) {
+        databaseExecutor.execute(() -> orderDao.markOrderCompleted(orderId));
     }
 
     private static class EmptyCartException extends RuntimeException {

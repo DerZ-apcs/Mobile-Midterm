@@ -14,9 +14,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.midterm_application.data.model.CartItem;
+import com.example.midterm_application.data.model.OrderListItem;
 import com.example.midterm_application.data.repository.CoffeeRepository;
 import com.example.midterm_application.ui.CartAdapter;
 import com.example.midterm_application.ui.CoffeeAdapter;
+import com.example.midterm_application.ui.OrderAdapter;
 import com.example.midterm_application.viewmodel.CartViewModel;
 import com.example.midterm_application.viewmodel.OrderViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -43,6 +45,7 @@ public class MainActivity extends ComponentActivity {
     private static final String STATE_SELECTED_COFFEE_ID = "selected_coffee_id";
     private static final String STATE_SELECTED_COFFEE_NAME = "selected_coffee_name";
     private static final String STATE_BACK_STACK = "back_stack";
+    private static final String STATE_SHOWING_HISTORY_ORDERS = "showing_history_orders";
 
     private final ArrayList<Integer> backStack = new ArrayList<>();
     private int currentScreen = SCREEN_HOME;
@@ -52,6 +55,7 @@ public class MainActivity extends ComponentActivity {
     private OrderViewModel orderViewModel;
     private List<CartItem> currentCartItems = new ArrayList<>();
     private boolean checkoutInProgress;
+    private boolean showingHistoryOrders;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +65,7 @@ public class MainActivity extends ComponentActivity {
             currentScreen = savedInstanceState.getInt(STATE_CURRENT_SCREEN, SCREEN_HOME);
             selectedCoffeeId = savedInstanceState.getInt(STATE_SELECTED_COFFEE_ID, 1);
             selectedCoffeeName = savedInstanceState.getString(STATE_SELECTED_COFFEE_NAME, "Americano");
+            showingHistoryOrders = savedInstanceState.getBoolean(STATE_SHOWING_HISTORY_ORDERS, false);
             ArrayList<Integer> restoredStack = savedInstanceState.getIntegerArrayList(STATE_BACK_STACK);
             if (restoredStack != null) {
                 backStack.addAll(restoredStack);
@@ -77,6 +82,7 @@ public class MainActivity extends ComponentActivity {
         outState.putInt(STATE_SELECTED_COFFEE_ID, selectedCoffeeId);
         outState.putString(STATE_SELECTED_COFFEE_NAME, selectedCoffeeName);
         outState.putIntegerArrayList(STATE_BACK_STACK, backStack);
+        outState.putBoolean(STATE_SHOWING_HISTORY_ORDERS, showingHistoryOrders);
     }
 
     @Override
@@ -240,13 +246,70 @@ public class MainActivity extends ComponentActivity {
     private void showOrderSuccess() {
         setContentView(R.layout.activity_order_success);
 
-        setClickListener(R.id.btnTrackOrder, () -> navigateToPrimary(SCREEN_ORDERS));
+        setClickListener(R.id.btnTrackOrder, () -> {
+            showingHistoryOrders = false;
+            navigateToPrimary(SCREEN_ORDERS);
+        });
     }
 
     private void showOrders() {
         setContentView(R.layout.activity_my_order);
 
+        OrderAdapter orderAdapter = new OrderAdapter(order -> getOrderViewModel().completeOrder(order.getId()));
+        RecyclerView orderList = findViewById(R.id.rvOrderList);
+        if (orderList != null) {
+            orderList.setLayoutManager(new LinearLayoutManager(this));
+            orderList.setAdapter(orderAdapter);
+        }
+
+        TextView tabOngoing = findViewById(R.id.tabOngoing);
+        TextView tabHistory = findViewById(R.id.tabHistory);
+        TextView emptyOrders = findViewById(R.id.tvEmptyOrders);
+        if (tabOngoing != null) {
+            tabOngoing.setOnClickListener(v -> showOrderTab(false, orderAdapter, emptyOrders, tabOngoing, tabHistory));
+        }
+        if (tabHistory != null) {
+            tabHistory.setOnClickListener(v -> showOrderTab(true, orderAdapter, emptyOrders, tabOngoing, tabHistory));
+        }
+        showOrderTab(showingHistoryOrders, orderAdapter, emptyOrders, tabOngoing, tabHistory);
+
         setupPrimaryBottomNavigation(R.id.navOrders);
+    }
+
+    private void showOrderTab(boolean showHistory, OrderAdapter adapter, TextView emptyOrders,
+                              TextView tabOngoing, TextView tabHistory) {
+        showingHistoryOrders = showHistory;
+        updateOrderTabs(showHistory, tabOngoing, tabHistory);
+        getOrderViewModel().getOngoingOrders().removeObservers(this);
+        getOrderViewModel().getCompletedOrders().removeObservers(this);
+        if (showHistory) {
+            getOrderViewModel().getCompletedOrders().observe(this,
+                    orders -> updateOrderList(orders, adapter, emptyOrders, true));
+        } else {
+            getOrderViewModel().getOngoingOrders().observe(this,
+                    orders -> updateOrderList(orders, adapter, emptyOrders, false));
+        }
+    }
+
+    private void updateOrderTabs(boolean showHistory, TextView tabOngoing, TextView tabHistory) {
+        if (tabOngoing != null) {
+            tabOngoing.setBackgroundResource(showHistory ? 0 : R.drawable.bg_tab_active_border);
+            tabOngoing.setTextColor(getColor(showHistory ? R.color.gray_400 : R.color.order_text));
+        }
+        if (tabHistory != null) {
+            tabHistory.setBackgroundResource(showHistory ? R.drawable.bg_tab_active_border : 0);
+            tabHistory.setTextColor(getColor(showHistory ? R.color.order_text : R.color.gray_400));
+        }
+    }
+
+    private void updateOrderList(List<OrderListItem> orders, OrderAdapter adapter,
+                                 TextView emptyOrders, boolean showHistory) {
+        adapter.submitOrders(orders);
+        boolean isEmpty = orders == null || orders.isEmpty();
+        if (emptyOrders != null) {
+            emptyOrders.setText(showHistory ? R.string.empty_history_orders : R.string.empty_ongoing_orders);
+            emptyOrders.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+        }
     }
 
     private void showRewards() {

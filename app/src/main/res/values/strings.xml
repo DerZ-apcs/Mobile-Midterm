@@ -42,6 +42,9 @@
     <string name="my_order_title">My Order</string>
     <string name="tab_ongoing">On going</string>
     <string name="tab_history">History</string>
+    <string name="empty_ongoing_orders">No ongoing orders</string>
+    <string name="empty_history_orders">No completed orders</string>
+    <string name="cta_complete_order">Complete</string>
     <string name="nav_home_desc_order">Home</string>
     <string name="nav_rewards_desc_order">Rewards</string>
     <string name="nav_history_desc_order">History</string>
