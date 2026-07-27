@@ -16,14 +16,14 @@
 
         <ImageView
             android:id="@+id/imgSuccessIllustration"
-            android:layout_width="180dp"
-            android:layout_height="180dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="48dp"
+            android:adjustViewBounds="true"
             android:contentDescription="@string/order_success_title"
-            android:padding="28dp"
+            android:maxWidth="320dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_shopping_cart"
-            android:tint="@color/teal_primary" />
+            android:src="@drawable/checkout_success" />
 
         <TextView
             android:layout_width="wrap_content"
