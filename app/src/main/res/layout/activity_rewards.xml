@@ -11,37 +11,37 @@
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:fillViewport="true"
-        android:paddingBottom="@dimen/bottom_nav_height">
+        android:paddingBottom="@dimen/bottom_nav_content_padding">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="24dp"
-            android:paddingTop="40dp"
-            android:paddingEnd="24dp">
+            android:paddingStart="@dimen/screen_padding"
+            android:paddingTop="@dimen/spacing_2xl"
+            android:paddingEnd="@dimen/screen_padding">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="32dp"
+                android:layout_marginBottom="@dimen/spacing_xl"
                 android:text="@string/rewards_title"
                 android:textColor="@color/navy_rewards"
-                android:textSize="34sp"
+                android:textSize="@dimen/text_screen_title"
                 android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:background="@drawable/bg_card_navy_rounded"
+                android:layout_marginBottom="@dimen/spacing_md"
+                android:background="@drawable/bg_card_dark_rounded"
                 android:orientation="vertical"
-                android:padding="24dp">
+                android:padding="@dimen/spacing_lg">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
+                    android:layout_marginBottom="@dimen/spacing_lg"
                     android:orientation="horizontal">
 
                     <TextView
@@ -51,7 +51,7 @@
                         android:fontFamily="sans-serif-medium"
                         android:text="@string/loyalty_card_title"
                         android:textColor="@color/white"
-                        android:textSize="18sp" />
+                        android:textSize="@dimen/text_body" />
 
                     <TextView
                         android:id="@+id/tvRewardStampCount"
@@ -59,7 +59,7 @@
                         android:layout_height="wrap_content"
                         android:text="0"
                         android:textColor="@color/white"
-                        android:textSize="18sp"
+                        android:textSize="@dimen/text_body"
                         android:textStyle="bold" />
 
                     <TextView
@@ -67,7 +67,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/stamp_total"
                         android:textColor="@color/gray_400"
-                        android:textSize="18sp" />
+                        android:textSize="@dimen/text_body" />
 
                 </LinearLayout>
 
@@ -80,7 +80,7 @@
                     <ImageView
                         android:id="@+id/imgStamp1"
                         android:layout_width="0dp"
-                        android:layout_height="36dp"
+                        android:layout_height="@dimen/stamp_icon_height"
                         android:layout_weight="1"
                         android:contentDescription="@null"
                         android:src="@drawable/coffee_cup_blue" />
@@ -88,7 +88,8 @@
                     <ImageView
                         android:id="@+id/imgStamp2"
                         android:layout_width="0dp"
-                        android:layout_height="36dp"
+                        android:layout_height="@dimen/stamp_icon_height"
+                        android:layout_marginStart="@dimen/stamp_icon_gap"
                         android:layout_weight="1"
                         android:contentDescription="@null"
                         android:src="@drawable/coffee_cup_blue" />
@@ -96,7 +97,8 @@
                     <ImageView
                         android:id="@+id/imgStamp3"
                         android:layout_width="0dp"
-                        android:layout_height="36dp"
+                        android:layout_height="@dimen/stamp_icon_height"
+                        android:layout_marginStart="@dimen/stamp_icon_gap"
                         android:layout_weight="1"
                         android:contentDescription="@null"
                         android:src="@drawable/coffee_cup_blue" />
@@ -104,7 +106,8 @@
                     <ImageView
                         android:id="@+id/imgStamp4"
                         android:layout_width="0dp"
-                        android:layout_height="36dp"
+                        android:layout_height="@dimen/stamp_icon_height"
+                        android:layout_marginStart="@dimen/stamp_icon_gap"
                         android:layout_weight="1"
                         android:contentDescription="@null"
                         android:src="@drawable/coffee_cup_blue" />
@@ -112,7 +115,8 @@
                     <ImageView
                         android:id="@+id/imgStamp5"
                         android:layout_width="0dp"
-                        android:layout_height="36dp"
+                        android:layout_height="@dimen/stamp_icon_height"
+                        android:layout_marginStart="@dimen/stamp_icon_gap"
                         android:layout_weight="1"
                         android:contentDescription="@null"
                         android:src="@drawable/coffee_cup_blue" />
@@ -120,7 +124,8 @@
                     <ImageView
                         android:id="@+id/imgStamp6"
                         android:layout_width="0dp"
-                        android:layout_height="36dp"
+                        android:layout_height="@dimen/stamp_icon_height"
+                        android:layout_marginStart="@dimen/stamp_icon_gap"
                         android:layout_weight="1"
                         android:contentDescription="@null"
                         android:src="@drawable/coffee_cup_blue" />
@@ -128,7 +133,8 @@
                     <ImageView
                         android:id="@+id/imgStamp7"
                         android:layout_width="0dp"
-                        android:layout_height="36dp"
+                        android:layout_height="@dimen/stamp_icon_height"
+                        android:layout_marginStart="@dimen/stamp_icon_gap"
                         android:layout_weight="1"
                         android:contentDescription="@null"
                         android:src="@drawable/coffee_cup_blue" />
@@ -136,7 +142,8 @@
                     <ImageView
                         android:id="@+id/imgStamp8"
                         android:layout_width="0dp"
-                        android:layout_height="36dp"
+                        android:layout_height="@dimen/stamp_icon_height"
+                        android:layout_marginStart="@dimen/stamp_icon_gap"
                         android:layout_weight="1"
                         android:contentDescription="@null"
                         android:src="@drawable/coffee_cup_blue" />
@@ -148,17 +155,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="@dimen/spacing_lg"
                     android:background="@drawable/bg_redeem_pill"
                     android:clickable="true"
                     android:focusable="true"
-                    android:paddingStart="16dp"
-                    android:paddingTop="10dp"
-                    android:paddingEnd="16dp"
-                    android:paddingBottom="10dp"
+                    android:paddingStart="@dimen/spacing_md"
+                    android:paddingTop="@dimen/spacing_sm"
+                    android:paddingEnd="@dimen/spacing_md"
+                    android:paddingBottom="@dimen/spacing_sm"
                     android:text="@string/cta_complete_loyalty"
                     android:textColor="@color/navy_rewards"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/text_secondary"
                     android:textStyle="bold" />
 
             </LinearLayout>
@@ -166,11 +173,11 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="40dp"
-                android:background="@drawable/bg_card_navy_rounded"
+                android:layout_marginBottom="@dimen/spacing_2xl"
+                android:background="@drawable/bg_card_dark_rounded"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="24dp">
+                android:padding="@dimen/spacing_lg">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -181,11 +188,11 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="4dp"
+                        android:layout_marginBottom="@dimen/spacing_xs"
                         android:alpha="0.9"
                         android:text="@string/my_points_label"
                         android:textColor="@color/white"
-                        android:textSize="14sp" />
+                        android:textSize="@dimen/text_secondary" />
 
                     <TextView
                         android:id="@+id/tvPointsValue"
@@ -193,7 +200,7 @@
                         android:layout_height="wrap_content"
                         android:text="2750"
                         android:textColor="@color/white"
-                        android:textSize="34sp"
+                        android:textSize="@dimen/text_screen_title"
                         android:textStyle="bold" />
 
                 </LinearLayout>
@@ -205,13 +212,13 @@
                     android:background="@drawable/bg_redeem_pill"
                     android:clickable="true"
                     android:focusable="true"
-                    android:paddingStart="16dp"
-                    android:paddingTop="12dp"
-                    android:paddingEnd="16dp"
-                    android:paddingBottom="12dp"
+                    android:paddingStart="@dimen/spacing_md"
+                    android:paddingTop="@dimen/spacing_sm"
+                    android:paddingEnd="@dimen/spacing_md"
+                    android:paddingBottom="@dimen/spacing_sm"
                     android:text="@string/cta_redeem_drinks"
                     android:textColor="@color/navy_rewards"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/text_secondary"
                     android:textStyle="bold" />
 
             </LinearLayout>
@@ -219,10 +226,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="@dimen/spacing_lg"
                 android:text="@string/history_rewards_title"
                 android:textColor="@color/navy_rewards"
-                android:textSize="20sp"
+                android:textSize="@dimen/text_toolbar_title"
                 android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -238,10 +245,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/spacing_md"
                 android:text="@string/empty_reward_history"
                 android:textColor="@color/text_gray_muted"
-                android:textSize="16sp"
+                android:textSize="@dimen/text_secondary"
                 android:visibility="gone" />
 
         </LinearLayout>
@@ -250,11 +257,13 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
+        style="@style/Widget_CodeCup_BottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_nav_height"
         android:layout_gravity="bottom"
-        android:background="@color/nav_bar_background"
-        android:elevation="12dp"
+        android:paddingTop="@dimen/bottom_nav_item_padding"
+        android:paddingBottom="@dimen/bottom_nav_item_padding"
+        app:itemIconSize="@dimen/icon_md"
         app:itemIconTint="@color/bottom_nav_item_color"
         app:itemTextColor="@color/bottom_nav_item_color"
         app:labelVisibilityMode="labeled"

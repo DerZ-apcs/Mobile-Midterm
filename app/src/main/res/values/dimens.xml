@@ -15,6 +15,8 @@
     <dimen name="padding_screen">24dp</dimen>
     <dimen name="screen_padding">24dp</dimen>
     <dimen name="bottom_nav_height">80dp</dimen>
+    <dimen name="bottom_nav_content_padding">112dp</dimen>
+    <dimen name="bottom_nav_item_padding">6dp</dimen>
 
     <dimen name="icon_xs">14dp</dimen>
     <dimen name="icon_sm">20dp</dimen>
@@ -32,4 +34,14 @@
     <dimen name="text_body">18sp</dimen>
     <dimen name="text_secondary">14sp</dimen>
     <dimen name="text_caption">12sp</dimen>
+
+    <dimen name="stamp_icon_height">36dp</dimen>
+    <dimen name="stamp_icon_gap">6dp</dimen>
+    <dimen name="coffee_card_margin">8dp</dimen>
+    <dimen name="coffee_card_padding">14dp</dimen>
+    <dimen name="favorite_button_size">36dp</dimen>
+    <dimen name="search_field_height">48dp</dimen>
+    <dimen name="tab_indicator_height">4dp</dimen>
+    <dimen name="order_row_gap">28dp</dimen>
+    <dimen name="row_divider_height">1dp</dimen>
 </resources>

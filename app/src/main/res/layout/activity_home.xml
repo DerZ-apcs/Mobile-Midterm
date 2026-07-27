@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:fillViewport="true"
-        android:paddingBottom="@dimen/bottom_nav_height">
+        android:paddingBottom="@dimen/bottom_nav_content_padding">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -23,7 +23,10 @@
                 android:layout_height="wrap_content"
                 android:gravity="top"
                 android:orientation="horizontal"
-                android:padding="@dimen/padding_screen">
+                android:paddingStart="@dimen/screen_padding"
+                android:paddingTop="@dimen/spacing_xl"
+                android:paddingEnd="@dimen/screen_padding"
+                android:paddingBottom="@dimen/spacing_md">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -35,8 +38,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/greeting_morning"
-                        android:textColor="@color/coffee_text_muted"
-                        android:textSize="20sp" />
+                        android:textColor="@color/text_secondary"
+                        android:textSize="@dimen/text_toolbar_title" />
 
                     <TextView
                         android:id="@+id/tvUserName"
@@ -44,24 +47,24 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif"
                         android:textColor="@color/coffee_dark"
-                        android:textSize="34sp"
+                        android:textSize="@dimen/text_screen_title"
                         android:textStyle="bold"
                         tools:text="Anderson" />
 
                 </LinearLayout>
 
                 <FrameLayout
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="8dp">
+                    android:layout_width="@dimen/icon_lg"
+                    android:layout_height="@dimen/icon_lg"
+                    android:layout_marginTop="@dimen/spacing_sm">
 
                     <ImageButton
                         android:id="@+id/btnCart"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="@dimen/icon_lg"
+                        android:layout_height="@dimen/icon_lg"
                         android:background="?android:attr/selectableItemBackgroundBorderless"
                         android:contentDescription="@string/cart_desc"
-                        android:padding="4dp"
+                        android:padding="@dimen/spacing_xs"
                         android:src="@drawable/ic_cart"
                         android:tint="@color/coffee_dark" />
 
@@ -83,13 +86,13 @@
 
                 <ImageButton
                     android:id="@+id/btnProfile"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_width="@dimen/icon_lg"
+                    android:layout_height="@dimen/icon_lg"
+                    android:layout_marginStart="@dimen/spacing_md"
+                    android:layout_marginTop="@dimen/spacing_sm"
                     android:background="?android:attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/profile_desc"
-                    android:padding="4dp"
+                    android:padding="@dimen/spacing_xs"
                     android:src="@drawable/ic_profile"
                     android:tint="@color/coffee_dark" />
 
@@ -98,17 +101,17 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/padding_screen"
-                android:layout_marginEnd="@dimen/padding_screen"
-                android:layout_marginBottom="32dp"
+                android:layout_marginStart="@dimen/screen_padding"
+                android:layout_marginEnd="@dimen/screen_padding"
+                android:layout_marginBottom="@dimen/spacing_xl"
                 android:background="@drawable/bg_card_dark_rounded"
                 android:orientation="vertical"
-                android:padding="24dp">
+                android:padding="@dimen/spacing_lg">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
+                    android:layout_marginBottom="@dimen/spacing_lg"
                     android:orientation="horizontal">
 
                     <TextView
@@ -118,7 +121,7 @@
                         android:fontFamily="sans-serif-medium"
                         android:text="@string/loyalty_card_title"
                         android:textColor="@color/white"
-                        android:textSize="18sp" />
+                        android:textSize="@dimen/text_body" />
 
                     <TextView
                         android:id="@+id/tvStampCount"
@@ -126,7 +129,7 @@
                         android:layout_height="wrap_content"
                         android:text="0"
                         android:textColor="@color/white"
-                        android:textSize="18sp"
+                        android:textSize="@dimen/text_body"
                         android:textStyle="bold"
                         tools:text="4" />
 
@@ -135,7 +138,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/stamp_total"
                         android:textColor="@color/gray_400"
-                        android:textSize="18sp" />
+                        android:textSize="@dimen/text_body" />
 
                 </LinearLayout>
 
@@ -148,7 +151,7 @@
                     <ImageView
                         android:id="@+id/imgStamp1"
                         android:layout_width="0dp"
-                        android:layout_height="36dp"
+                        android:layout_height="@dimen/stamp_icon_height"
                         android:layout_weight="1"
                         android:contentDescription="@null"
                         android:src="@drawable/coffee_cup_blue" />
@@ -156,8 +159,8 @@
                     <ImageView
                         android:id="@+id/imgStamp2"
                         android:layout_width="0dp"
-                        android:layout_height="36dp"
-                        android:layout_marginStart="6dp"
+                        android:layout_height="@dimen/stamp_icon_height"
+                        android:layout_marginStart="@dimen/stamp_icon_gap"
                         android:layout_weight="1"
                         android:contentDescription="@null"
                         android:src="@drawable/coffee_cup_blue" />
@@ -165,8 +168,8 @@
                     <ImageView
                         android:id="@+id/imgStamp3"
                         android:layout_width="0dp"
-                        android:layout_height="36dp"
-                        android:layout_marginStart="6dp"
+                        android:layout_height="@dimen/stamp_icon_height"
+                        android:layout_marginStart="@dimen/stamp_icon_gap"
                         android:layout_weight="1"
                         android:contentDescription="@null"
                         android:src="@drawable/coffee_cup_blue" />
@@ -174,8 +177,8 @@
                     <ImageView
                         android:id="@+id/imgStamp4"
                         android:layout_width="0dp"
-                        android:layout_height="36dp"
-                        android:layout_marginStart="6dp"
+                        android:layout_height="@dimen/stamp_icon_height"
+                        android:layout_marginStart="@dimen/stamp_icon_gap"
                         android:layout_weight="1"
                         android:contentDescription="@null"
                         android:src="@drawable/coffee_cup_blue" />
@@ -183,8 +186,8 @@
                     <ImageView
                         android:id="@+id/imgStamp5"
                         android:layout_width="0dp"
-                        android:layout_height="36dp"
-                        android:layout_marginStart="6dp"
+                        android:layout_height="@dimen/stamp_icon_height"
+                        android:layout_marginStart="@dimen/stamp_icon_gap"
                         android:layout_weight="1"
                         android:contentDescription="@null"
                         android:src="@drawable/coffee_cup_blue" />
@@ -192,8 +195,8 @@
                     <ImageView
                         android:id="@+id/imgStamp6"
                         android:layout_width="0dp"
-                        android:layout_height="36dp"
-                        android:layout_marginStart="6dp"
+                        android:layout_height="@dimen/stamp_icon_height"
+                        android:layout_marginStart="@dimen/stamp_icon_gap"
                         android:layout_weight="1"
                         android:contentDescription="@null"
                         android:src="@drawable/coffee_cup_blue" />
@@ -201,8 +204,8 @@
                     <ImageView
                         android:id="@+id/imgStamp7"
                         android:layout_width="0dp"
-                        android:layout_height="36dp"
-                        android:layout_marginStart="6dp"
+                        android:layout_height="@dimen/stamp_icon_height"
+                        android:layout_marginStart="@dimen/stamp_icon_gap"
                         android:layout_weight="1"
                         android:contentDescription="@null"
                         android:src="@drawable/coffee_cup_blue" />
@@ -210,8 +213,8 @@
                     <ImageView
                         android:id="@+id/imgStamp8"
                         android:layout_width="0dp"
-                        android:layout_height="36dp"
-                        android:layout_marginStart="6dp"
+                        android:layout_height="@dimen/stamp_icon_height"
+                        android:layout_marginStart="@dimen/stamp_icon_gap"
                         android:layout_weight="1"
                         android:contentDescription="@null"
                         android:src="@drawable/coffee_cup_blue" />
@@ -223,40 +226,41 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/padding_screen"
-                android:layout_marginEnd="@dimen/padding_screen"
-                android:layout_marginBottom="24dp"
+                android:layout_marginStart="@dimen/screen_padding"
+                android:layout_marginEnd="@dimen/screen_padding"
+                android:layout_marginBottom="@dimen/spacing_lg"
                 android:background="@drawable/bg_card_dark_rounded"
-                android:minHeight="500dp"
                 android:orientation="vertical"
-                android:padding="24dp">
+                android:padding="@dimen/spacing_lg">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
+                    android:layout_marginBottom="@dimen/spacing_lg"
                     android:text="@string/choose_coffee_title"
                     android:textColor="@color/white"
-                    android:textSize="24sp"
+                    android:textSize="@dimen/text_section_title"
                     android:textStyle="bold" />
 
                 <EditText
                     android:id="@+id/etCoffeeSearch"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:backgroundTint="@color/white"
+                    android:layout_height="@dimen/search_field_height"
+                    android:layout_marginBottom="@dimen/spacing_md"
+                    android:background="@drawable/bg_search_field"
                     android:hint="@string/search_coffee_hint"
                     android:inputType="text"
+                    android:paddingStart="@dimen/spacing_md"
+                    android:paddingEnd="@dimen/spacing_md"
                     android:singleLine="true"
                     android:textColor="@color/white"
+                    android:textSize="@dimen/text_secondary"
                     android:textColorHint="@color/gray_400" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvCoffeeGrid"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="420dp"
                     android:nestedScrollingEnabled="false"
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                     app:spanCount="2"
@@ -269,10 +273,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="@dimen/spacing_lg"
                     android:text="@string/empty_search_results"
                     android:textColor="@color/gray_400"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/text_secondary"
                     android:visibility="gone" />
 
             </LinearLayout>
@@ -283,11 +287,13 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
+        style="@style/Widget_CodeCup_BottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_nav_height"
         android:layout_gravity="bottom"
-        android:background="@color/nav_bar_background"
-        android:elevation="12dp"
+        android:paddingTop="@dimen/bottom_nav_item_padding"
+        android:paddingBottom="@dimen/bottom_nav_item_padding"
+        app:itemIconSize="@dimen/icon_md"
         app:itemIconTint="@color/bottom_nav_item_color"
         app:itemTextColor="@color/bottom_nav_item_color"
         app:labelVisibilityMode="labeled"

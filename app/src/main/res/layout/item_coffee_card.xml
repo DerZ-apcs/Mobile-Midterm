@@ -4,33 +4,34 @@
     android:id="@+id/cardCoffeeItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
+    android:layout_margin="@dimen/coffee_card_margin"
     android:background="@drawable/bg_card_white_rounded"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"
+    android:minHeight="188dp"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="@dimen/coffee_card_padding">
 
     <ImageButton
         android:id="@+id/btnFavoriteCoffee"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="@dimen/favorite_button_size"
+        android:layout_height="@dimen/favorite_button_size"
         android:layout_gravity="end"
         android:background="?android:attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/favorite_coffee_desc"
-        android:padding="6dp"
+        android:padding="@dimen/spacing_sm"
         android:src="@android:drawable/btn_star_big_off"
         android:tint="@color/coffee_text_muted" />
 
     <ImageView
         android:id="@+id/imgCoffee"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
-        android:layout_marginBottom="12dp"
+        android:layout_width="@dimen/product_image_md"
+        android:layout_height="@dimen/product_image_md"
+        android:layout_marginBottom="@dimen/spacing_sm"
         android:layout_gravity="center_horizontal"
         android:contentDescription="@string/coffee_image_desc"
-        android:padding="20dp"
+        android:padding="@dimen/spacing_md"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_cup_outline" />
 
@@ -41,7 +42,7 @@
         android:layout_gravity="center_horizontal"
         android:fontFamily="sans-serif-medium"
         android:textColor="@color/coffee_dark"
-        android:textSize="18sp"
+        android:textSize="@dimen/text_body"
         android:textStyle="bold"
         tools:text="Americano" />
 

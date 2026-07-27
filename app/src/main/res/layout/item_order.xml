@@ -3,30 +3,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="40dp"
+    android:layout_marginBottom="@dimen/order_row_gap"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/tvOrderDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="@dimen/spacing_sm"
         android:textColor="@color/gray_500"
-        android:textSize="14sp"
+        android:textSize="@dimen/text_secondary"
         android:textStyle="bold"
         tools:text="24 June | 12:30 PM" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="@dimen/spacing_sm"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="12dp"
+            android:layout_width="@dimen/icon_md"
+            android:layout_height="@dimen/icon_md"
+            android:layout_marginEnd="@dimen/spacing_sm"
             android:contentDescription="@null"
             android:src="@drawable/ic_orders" />
 
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textColor="@color/order_text"
-            android:textSize="20sp"
+            android:textSize="@dimen/text_toolbar_title"
             android:textStyle="bold"
             tools:text="Americano" />
 
@@ -45,7 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/order_text"
-            android:textSize="20sp"
+            android:textSize="@dimen/text_toolbar_title"
             android:textStyle="bold"
             tools:text="$3.00" />
 
@@ -54,14 +54,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="@dimen/spacing_md"
         android:orientation="horizontal">
 
         <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="12dp"
+            android:layout_width="@dimen/icon_sm"
+            android:layout_height="@dimen/icon_sm"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:layout_marginEnd="@dimen/spacing_sm"
             android:contentDescription="@null"
             android:src="@drawable/ic_location_pin" />
 
@@ -72,7 +72,7 @@
             android:layout_weight="1"
             android:lineSpacingExtra="2sp"
             android:textColor="@color/gray_900"
-            android:textSize="16sp"
+            android:textSize="@dimen/text_secondary"
             tools:text="3 Addersian Court Chino Hills,\nHO56824, United States" />
 
     </LinearLayout>
@@ -81,22 +81,23 @@
         android:id="@+id/btnCompleteOrder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_marginStart="@dimen/spacing_xl"
+        android:layout_marginBottom="@dimen/spacing_lg"
         android:background="@drawable/bg_button_teal_pill"
         android:clickable="true"
         android:focusable="true"
-        android:paddingStart="18dp"
-        android:paddingTop="10dp"
-        android:paddingEnd="18dp"
-        android:paddingBottom="10dp"
+        android:paddingStart="@dimen/spacing_md"
+        android:paddingTop="@dimen/spacing_sm"
+        android:paddingEnd="@dimen/spacing_md"
+        android:paddingBottom="@dimen/spacing_sm"
         android:text="@string/cta_complete_order"
         android:textColor="@color/white"
-        android:textSize="14sp"
+        android:textSize="@dimen/text_secondary"
         android:textStyle="bold" />
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="@dimen/row_divider_height"
         android:background="@color/gray_100" />
 
 </LinearLayout>

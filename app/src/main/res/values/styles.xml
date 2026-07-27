@@ -55,4 +55,13 @@
         <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
         <item name="android:padding">@dimen/spacing_sm</item>
     </style>
+
+    <style name="Widget_CodeCup_BottomNavigation">
+        <item name="android:background">@drawable/bg_nav_floating_card</item>
+        <item name="android:elevation">12dp</item>
+        <item name="itemIconSize">@dimen/icon_md</item>
+        <item name="itemIconTint">@color/bottom_nav_item_color</item>
+        <item name="itemTextColor">@color/bottom_nav_item_color</item>
+        <item name="labelVisibilityMode">labeled</item>
+    </style>
 </resources>

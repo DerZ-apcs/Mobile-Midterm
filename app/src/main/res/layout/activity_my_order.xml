@@ -15,11 +15,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:paddingTop="24dp"
-            android:paddingBottom="24dp"
+            android:paddingTop="@dimen/spacing_xl"
+            android:paddingBottom="@dimen/spacing_lg"
             android:text="@string/my_order_title"
             android:textColor="@color/order_text"
-            android:textSize="24sp"
+            android:textSize="@dimen/text_section_title"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -37,10 +37,11 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:paddingBottom="16dp"
+                android:paddingTop="@dimen/spacing_sm"
+                android:paddingBottom="@dimen/spacing_md"
                 android:text="@string/tab_ongoing"
                 android:textColor="@color/order_text"
-                android:textSize="18sp"
+                android:textSize="@dimen/text_body"
                 android:textStyle="bold" />
 
             <TextView
@@ -51,17 +52,18 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:paddingBottom="16dp"
+                android:paddingTop="@dimen/spacing_sm"
+                android:paddingBottom="@dimen/spacing_md"
                 android:text="@string/tab_history"
                 android:textColor="@color/gray_400"
-                android:textSize="18sp"
+                android:textSize="@dimen/text_body"
                 android:textStyle="bold" />
 
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="@dimen/row_divider_height"
             android:background="@color/gray_100" />
 
         <FrameLayout
@@ -74,10 +76,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:paddingStart="24dp"
-                android:paddingTop="32dp"
-                android:paddingEnd="24dp"
-                android:paddingBottom="@dimen/bottom_nav_height"
+                android:paddingStart="@dimen/screen_padding"
+                android:paddingTop="@dimen/spacing_lg"
+                android:paddingEnd="@dimen/screen_padding"
+                android:paddingBottom="@dimen/bottom_nav_content_padding"
                 tools:itemCount="3"
                 tools:listitem="@layout/item_order" />
 
@@ -87,7 +89,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textColor="@color/gray_500"
-                android:textSize="18sp"
+                android:textSize="@dimen/text_body"
                 android:visibility="gone"
                 tools:text="No ongoing orders" />
 
@@ -97,11 +99,13 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
+        style="@style/Widget_CodeCup_BottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_nav_height"
         android:layout_gravity="bottom"
-        android:background="@color/nav_bar_background"
-        android:elevation="12dp"
+        android:paddingTop="@dimen/bottom_nav_item_padding"
+        android:paddingBottom="@dimen/bottom_nav_item_padding"
+        app:itemIconSize="@dimen/icon_md"
         app:itemIconTint="@color/bottom_nav_item_color"
         app:itemTextColor="@color/bottom_nav_item_color"
         app:labelVisibilityMode="labeled"

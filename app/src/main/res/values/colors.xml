@@ -60,4 +60,6 @@
     <color name="icon_unselected">#9CA3AF</color>
     <color name="card_dark_surface">#32435F</color>
     <color name="button_primary">#204D54</color>
+    <color name="search_field_surface">#22FFFFFF</color>
+    <color name="nav_shadow_tint">#14000000</color>
 </resources>

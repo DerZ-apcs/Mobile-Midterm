@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="16dp"
+    android:layout_marginBottom="@dimen/spacing_md"
     android:orientation="horizontal">
 
     <LinearLayout
@@ -11,14 +11,14 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:paddingBottom="16dp">
+        android:paddingBottom="@dimen/spacing_md">
 
         <TextView
             android:id="@+id/tvHistoryDrinkName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/navy_rewards"
-            android:textSize="18sp"
+            android:textSize="@dimen/text_body"
             android:textStyle="bold"
             tools:text="Americano" />
 
@@ -26,15 +26,15 @@
             android:id="@+id/tvHistoryDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="@dimen/spacing_xs"
             android:textColor="@color/text_gray_muted"
-            android:textSize="14sp"
+            android:textSize="@dimen/text_secondary"
             tools:text="24 June | 12:30 PM" />
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="16dp"
+            android:layout_height="@dimen/row_divider_height"
+            android:layout_marginTop="@dimen/spacing_md"
             android:background="@color/gray_100" />
 
     </LinearLayout>
@@ -43,8 +43,9 @@
         android:id="@+id/tvHistoryPoints"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_md"
         android:textColor="@color/navy_rewards"
-        android:textSize="18sp"
+        android:textSize="@dimen/text_body"
         android:textStyle="bold"
         tools:text="+ 12 Pts" />
 
