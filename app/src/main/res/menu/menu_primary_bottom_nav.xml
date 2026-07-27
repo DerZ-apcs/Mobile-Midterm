@@ -8,12 +8,12 @@
 
     <item
         android:id="@+id/navOrders"
-        android:icon="@drawable/ic_receipt_long"
+        android:icon="@drawable/ic_orders"
         android:title="@string/nav_orders_desc" />
 
     <item
         android:id="@+id/navRewards"
-        android:icon="@drawable/ic_redeem"
+        android:icon="@drawable/ic_rewards"
         android:title="@string/nav_rewards_desc" />
 
 </menu>

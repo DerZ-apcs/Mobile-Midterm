@@ -10,10 +10,10 @@ import java.util.List;
 
 public final class RewardCatalog {
     private static final List<RewardProduct> REWARDS = Collections.unmodifiableList(Arrays.asList(
-            new RewardProduct(1, "Americano", R.drawable.ic_coffee_cup, 120),
-            new RewardProduct(2, "Cappuccino", R.drawable.ic_cup_outline, 160),
-            new RewardProduct(3, "Mocha", R.drawable.ic_coffee_cup, 180),
-            new RewardProduct(4, "Flat White", R.drawable.ic_cup_outline, 160)
+            new RewardProduct(1, "Americano", R.drawable.cf_americano, 120),
+            new RewardProduct(2, "Cappuccino", R.drawable.cf_cappuccino, 160),
+            new RewardProduct(3, "Mocha", R.drawable.cf_mocha, 180),
+            new RewardProduct(4, "Flat White", R.drawable.cf_flat_white, 160)
     ));
 
     private RewardCatalog() {

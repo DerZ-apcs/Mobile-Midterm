@@ -11,10 +11,10 @@ import java.util.Locale;
 
 public final class CoffeeRepository {
     private static final List<Coffee> COFFEES = Collections.unmodifiableList(Arrays.asList(
-            new Coffee(1, "Americano", R.drawable.ic_coffee_cup, 3.00),
-            new Coffee(2, "Cappuccino", R.drawable.ic_cup_outline, 4.00),
-            new Coffee(3, "Mocha", R.drawable.ic_coffee_cup, 4.50),
-            new Coffee(4, "Flat White", R.drawable.ic_cup_outline, 4.00)
+            new Coffee(1, "Americano", R.drawable.cf_americano, 3.00),
+            new Coffee(2, "Cappuccino", R.drawable.cf_cappuccino, 4.00),
+            new Coffee(3, "Mocha", R.drawable.cf_mocha, 4.50),
+            new Coffee(4, "Flat White", R.drawable.cf_flat_white, 4.00)
     ));
 
     private CoffeeRepository() {

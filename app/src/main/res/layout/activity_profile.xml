@@ -22,7 +22,7 @@
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/back_desc"
             android:padding="12dp"
-            android:src="@drawable/ic_arrow_back" />
+            android:src="@drawable/arrow_left" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -58,7 +58,7 @@
                     android:layout_height="20dp"
                     android:layout_gravity="center"
                     android:contentDescription="@null"
-                    android:src="@drawable/ic_account_circle"
+                    android:src="@drawable/ic_profile"
                     android:tint="#3E4D6C" />
 
             </FrameLayout>
@@ -345,7 +345,7 @@
                     android:layout_height="20dp"
                     android:layout_gravity="center"
                     android:contentDescription="@null"
-                    android:src="@drawable/ic_temp_cold"
+                    android:src="@drawable/cold"
                     android:tint="@color/primary" />
 
             </FrameLayout>

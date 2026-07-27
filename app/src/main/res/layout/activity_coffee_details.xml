@@ -23,7 +23,7 @@
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/back_desc"
             android:padding="8dp"
-            android:src="@drawable/ic_arrow_back" />
+            android:src="@drawable/arrow_left" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -48,7 +48,7 @@
                 android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/view_cart_desc"
                 android:padding="8dp"
-                android:src="@drawable/ic_cart_outline" />
+                android:src="@drawable/ic_cart" />
 
             <TextView
                 android:id="@+id/tvCartBadge"
@@ -83,8 +83,7 @@
             android:layout_gravity="center"
             android:contentDescription="@string/coffee_image_desc"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_cup_outline"
-            android:tint="@color/brand_dark" />
+            android:src="@drawable/ic_cup_outline" />
 
     </FrameLayout>
 
@@ -267,7 +266,7 @@
                     android:layout_height="56dp"
                     android:background="@drawable/bg_option_active"
                     android:padding="14dp"
-                    android:src="@drawable/ic_temp_hot"
+                    android:src="@drawable/ic_hot"
                     android:tint="@color/brand_dark" />
 
                 <ImageButton
@@ -277,7 +276,7 @@
                     android:layout_marginStart="12dp"
                     android:background="@drawable/bg_option_inactive"
                     android:padding="14dp"
-                    android:src="@drawable/ic_temp_cold"
+                    android:src="@drawable/cold"
                     android:tint="@color/gray_400" />
 
             </LinearLayout>
@@ -303,7 +302,7 @@
                     android:layout_height="56dp"
                     android:background="@drawable/bg_option_inactive"
                     android:padding="18dp"
-                    android:src="@drawable/ic_cup_outline"
+                    android:src="@drawable/size_123"
                     android:tint="@color/gray_400" />
 
                 <ImageButton
@@ -313,7 +312,7 @@
                     android:layout_marginStart="12dp"
                     android:background="@drawable/bg_option_active"
                     android:padding="14dp"
-                    android:src="@drawable/ic_cup_outline"
+                    android:src="@drawable/size_123"
                     android:tint="@color/brand_dark" />
 
                 <ImageButton
@@ -323,7 +322,7 @@
                     android:layout_marginStart="12dp"
                     android:background="@drawable/bg_option_inactive"
                     android:padding="8dp"
-                    android:src="@drawable/ic_cup_outline"
+                    android:src="@drawable/size_123"
                     android:tint="@color/gray_400" />
 
             </LinearLayout>
@@ -348,7 +347,7 @@
                     android:layout_height="56dp"
                     android:background="@drawable/bg_option_inactive"
                     android:padding="14dp"
-                    android:src="@drawable/ic_ice_light"
+                    android:src="@drawable/ic_ice"
                     android:tint="@color/gray_400" />
 
                 <ImageButton
@@ -358,7 +357,7 @@
                     android:layout_marginStart="12dp"
                     android:background="@drawable/bg_option_inactive"
                     android:padding="14dp"
-                    android:src="@drawable/ic_ice_light"
+                    android:src="@drawable/ic_ice"
                     android:tint="@color/gray_400" />
 
                 <ImageButton
@@ -368,7 +367,7 @@
                     android:layout_marginStart="12dp"
                     android:background="@drawable/bg_option_active"
                     android:padding="14dp"
-                    android:src="@drawable/ic_ice_full"
+                    android:src="@drawable/ic_ice"
                     android:tint="@color/brand_dark" />
 
             </LinearLayout>

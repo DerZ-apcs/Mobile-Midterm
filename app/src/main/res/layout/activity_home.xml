@@ -62,7 +62,7 @@
                         android:background="?android:attr/selectableItemBackgroundBorderless"
                         android:contentDescription="@string/cart_desc"
                         android:padding="4dp"
-                        android:src="@drawable/ic_shopping_cart"
+                        android:src="@drawable/ic_cart"
                         android:tint="@color/coffee_dark" />
 
                     <TextView
@@ -90,7 +90,7 @@
                     android:background="?android:attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/profile_desc"
                     android:padding="4dp"
-                    android:src="@drawable/ic_account_circle"
+                    android:src="@drawable/ic_profile"
                     android:tint="@color/coffee_dark" />
 
             </LinearLayout>
@@ -124,6 +124,7 @@
                         android:id="@+id/tvStampCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="0"
                         android:textColor="@color/white"
                         android:textSize="18sp"
                         android:textStyle="bold"
@@ -144,60 +145,76 @@
                     android:orientation="horizontal"
                     android:weightSum="8">
 
-                    <View
+                    <ImageView
+                        android:id="@+id/imgStamp1"
                         android:layout_width="0dp"
-                        android:layout_height="32dp"
+                        android:layout_height="36dp"
                         android:layout_weight="1"
-                        android:background="@drawable/bg_stamp_active" />
+                        android:contentDescription="@null"
+                        android:src="@drawable/coffee_cup_blue" />
 
-                    <View
+                    <ImageView
+                        android:id="@+id/imgStamp2"
                         android:layout_width="0dp"
-                        android:layout_height="32dp"
+                        android:layout_height="36dp"
                         android:layout_marginStart="6dp"
                         android:layout_weight="1"
-                        android:background="@drawable/bg_stamp_active" />
+                        android:contentDescription="@null"
+                        android:src="@drawable/coffee_cup_blue" />
 
-                    <View
+                    <ImageView
+                        android:id="@+id/imgStamp3"
                         android:layout_width="0dp"
-                        android:layout_height="32dp"
+                        android:layout_height="36dp"
                         android:layout_marginStart="6dp"
                         android:layout_weight="1"
-                        android:background="@drawable/bg_stamp_active" />
+                        android:contentDescription="@null"
+                        android:src="@drawable/coffee_cup_blue" />
 
-                    <View
+                    <ImageView
+                        android:id="@+id/imgStamp4"
                         android:layout_width="0dp"
-                        android:layout_height="32dp"
+                        android:layout_height="36dp"
                         android:layout_marginStart="6dp"
                         android:layout_weight="1"
-                        android:background="@drawable/bg_stamp_active" />
+                        android:contentDescription="@null"
+                        android:src="@drawable/coffee_cup_blue" />
 
-                    <View
+                    <ImageView
+                        android:id="@+id/imgStamp5"
                         android:layout_width="0dp"
-                        android:layout_height="32dp"
+                        android:layout_height="36dp"
                         android:layout_marginStart="6dp"
                         android:layout_weight="1"
-                        android:background="@drawable/bg_stamp_inactive" />
+                        android:contentDescription="@null"
+                        android:src="@drawable/coffee_cup_blue" />
 
-                    <View
+                    <ImageView
+                        android:id="@+id/imgStamp6"
                         android:layout_width="0dp"
-                        android:layout_height="32dp"
+                        android:layout_height="36dp"
                         android:layout_marginStart="6dp"
                         android:layout_weight="1"
-                        android:background="@drawable/bg_stamp_inactive" />
+                        android:contentDescription="@null"
+                        android:src="@drawable/coffee_cup_blue" />
 
-                    <View
+                    <ImageView
+                        android:id="@+id/imgStamp7"
                         android:layout_width="0dp"
-                        android:layout_height="32dp"
+                        android:layout_height="36dp"
                         android:layout_marginStart="6dp"
                         android:layout_weight="1"
-                        android:background="@drawable/bg_stamp_inactive" />
+                        android:contentDescription="@null"
+                        android:src="@drawable/coffee_cup_blue" />
 
-                    <View
+                    <ImageView
+                        android:id="@+id/imgStamp8"
                         android:layout_width="0dp"
-                        android:layout_height="32dp"
+                        android:layout_height="36dp"
                         android:layout_marginStart="6dp"
                         android:layout_weight="1"
-                        android:background="@drawable/bg_stamp_inactive" />
+                        android:contentDescription="@null"
+                        android:src="@drawable/coffee_cup_blue" />
 
                 </LinearLayout>
 

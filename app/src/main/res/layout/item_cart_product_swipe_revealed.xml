@@ -27,7 +27,8 @@
             android:layout_height="32dp"
             android:layout_gravity="center"
             android:contentDescription="@string/delete_desc"
-            android:src="@drawable/ic_delete" />
+            android:src="@drawable/delete"
+            android:tint="@color/white" />
 
     </FrameLayout>
 

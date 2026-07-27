@@ -1,6 +1,8 @@
 package com.example.midterm_application;
 
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -252,9 +254,17 @@ public class MainActivity extends AppCompatActivity {
 
         getCartViewModel().getCartItems().removeObservers(this);
         getCartViewModel().getCartItems().observe(this, this::updateCartBadge);
+        getRewardViewModel().getRewardState().removeObservers(this);
+        getRewardViewModel().getRewardState().observe(this, this::updateHomeRewardState);
         setClickListener(R.id.btnCart, () -> navigateTo(SCREEN_CART));
         setClickListener(R.id.btnProfile, () -> navigateTo(SCREEN_PROFILE));
         setupPrimaryBottomNavigation(R.id.navHome);
+    }
+
+    private void updateHomeRewardState(RewardState rewardState) {
+        int stampCount = rewardState == null ? 0 : RewardCalculator.capStampCount(rewardState.getStampCount());
+        updateLoyaltyStampCount(R.id.tvStampCount, stampCount);
+        updateStampImages(stampCount);
     }
 
     private void updateCoffeeEmptyState(List<Coffee> coffees, TextView emptyResults) {
@@ -440,18 +450,22 @@ public class MainActivity extends AppCompatActivity {
         int stampCount = rewardState == null ? 0 : RewardCalculator.capStampCount(rewardState.getStampCount());
         int totalPoints = rewardState == null ? 0 : rewardState.getTotalPoints();
 
-        TextView stampCountText = findViewById(R.id.tvRewardStampCount);
         TextView pointsValue = findViewById(R.id.tvPointsValue);
         TextView claimCard = findViewById(R.id.btnClaimLoyalty);
 
-        if (stampCountText != null) {
-            stampCountText.setText(String.valueOf(stampCount));
-        }
+        updateLoyaltyStampCount(R.id.tvRewardStampCount, stampCount);
         if (pointsValue != null) {
             pointsValue.setText(String.valueOf(totalPoints));
         }
         updateStampImages(stampCount);
         updateClaimCardButton(claimCard, RewardCalculator.canClaimStampCard(stampCount));
+    }
+
+    private void updateLoyaltyStampCount(int textViewId, int stampCount) {
+        TextView stampCountText = findViewById(textViewId);
+        if (stampCountText != null) {
+            stampCountText.setText(String.valueOf(stampCount));
+        }
     }
 
     private void updateStampImages(int stampCount) {
@@ -469,8 +483,8 @@ public class MainActivity extends AppCompatActivity {
             ImageView stamp = findViewById(stampIds[index]);
             if (stamp != null) {
                 stamp.setImageResource(index < stampCount
-                        ? R.drawable.ic_stamp_cup_filled
-                        : R.drawable.ic_stamp_cup_empty);
+                        ? R.drawable.coffee_cup_white
+                        : R.drawable.coffee_cup_blue);
             }
         }
     }
@@ -871,13 +885,48 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                CartItem item = cartAdapter.getItemAt(viewHolder.getBindingAdapterPosition());
+                int position = viewHolder.getBindingAdapterPosition();
+                CartItem item = cartAdapter.getItemAt(position);
                 if (item != null) {
                     getCartViewModel().deleteCartItem(item);
+                } else if (position != RecyclerView.NO_POSITION) {
+                    cartAdapter.notifyItemChanged(position);
                 }
+            }
+
+            @Override
+            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView,
+                                    @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY,
+                                    int actionState, boolean isCurrentlyActive) {
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE && dX < 0) {
+                    drawSwipeDeleteIndicator(c, viewHolder.itemView, dX);
+                }
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
             }
         });
         helper.attachToRecyclerView(recyclerView);
+    }
+
+    private void drawSwipeDeleteIndicator(Canvas canvas, View itemView, float dX) {
+        Drawable background = getDrawable(R.drawable.bg_delete_action);
+        Drawable deleteIcon = getDrawable(R.drawable.delete);
+        if (background == null || deleteIcon == null) {
+            return;
+        }
+
+        int right = itemView.getRight();
+        int left = Math.max(right + (int) dX, right - itemView.getHeight());
+        background.setBounds(left, itemView.getTop(), right, itemView.getBottom());
+        background.draw(canvas);
+
+        int iconWidth = deleteIcon.getIntrinsicWidth() > 0 ? deleteIcon.getIntrinsicWidth() : 24;
+        int iconHeight = deleteIcon.getIntrinsicHeight() > 0 ? deleteIcon.getIntrinsicHeight() : 24;
+        int iconMargin = (itemView.getHeight() - iconHeight) / 2;
+        int iconLeft = right - iconMargin - iconWidth;
+        int iconTop = itemView.getTop() + (itemView.getHeight() - iconHeight) / 2;
+        deleteIcon.mutate().setTint(getColor(R.color.white));
+        deleteIcon.setBounds(iconLeft, iconTop, iconLeft + iconWidth, iconTop + iconHeight);
+        deleteIcon.draw(canvas);
     }
 
     private interface ClickAction {

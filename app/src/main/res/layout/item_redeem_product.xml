@@ -16,8 +16,7 @@
         android:contentDescription="@string/coffee_image_desc"
         android:padding="18dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_cup_outline"
-        android:tint="@color/brand_dark" />
+        android:src="@drawable/ic_cup_outline" />
 
     <LinearLayout
         android:layout_width="0dp"
