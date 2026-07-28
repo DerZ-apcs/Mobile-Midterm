@@ -277,7 +277,7 @@ public class DetailActivity extends AppCompatActivity {
             return;
         }
 
-        option.setBackgroundResource(selected ? R.drawable.bg_segment_active : 0);
+        option.setBackgroundResource(selected ? R.drawable.bg_segment_active : R.drawable.bg_details_pill_inactive);
         option.setTextColor(getColor(selected ? R.color.white : R.color.gray_500));
     }
 
