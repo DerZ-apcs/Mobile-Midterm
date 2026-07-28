@@ -36,6 +36,7 @@
     <color name="unselected">#CBD5E1</color>
     <color name="icon_selected">#8DB5C0</color>
     <color name="icon_unselected">#CBD5E1</color>
+    <color name="icon_primary">#F9FAFB</color>
     <color name="card_dark_surface">#1F2937</color>
     <color name="button_primary">#8DB5C0</color>
     <color name="search_field_surface">#1FFFFFFF</color>

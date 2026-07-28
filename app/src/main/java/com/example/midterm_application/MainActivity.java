@@ -21,7 +21,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.graphics.Insets;
 import androidx.core.splashscreen.SplashScreen;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -677,6 +680,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showRedeem() {
         setContentView(R.layout.activity_redeem);
+        applyTopSystemBarInset(R.id.redeemRoot);
 
         RewardProductAdapter rewardProductAdapter = new RewardProductAdapter(
                 RewardCatalog.getRewards(),
@@ -716,6 +720,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showProfile() {
         setContentView(R.layout.activity_profile);
+        applyTopSystemBarInset(R.id.profileRoot);
 
         getProfileViewModel().getProfile().removeObservers(this);
         getProfileViewModel().getValidationResult().removeObservers(this);
@@ -732,6 +737,28 @@ public class MainActivity extends AppCompatActivity {
         setProfileEditing(profileEditMode);
         getProfileViewModel().reloadProfile();
         setClickListener(R.id.btnBack, this::goBackOrHome);
+    }
+
+    private void applyTopSystemBarInset(int rootViewId) {
+        View root = findViewById(rootViewId);
+        if (root == null) {
+            return;
+        }
+
+        int initialLeft = root.getPaddingLeft();
+        int initialTop = root.getPaddingTop();
+        int initialRight = root.getPaddingRight();
+        int initialBottom = root.getPaddingBottom();
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
+            Insets systemBars = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            view.setPadding(initialLeft,
+                    initialTop + systemBars.top,
+                    initialRight,
+                    initialBottom);
+            return windowInsets;
+        });
+        ViewCompat.requestApplyInsets(root);
     }
 
     private void setupDarkModeSwitch() {

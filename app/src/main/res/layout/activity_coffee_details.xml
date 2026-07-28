@@ -375,7 +375,7 @@
                     android:contentDescription="@string/label_ice"
                     android:padding="15dp"
                     android:scaleType="centerInside"
-                    android:src="@drawable/ic_ice"
+                    android:src="@drawable/ic_ice_light"
                     android:tint="@color/gray_400" />
 
                 <ImageButton
@@ -387,7 +387,7 @@
                     android:contentDescription="@string/label_ice"
                     android:padding="15dp"
                     android:scaleType="centerInside"
-                    android:src="@drawable/ic_ice"
+                    android:src="@drawable/ic_ice_full"
                     android:tint="@color/brand_dark" />
 
             </LinearLayout>

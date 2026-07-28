@@ -66,7 +66,7 @@
                         android:contentDescription="@string/cart_desc"
                         android:padding="@dimen/spacing_xs"
                         android:src="@drawable/ic_cart"
-                        android:tint="@color/coffee_dark" />
+                        app:tint="@color/coffee_dark" />
 
                     <TextView
                         android:id="@+id/tvCartBadge"
@@ -94,7 +94,7 @@
                     android:contentDescription="@string/profile_desc"
                     android:padding="@dimen/spacing_xs"
                     android:src="@drawable/ic_profile"
-                    android:tint="@color/coffee_dark" />
+                    app:tint="@color/coffee_dark" />
 
             </LinearLayout>
 
@@ -111,7 +111,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/spacing_lg"
+                    android:layout_marginBottom="10dp"
                     android:orientation="horizontal">
 
                     <TextView
@@ -142,81 +142,104 @@
 
                 </LinearLayout>
 
+                <!-- White loyalty stamp panel - matches Figma -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="56dp"
+                    android:background="@drawable/bg_loyalty_stamp_panel"
+                    android:gravity="center"
                     android:orientation="horizontal"
+                    android:paddingStart="10dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="8dp"
                     android:weightSum="8">
 
                     <ImageView
                         android:id="@+id/imgStamp1"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/stamp_icon_height"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
+                        android:adjustViewBounds="true"
                         android:contentDescription="@null"
+                        android:scaleType="centerInside"
                         android:src="@drawable/coffee_cup_white" />
 
                     <ImageView
                         android:id="@+id/imgStamp2"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/stamp_icon_height"
-                        android:layout_marginStart="@dimen/stamp_icon_gap"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="4dp"
                         android:layout_weight="1"
+                        android:adjustViewBounds="true"
                         android:contentDescription="@null"
+                        android:scaleType="centerInside"
                         android:src="@drawable/coffee_cup_white" />
 
                     <ImageView
                         android:id="@+id/imgStamp3"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/stamp_icon_height"
-                        android:layout_marginStart="@dimen/stamp_icon_gap"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="4dp"
                         android:layout_weight="1"
+                        android:adjustViewBounds="true"
                         android:contentDescription="@null"
+                        android:scaleType="centerInside"
                         android:src="@drawable/coffee_cup_white" />
 
                     <ImageView
                         android:id="@+id/imgStamp4"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/stamp_icon_height"
-                        android:layout_marginStart="@dimen/stamp_icon_gap"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="4dp"
                         android:layout_weight="1"
+                        android:adjustViewBounds="true"
                         android:contentDescription="@null"
+                        android:scaleType="centerInside"
                         android:src="@drawable/coffee_cup_white" />
 
                     <ImageView
                         android:id="@+id/imgStamp5"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/stamp_icon_height"
-                        android:layout_marginStart="@dimen/stamp_icon_gap"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="4dp"
                         android:layout_weight="1"
+                        android:adjustViewBounds="true"
                         android:contentDescription="@null"
+                        android:scaleType="centerInside"
                         android:src="@drawable/coffee_cup_white" />
 
                     <ImageView
                         android:id="@+id/imgStamp6"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/stamp_icon_height"
-                        android:layout_marginStart="@dimen/stamp_icon_gap"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="4dp"
                         android:layout_weight="1"
+                        android:adjustViewBounds="true"
                         android:contentDescription="@null"
+                        android:scaleType="centerInside"
                         android:src="@drawable/coffee_cup_white" />
 
                     <ImageView
                         android:id="@+id/imgStamp7"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/stamp_icon_height"
-                        android:layout_marginStart="@dimen/stamp_icon_gap"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="4dp"
                         android:layout_weight="1"
+                        android:adjustViewBounds="true"
                         android:contentDescription="@null"
+                        android:scaleType="centerInside"
                         android:src="@drawable/coffee_cup_white" />
 
                     <ImageView
                         android:id="@+id/imgStamp8"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/stamp_icon_height"
-                        android:layout_marginStart="@dimen/stamp_icon_gap"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="4dp"
                         android:layout_weight="1"
+                        android:adjustViewBounds="true"
                         android:contentDescription="@null"
+                        android:scaleType="centerInside"
                         android:src="@drawable/coffee_cup_white" />
 
                 </LinearLayout>
@@ -231,7 +254,7 @@
                 android:layout_marginBottom="@dimen/spacing_lg"
                 android:background="@drawable/bg_card_dark_rounded"
                 android:orientation="vertical"
-                android:padding="@dimen/spacing_lg">
+                android:padding="16dp">
 
                 <TextView
                     android:layout_width="wrap_content"
