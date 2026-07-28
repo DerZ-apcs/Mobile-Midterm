@@ -30,6 +30,7 @@ import androidx.core.splashscreen.SplashScreen;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -292,10 +293,11 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView favoriteList = findViewById(R.id.rvFavoriteCoffees);
         View favoritesSection = findViewById(R.id.layoutFavoritesSection);
         Set<Integer> favoriteCoffeeIds = getFavoriteRepository().getFavoriteCoffeeIds();
+        List<Coffee> displayedCatalogCoffees = getDisplayedCatalogCoffees();
         final CoffeeAdapter[] adapterRef = new CoffeeAdapter[1];
         final FavoriteCoffeeAdapter[] favoriteAdapterRef = new FavoriteCoffeeAdapter[1];
         CoffeeAdapter coffeeAdapter = new CoffeeAdapter(
-                CoffeeRepository.searchByName(coffeeSearchQuery),
+                displayedCatalogCoffees,
                 favoriteCoffeeIds,
                 coffee -> openCoffeeDetails(coffee.getId()),
                 coffee -> {
@@ -314,6 +316,8 @@ public class MainActivity extends AppCompatActivity {
                 });
         favoriteAdapterRef[0] = favoriteAdapter;
         if (coffeeGrid != null) {
+            coffeeGrid.setLayoutManager(new GridLayoutManager(this, 2));
+            coffeeGrid.setNestedScrollingEnabled(false);
             coffeeGrid.setAdapter(coffeeAdapter);
         }
         if (favoriteList != null) {
@@ -321,7 +325,7 @@ public class MainActivity extends AppCompatActivity {
             favoriteList.setAdapter(favoriteAdapter);
         }
         updateFavoritesSectionVisibility(favoritesSection, favoriteAdapter.getItemCount());
-        updateCoffeeEmptyState(CoffeeRepository.searchByName(coffeeSearchQuery), emptyResults);
+        updateCoffeeEmptyState(displayedCatalogCoffees, emptyResults);
         if (searchInput != null) {
             searchInput.setText(coffeeSearchQuery);
             searchInput.addTextChangedListener(new TextWatcher() {
@@ -332,7 +336,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                     coffeeSearchQuery = s == null ? "" : s.toString();
-                    List<Coffee> filteredCoffees = CoffeeRepository.searchByName(coffeeSearchQuery);
+                    List<Coffee> filteredCoffees = getDisplayedCatalogCoffees();
                     coffeeAdapter.submitCoffees(filteredCoffees);
                     updateCoffeeEmptyState(filteredCoffees, emptyResults);
                 }
@@ -350,6 +354,10 @@ public class MainActivity extends AppCompatActivity {
         setClickListener(R.id.btnCart, () -> navigateTo(SCREEN_CART));
         setClickListener(R.id.btnProfile, () -> navigateTo(SCREEN_PROFILE));
         setupPrimaryBottomNavigation(R.id.navHome);
+    }
+
+    private List<Coffee> getDisplayedCatalogCoffees() {
+        return new ArrayList<>(CoffeeRepository.searchByName(coffeeSearchQuery));
     }
 
     private void updateHomeRewardState(RewardState rewardState) {

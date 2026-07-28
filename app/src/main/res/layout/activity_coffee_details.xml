@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/detailsRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/app_background"
@@ -8,22 +9,23 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="24dp"
-        android:paddingTop="26dp"
-        android:paddingEnd="24dp"
-        android:paddingBottom="8dp">
+        android:layout_height="@dimen/secondary_header_height"
+        android:paddingStart="@dimen/spacing_md"
+        android:paddingEnd="@dimen/spacing_md">
 
         <ImageButton
             android:id="@+id/btnBack"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/back_touch_target"
+            android:layout_height="@dimen/back_touch_target"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
             android:contentDescription="@string/back_desc"
-            android:padding="9dp"
-            android:src="@drawable/arrow_left" />
+            android:focusable="true"
+            android:padding="@dimen/back_icon_padding"
+            android:src="@drawable/arrow_left"
+            android:tint="@color/icon_primary" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -36,19 +38,22 @@
             android:textStyle="bold" />
 
         <FrameLayout
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/back_touch_target"
+            android:layout_height="@dimen/back_touch_target"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true">
 
             <ImageButton
                 android:id="@+id/btnCart"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/back_touch_target"
+                android:layout_height="@dimen/back_touch_target"
                 android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
                 android:contentDescription="@string/view_cart_desc"
-                android:padding="9dp"
-                android:src="@drawable/ic_cart" />
+                android:focusable="true"
+                android:padding="@dimen/back_icon_padding"
+                android:src="@drawable/ic_cart"
+                android:tint="@color/icon_primary" />
 
             <TextView
                 android:id="@+id/tvCartBadge"
@@ -361,34 +366,31 @@
                     android:layout_height="44dp"
                     android:background="@drawable/bg_option_inactive"
                     android:contentDescription="@string/label_ice"
-                    android:padding="15dp"
+                    android:padding="10dp"
                     android:scaleType="centerInside"
-                    android:src="@drawable/ic_ice"
-                    android:tint="@color/gray_400" />
+                    android:src="@drawable/ic_ice" />
 
                 <ImageButton
                     android:id="@+id/btnIceLight"
                     android:layout_width="44dp"
                     android:layout_height="44dp"
-                    android:layout_marginStart="18dp"
+                    android:layout_marginStart="12dp"
                     android:background="@drawable/bg_option_inactive"
                     android:contentDescription="@string/label_ice"
-                    android:padding="15dp"
+                    android:padding="10dp"
                     android:scaleType="centerInside"
-                    android:src="@drawable/ic_ice_light"
-                    android:tint="@color/gray_400" />
+                    android:src="@drawable/ic_ice_medium" />
 
                 <ImageButton
                     android:id="@+id/btnIceFull"
                     android:layout_width="44dp"
                     android:layout_height="44dp"
-                    android:layout_marginStart="18dp"
+                    android:layout_marginStart="12dp"
                     android:background="@drawable/bg_option_active"
                     android:contentDescription="@string/label_ice"
-                    android:padding="15dp"
+                    android:padding="10dp"
                     android:scaleType="centerInside"
-                    android:src="@drawable/ic_ice_full"
-                    android:tint="@color/brand_dark" />
+                    android:src="@drawable/ic_ice_more" />
 
             </LinearLayout>
 

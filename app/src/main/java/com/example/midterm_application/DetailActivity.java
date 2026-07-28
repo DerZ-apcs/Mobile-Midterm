@@ -16,6 +16,9 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -45,6 +48,7 @@ public class DetailActivity extends AppCompatActivity {
         applySavedThemeMode();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_coffee_details);
+        applyTopSystemBarInset(R.id.detailsRoot);
         detailViewModel = new ViewModelProvider(this).get(DetailViewModel.class);
         cartViewModel = new ViewModelProvider(this,
                 ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
@@ -76,6 +80,28 @@ public class DetailActivity extends AppCompatActivity {
         AppCompatDelegate.setDefaultNightMode(darkModeEnabled
                 ? AppCompatDelegate.MODE_NIGHT_YES
                 : AppCompatDelegate.MODE_NIGHT_NO);
+    }
+
+    private void applyTopSystemBarInset(int rootViewId) {
+        View root = findViewById(rootViewId);
+        if (root == null) {
+            return;
+        }
+
+        int initialLeft = root.getPaddingLeft();
+        int initialTop = root.getPaddingTop();
+        int initialRight = root.getPaddingRight();
+        int initialBottom = root.getPaddingBottom();
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
+            Insets systemBars = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            view.setPadding(initialLeft,
+                    initialTop + systemBars.top,
+                    initialRight,
+                    initialBottom);
+            return windowInsets;
+        });
+        ViewCompat.requestApplyInsets(root);
     }
 
     private void setupNoteInput() {
@@ -188,9 +214,9 @@ public class DetailActivity extends AppCompatActivity {
         updateImageOption(R.id.btnSizeSmall, detailViewModel.getSelectedSize() == Size.SMALL);
         updateImageOption(R.id.btnSizeMedium, detailViewModel.getSelectedSize() == Size.MEDIUM);
         updateImageOption(R.id.btnSizeLarge, detailViewModel.getSelectedSize() == Size.LARGE);
-        updateImageOption(R.id.btnIceNone, detailViewModel.getSelectedIce() == Ice.NO_ICE);
-        updateImageOption(R.id.btnIceLight, detailViewModel.getSelectedIce() == Ice.LESS_ICE);
-        updateImageOption(R.id.btnIceFull, detailViewModel.getSelectedIce() == Ice.NORMAL);
+        updateIceOption(R.id.btnIceNone, detailViewModel.getSelectedIce() == Ice.NO_ICE);
+        updateIceOption(R.id.btnIceLight, detailViewModel.getSelectedIce() == Ice.LESS_ICE);
+        updateIceOption(R.id.btnIceFull, detailViewModel.getSelectedIce() == Ice.NORMAL);
     }
 
     private void addCurrentCoffeeToCart(Coffee coffee) {
@@ -300,6 +326,16 @@ public class DetailActivity extends AppCompatActivity {
 
         option.setBackgroundResource(selected ? R.drawable.bg_option_active : R.drawable.bg_option_inactive);
         option.setImageTintList(ColorStateList.valueOf(getColor(selected ? R.color.brand_dark : R.color.gray_400)));
+    }
+
+    private void updateIceOption(int viewId, boolean selected) {
+        ImageButton option = findViewById(viewId);
+        if (option == null) {
+            return;
+        }
+
+        option.setBackgroundResource(selected ? R.drawable.bg_option_active : R.drawable.bg_option_inactive);
+        option.setImageTintList(null);
     }
 
     private void setClickListener(int viewId, ClickAction action) {
