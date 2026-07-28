@@ -62,4 +62,7 @@
     <color name="button_primary">#204D54</color>
     <color name="search_field_surface">#22FFFFFF</color>
     <color name="nav_shadow_tint">#14000000</color>
+    <color name="splash_system_background">#171A20</color>
+    <color name="splash_overlay_scrim">#66000000</color>
+    <color name="splash_brand">#FFF9F2</color>
 </resources>

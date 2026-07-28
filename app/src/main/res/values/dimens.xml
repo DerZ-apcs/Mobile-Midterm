@@ -47,4 +47,7 @@
     <dimen name="tab_label_vertical_padding">10dp</dimen>
     <dimen name="order_row_gap">28dp</dimen>
     <dimen name="row_divider_height">1dp</dimen>
+    <dimen name="splash_logo_size">164dp</dimen>
+    <dimen name="splash_title_text_size">32sp</dimen>
+    <dimen name="splash_brand_gap">28dp</dimen>
 </resources>

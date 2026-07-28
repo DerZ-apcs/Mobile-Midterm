@@ -106,4 +106,6 @@
     <string name="checkout_promo_discount_format">Promo discount: -$%.2f</string>
     <string name="checkout_final_total_format">Final Total: $%.2f</string>
     <string name="checkout_place_order">Place Order</string>
+    <string name="splash_brand_title">Ordinary Coffee House</string>
+    <string name="splash_logo_desc">Coffee house logo</string>
 </resources>

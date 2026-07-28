@@ -3,10 +3,14 @@ package com.example.midterm_application;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -17,6 +21,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.splashscreen.SplashScreen;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -56,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_OPEN_CART = "com.example.midterm_application.EXTRA_OPEN_CART";
 
     private static final int REQUEST_COFFEE_DETAILS = 1001;
+    private static final long BRANDED_SPLASH_VISIBLE_MS = 850L;
+    private static final long BRANDED_SPLASH_FADE_MS = 300L;
 
     private static final int SCREEN_HOME = 1;
     private static final int SCREEN_DETAILS = 2;
@@ -95,7 +102,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         applySavedThemeMode();
+        SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
+        boolean shouldShowBrandedSplash = savedInstanceState == null;
 
         if (savedInstanceState != null) {
             currentScreen = savedInstanceState.getInt(STATE_CURRENT_SCREEN, SCREEN_HOME);
@@ -111,6 +120,46 @@ public class MainActivity extends AppCompatActivity {
         }
 
         showScreen(currentScreen);
+        if (shouldShowBrandedSplash) {
+            showBrandedSplashOverlay();
+        }
+    }
+
+    private void showBrandedSplashOverlay() {
+        ViewGroup content = findViewById(android.R.id.content);
+        if (content == null) {
+            return;
+        }
+
+        Window window = getWindow();
+        View decorView = window.getDecorView();
+        int originalStatusBarColor = window.getStatusBarColor();
+        int originalNavigationBarColor = window.getNavigationBarColor();
+        int originalSystemUiVisibility = decorView.getSystemUiVisibility();
+
+        window.setStatusBarColor(getColor(R.color.splash_system_background));
+        window.setNavigationBarColor(getColor(R.color.splash_system_background));
+        int splashSystemUiVisibility = originalSystemUiVisibility & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            splashSystemUiVisibility &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+        }
+        decorView.setSystemUiVisibility(splashSystemUiVisibility);
+
+        View overlay = LayoutInflater.from(this).inflate(R.layout.view_branded_splash, content, false);
+        content.addView(overlay, new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+
+        overlay.postDelayed(() -> overlay.animate()
+                .alpha(0f)
+                .setDuration(BRANDED_SPLASH_FADE_MS)
+                .withEndAction(() -> {
+                    content.removeView(overlay);
+                    window.setStatusBarColor(originalStatusBarColor);
+                    window.setNavigationBarColor(originalNavigationBarColor);
+                    decorView.setSystemUiVisibility(originalSystemUiVisibility);
+                })
+                .start(), BRANDED_SPLASH_VISIBLE_MS);
     }
 
     @Override

@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.activity)
+    implementation(libs.androidx.core.splashscreen)
     annotationProcessor(libs.androidx.room.compiler)
     testImplementation(libs.junit)
 }
