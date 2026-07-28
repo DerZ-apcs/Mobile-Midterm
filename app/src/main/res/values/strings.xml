@@ -91,4 +91,19 @@
     <string name="reorder_failed_message">Could not reorder this order</string>
     <string name="dark_mode_label">Dark mode</string>
     <string name="dark_mode_desc">Use a darker app theme</string>
+    <string name="checkout_title">Checkout</string>
+    <string name="checkout_delivery_address">Delivery address</string>
+    <string name="checkout_delivery_address_hint">Enter delivery address</string>
+    <string name="checkout_promo_code">Promo code</string>
+    <string name="checkout_promo_code_hint">CODECUP10 or WELCOME5</string>
+    <string name="checkout_apply_promo">Apply</string>
+    <string name="checkout_use_free_drink">Use free drink reward</string>
+    <string name="checkout_loyalty_available">Available: highest-priced drink unit will be free.</string>
+    <string name="checkout_loyalty_unavailable">Available when your loyalty card has 8 stamps.</string>
+    <string name="checkout_order_summary">Order Summary</string>
+    <string name="checkout_subtotal_format">Subtotal: $%.2f</string>
+    <string name="checkout_loyalty_discount_format">Loyalty discount: -$%.2f</string>
+    <string name="checkout_promo_discount_format">Promo discount: -$%.2f</string>
+    <string name="checkout_final_total_format">Final Total: $%.2f</string>
+    <string name="checkout_place_order">Place Order</string>
 </resources>

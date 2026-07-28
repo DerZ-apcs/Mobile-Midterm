@@ -15,7 +15,7 @@ import com.example.midterm_application.data.model.RewardState;
 import com.example.midterm_application.data.model.RewardTransaction;
 
 @Database(entities = {CartItem.class, Order.class, OrderItem.class, RewardState.class,
-        RewardTransaction.class}, version = 5, exportSchema = false)
+        RewardTransaction.class}, version = 6, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase instance;
 
@@ -102,6 +102,21 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
+    private static final Migration MIGRATION_5_6 = new Migration(5, 6) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE `orders` ADD COLUMN `subtotal` REAL NOT NULL DEFAULT 0");
+            database.execSQL("ALTER TABLE `orders` ADD COLUMN `promoCode` TEXT");
+            database.execSQL("ALTER TABLE `orders` ADD COLUMN `promoDiscount` REAL NOT NULL DEFAULT 0");
+            database.execSQL("ALTER TABLE `orders` ADD COLUMN `loyaltyDiscount` REAL NOT NULL DEFAULT 0");
+            database.execSQL("ALTER TABLE `orders` ADD COLUMN `finalTotal` REAL NOT NULL DEFAULT 0");
+            database.execSQL("ALTER TABLE `orders` ADD COLUMN `deliveryAddress` TEXT");
+            database.execSQL("ALTER TABLE `orders` ADD COLUMN `loyaltyRewardUsed` INTEGER NOT NULL DEFAULT 0");
+            database.execSQL("UPDATE `orders` SET `subtotal` = `totalPrice`, `finalTotal` = `totalPrice` "
+                    + "WHERE `subtotal` = 0 AND `finalTotal` = 0");
+        }
+    };
+
     public abstract CartDao cartDao();
 
     public abstract OrderDao orderDao();
@@ -114,7 +129,8 @@ public abstract class AppDatabase extends RoomDatabase {
                 if (instance == null) {
                     instance = Room.databaseBuilder(context.getApplicationContext(),
                                     AppDatabase.class, "code_cup.db")
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4,
+                                    MIGRATION_4_5, MIGRATION_5_6)
                             .build();
                 }
             }

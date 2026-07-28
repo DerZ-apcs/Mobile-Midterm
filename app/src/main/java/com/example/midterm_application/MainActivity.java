@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -22,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.midterm_application.data.model.CartItem;
+import com.example.midterm_application.data.model.CheckoutSummary;
 import com.example.midterm_application.data.model.Coffee;
 import com.example.midterm_application.data.model.OrderListItem;
 import com.example.midterm_application.data.model.RewardState;
@@ -39,6 +41,7 @@ import com.example.midterm_application.ui.RewardProductAdapter;
 import com.example.midterm_application.ui.RewardTransactionAdapter;
 import com.example.midterm_application.utils.RewardCalculator;
 import com.example.midterm_application.viewmodel.CartViewModel;
+import com.example.midterm_application.viewmodel.CheckoutViewModel;
 import com.example.midterm_application.viewmodel.OrderViewModel;
 import com.example.midterm_application.viewmodel.ProfileViewModel;
 import com.example.midterm_application.viewmodel.RewardViewModel;
@@ -62,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int SCREEN_REWARDS = 6;
     private static final int SCREEN_REDEEM = 7;
     private static final int SCREEN_PROFILE = 8;
+    private static final int SCREEN_CHECKOUT = 9;
 
     private static final String STATE_CURRENT_SCREEN = "current_screen";
     private static final String STATE_SELECTED_COFFEE_ID = "selected_coffee_id";
@@ -76,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
     private int selectedCoffeeId = 1;
     private String selectedCoffeeName = "Americano";
     private CartViewModel cartViewModel;
+    private CheckoutViewModel checkoutViewModel;
     private OrderViewModel orderViewModel;
     private ProfileViewModel profileViewModel;
     private RewardViewModel rewardViewModel;
@@ -191,6 +196,9 @@ public class MainActivity extends AppCompatActivity {
             case SCREEN_ORDER_SUCCESS:
                 showOrderSuccess();
                 break;
+            case SCREEN_CHECKOUT:
+                showCheckout();
+                break;
             case SCREEN_ORDERS:
                 showOrders();
                 break;
@@ -293,7 +301,7 @@ public class MainActivity extends AppCompatActivity {
         setClickListener(R.id.btnBack, this::goBackOrHome);
         View checkout = findViewById(R.id.btnCheckout);
         if (checkout != null) {
-            checkout.setOnClickListener(v -> getOrderViewModel().checkout());
+            checkout.setOnClickListener(v -> navigateTo(SCREEN_CHECKOUT));
         }
 
         CartAdapter cartAdapter = new CartAdapter();
@@ -311,22 +319,121 @@ public class MainActivity extends AppCompatActivity {
             updateCartSummary(items);
         });
 
-        getOrderViewModel().getCheckoutState().removeObservers(this);
-        getOrderViewModel().getCheckoutState().observe(this, state -> {
+        checkoutInProgress = false;
+        updateCartSummary(currentCartItems);
+    }
+
+    private void showCheckout() {
+        setContentView(R.layout.activity_checkout);
+
+        CheckoutViewModel checkoutViewModel = getCheckoutViewModel();
+        EditText deliveryAddress = findViewById(R.id.etDeliveryAddress);
+        EditText promoCode = findViewById(R.id.etPromoCode);
+        CheckBox loyaltyReward = findViewById(R.id.cbUseLoyaltyReward);
+
+        setClickListener(R.id.btnBack, this::goBackOrHome);
+        setClickListener(R.id.btnApplyPromo, () -> {
+            if (promoCode != null) {
+                checkoutViewModel.setPromoCode(promoCode.getText().toString());
+            }
+        });
+        setClickListener(R.id.btnPlaceOrder, checkoutViewModel::placeOrder);
+
+        if (deliveryAddress != null) {
+            deliveryAddress.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    checkoutViewModel.setDeliveryAddress(s == null ? "" : s.toString());
+                    updatePlaceOrderButton();
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                }
+            });
+        }
+        if (promoCode != null) {
+            promoCode.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    checkoutViewModel.setPromoCode(s == null ? "" : s.toString());
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                }
+            });
+        }
+        if (loyaltyReward != null) {
+            loyaltyReward.setOnCheckedChangeListener((buttonView, isChecked) ->
+                    checkoutViewModel.setLoyaltyRequested(isChecked));
+        }
+
+        checkoutViewModel.getDeliveryAddress().removeObservers(this);
+        checkoutViewModel.getDeliveryAddress().observe(this, address -> {
+            if (deliveryAddress != null && address != null
+                    && !address.contentEquals(deliveryAddress.getText())) {
+                deliveryAddress.setText(address);
+            }
+            updatePlaceOrderButton();
+        });
+        checkoutViewModel.getPromoCode().removeObservers(this);
+        checkoutViewModel.getPromoCode().observe(this, code -> {
+            if (promoCode != null && code != null && !code.contentEquals(promoCode.getText())) {
+                promoCode.setText(code);
+            }
+        });
+        checkoutViewModel.getLoyaltyAvailable().removeObservers(this);
+        checkoutViewModel.getLoyaltyAvailable().observe(this, available -> {
+            boolean enabled = Boolean.TRUE.equals(available);
+            if (loyaltyReward != null) {
+                loyaltyReward.setEnabled(enabled);
+                loyaltyReward.setAlpha(enabled ? 1.00f : 0.45f);
+            }
+            TextView hint = findViewById(R.id.tvLoyaltyRewardHint);
+            if (hint != null) {
+                hint.setText(enabled
+                        ? R.string.checkout_loyalty_available
+                        : R.string.checkout_loyalty_unavailable);
+            }
+        });
+        checkoutViewModel.getLoyaltyRequested().removeObservers(this);
+        checkoutViewModel.getLoyaltyRequested().observe(this, requested -> {
+            if (loyaltyReward != null
+                    && loyaltyReward.isChecked() != Boolean.TRUE.equals(requested)) {
+                loyaltyReward.setChecked(Boolean.TRUE.equals(requested));
+            }
+        });
+        checkoutViewModel.getCartItems().removeObservers(this);
+        checkoutViewModel.getCartItems().observe(this, items -> {
+            currentCartItems = items == null ? new ArrayList<>() : new ArrayList<>(items);
+            updatePlaceOrderButton();
+        });
+        checkoutViewModel.getSummary().removeObservers(this);
+        checkoutViewModel.getSummary().observe(this, this::updateCheckoutSummary);
+        checkoutViewModel.getPlaceOrderState().removeObservers(this);
+        checkoutViewModel.getPlaceOrderState().observe(this, state -> {
             if (state == null) {
                 return;
             }
-
             checkoutInProgress = state.isLoading();
-            updateCartSummary(currentCartItems);
+            updatePlaceOrderButton();
             if (state.isSuccess()) {
-                getOrderViewModel().consumeCheckoutResult();
+                checkoutViewModel.consumePlaceOrderResult();
                 navigateTo(SCREEN_ORDER_SUCCESS);
                 return;
             }
             if (state.getErrorMessage() != null) {
                 Toast.makeText(this, state.getErrorMessage(), Toast.LENGTH_SHORT).show();
-                getOrderViewModel().consumeCheckoutResult();
+                checkoutViewModel.consumePlaceOrderResult();
             }
         });
     }
@@ -744,6 +851,15 @@ public class MainActivity extends AppCompatActivity {
         return cartViewModel;
     }
 
+    private CheckoutViewModel getCheckoutViewModel() {
+        if (checkoutViewModel == null) {
+            checkoutViewModel = new ViewModelProvider(this,
+                    ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
+                    .get(CheckoutViewModel.class);
+        }
+        return checkoutViewModel;
+    }
+
     private OrderViewModel getOrderViewModel() {
         if (orderViewModel == null) {
             orderViewModel = new ViewModelProvider(this,
@@ -871,6 +987,42 @@ public class MainActivity extends AppCompatActivity {
             checkout.setEnabled(checkoutEnabled);
             checkout.setAlpha(checkoutEnabled ? 1.00f : 0.45f);
         }
+    }
+
+    private void updateCheckoutSummary(CheckoutSummary summary) {
+        if (summary == null) {
+            return;
+        }
+        setText(R.id.tvSubtotal, getString(R.string.checkout_subtotal_format, summary.getSubtotal()));
+        setText(R.id.tvLoyaltyDiscount,
+                getString(R.string.checkout_loyalty_discount_format, summary.getLoyaltyDiscount()));
+        setText(R.id.tvPromoDiscount,
+                getString(R.string.checkout_promo_discount_format, summary.getPromoDiscount()));
+        setText(R.id.tvFinalTotal,
+                getString(R.string.checkout_final_total_format, summary.getFinalTotal()));
+
+        TextView promoMessage = findViewById(R.id.tvPromoMessage);
+        if (promoMessage != null) {
+            String message = summary.getPromoMessage();
+            promoMessage.setText(message == null ? "" : message);
+            promoMessage.setVisibility(message == null || message.isEmpty() ? View.GONE : View.VISIBLE);
+            promoMessage.setTextColor(getColor(summary.isPromoAccepted()
+                    ? R.color.primary
+                    : R.color.delete_red));
+        }
+        updatePlaceOrderButton();
+    }
+
+    private void updatePlaceOrderButton() {
+        View placeOrder = findViewById(R.id.btnPlaceOrder);
+        if (placeOrder == null) {
+            return;
+        }
+        boolean cartHasItems = currentCartItems != null && !currentCartItems.isEmpty();
+        boolean hasAddress = !getEditText(R.id.etDeliveryAddress).trim().isEmpty();
+        boolean enabled = cartHasItems && hasAddress && !checkoutInProgress;
+        placeOrder.setEnabled(enabled);
+        placeOrder.setAlpha(enabled ? 1.00f : 0.45f);
     }
 
     private void attachSwipeToDelete(RecyclerView recyclerView, CartAdapter cartAdapter) {
