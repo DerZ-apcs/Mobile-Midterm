@@ -16,6 +16,7 @@ public interface OrderDao {
     @Query("SELECT orders.id AS id, orders.createdAt AS createdAt, "
             + "orders.totalPrice AS totalPrice, orders.status AS status, "
             + "orders.deliveryType AS deliveryType, orders.scheduledAt AS scheduledAt, "
+            + "0 AS reviewRating, NULL AS reviewComment, 0 AS reviewUpdatedAt, "
             + "IFNULL(GROUP_CONCAT(order_items.coffeeName || ' x' || order_items.quantity "
             + "|| CASE WHEN order_items.note IS NOT NULL AND TRIM(order_items.note) != '' "
             + "THEN ' (' || order_items.note || ')' ELSE '' END, ', '), '') AS itemSummary "
@@ -29,13 +30,18 @@ public interface OrderDao {
     @Query("SELECT orders.id AS id, orders.createdAt AS createdAt, "
             + "orders.totalPrice AS totalPrice, orders.status AS status, "
             + "orders.deliveryType AS deliveryType, orders.scheduledAt AS scheduledAt, "
+            + "IFNULL(order_reviews.rating, 0) AS reviewRating, "
+            + "order_reviews.comment AS reviewComment, "
+            + "IFNULL(order_reviews.updatedAt, 0) AS reviewUpdatedAt, "
             + "IFNULL(GROUP_CONCAT(order_items.coffeeName || ' x' || order_items.quantity "
             + "|| CASE WHEN order_items.note IS NOT NULL AND TRIM(order_items.note) != '' "
             + "THEN ' (' || order_items.note || ')' ELSE '' END, ', '), '') AS itemSummary "
             + "FROM orders LEFT JOIN order_items ON orders.id = order_items.orderId "
+            + "LEFT JOIN order_reviews ON orders.id = order_reviews.orderId "
             + "WHERE orders.status = 'COMPLETED' "
             + "GROUP BY orders.id, orders.createdAt, orders.totalPrice, orders.status, "
-            + "orders.deliveryType, orders.scheduledAt "
+            + "orders.deliveryType, orders.scheduledAt, order_reviews.rating, "
+            + "order_reviews.comment, order_reviews.updatedAt "
             + "ORDER BY orders.createdAt DESC")
     LiveData<List<OrderListItem>> getCompletedOrders();
 

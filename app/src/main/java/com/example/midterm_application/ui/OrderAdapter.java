@@ -22,11 +22,14 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     private final List<OrderListItem> orders = new ArrayList<>();
     private final OnCompleteClickListener completeClickListener;
     private final OnReorderClickListener reorderClickListener;
+    private final OnReviewClickListener reviewClickListener;
 
     public OrderAdapter(OnCompleteClickListener completeClickListener,
-                        OnReorderClickListener reorderClickListener) {
+                        OnReorderClickListener reorderClickListener,
+                        OnReviewClickListener reviewClickListener) {
         this.completeClickListener = completeClickListener;
         this.reorderClickListener = reorderClickListener;
+        this.reviewClickListener = reviewClickListener;
     }
 
     public void submitOrders(List<OrderListItem> orderItems) {
@@ -56,6 +59,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         boolean canComplete = Order.STATUS_ONGOING.equals(order.getStatus());
         boolean canReorder = Order.STATUS_COMPLETED.equals(order.getStatus());
         holder.complete.setVisibility(canComplete || canReorder ? View.VISIBLE : View.GONE);
+        bindReview(holder, order, canReorder);
         if (canComplete) {
             holder.complete.setText(R.string.cta_complete_order);
             holder.complete.setOnClickListener(v -> completeClickListener.onCompleteClicked(order));
@@ -65,6 +69,29 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         } else {
             holder.complete.setOnClickListener(null);
         }
+    }
+
+    private void bindReview(OrderViewHolder holder, OrderListItem order, boolean canReview) {
+        holder.review.setVisibility(canReview ? View.VISIBLE : View.GONE);
+        holder.review.setOnClickListener(canReview ? v -> reviewClickListener.onReviewClicked(order) : null);
+        if (!canReview) {
+            holder.reviewSummary.setVisibility(View.GONE);
+            return;
+        }
+
+        holder.review.setText(order.hasReview() ? R.string.cta_edit_review : R.string.cta_rate_order);
+        if (!order.hasReview()) {
+            holder.reviewSummary.setVisibility(View.GONE);
+            return;
+        }
+
+        String comment = order.getReviewComment() == null ? "" : order.getReviewComment().trim();
+        holder.reviewSummary.setText(comment.isEmpty()
+                ? holder.itemView.getContext().getString(R.string.review_summary_no_comment_format,
+                formatStars(order.getReviewRating()))
+                : holder.itemView.getContext().getString(R.string.review_summary_format,
+                formatStars(order.getReviewRating()), comment));
+        holder.reviewSummary.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -93,6 +120,15 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         return "ASAP";
     }
 
+    private String formatStars(int rating) {
+        int safeRating = Math.max(0, Math.min(5, rating));
+        StringBuilder builder = new StringBuilder();
+        for (int index = 0; index < 5; index++) {
+            builder.append(index < safeRating ? '\u2605' : '\u2606');
+        }
+        return builder.toString();
+    }
+
     public interface OnCompleteClickListener {
         void onCompleteClicked(OrderListItem order);
     }
@@ -101,12 +137,18 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         void onReorderClicked(OrderListItem order);
     }
 
+    public interface OnReviewClickListener {
+        void onReviewClicked(OrderListItem order);
+    }
+
     static class OrderViewHolder extends RecyclerView.ViewHolder {
         final TextView date;
         final TextView name;
         final TextView price;
         final TextView details;
         final TextView complete;
+        final TextView review;
+        final TextView reviewSummary;
 
         OrderViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -115,6 +157,8 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             price = itemView.findViewById(R.id.tvOrderPrice);
             details = itemView.findViewById(R.id.tvOrderAddress);
             complete = itemView.findViewById(R.id.btnCompleteOrder);
+            review = itemView.findViewById(R.id.btnReviewOrder);
+            reviewSummary = itemView.findViewById(R.id.tvOrderReviewSummary);
         }
     }
 }

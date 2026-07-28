@@ -14,9 +14,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -62,6 +64,7 @@ import com.example.midterm_application.utils.RewardCalculator;
 import com.example.midterm_application.viewmodel.CartViewModel;
 import com.example.midterm_application.viewmodel.CheckoutViewModel;
 import com.example.midterm_application.viewmodel.OrderViewModel;
+import com.example.midterm_application.viewmodel.OrderReviewViewModel;
 import com.example.midterm_application.viewmodel.ProfileViewModel;
 import com.example.midterm_application.viewmodel.RewardViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -106,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
     private CartViewModel cartViewModel;
     private CheckoutViewModel checkoutViewModel;
     private OrderViewModel orderViewModel;
+    private OrderReviewViewModel orderReviewViewModel;
     private ProfileViewModel profileViewModel;
     private RewardViewModel rewardViewModel;
     private FavoriteRepository favoriteRepository;
@@ -890,7 +894,8 @@ public class MainActivity extends AppCompatActivity {
 
         OrderAdapter orderAdapter = new OrderAdapter(
                 order -> getOrderViewModel().completeOrder(order.getId()),
-                order -> getOrderViewModel().reorderCompletedOrder(order.getId()));
+                order -> getOrderViewModel().reorderCompletedOrder(order.getId()),
+                this::showOrderReviewDialog);
         RecyclerView orderList = findViewById(R.id.rvOrderList);
         if (orderList != null) {
             orderList.setLayoutManager(new LinearLayoutManager(this));
@@ -915,8 +920,72 @@ public class MainActivity extends AppCompatActivity {
 
         getOrderViewModel().getReorderState().removeObservers(this);
         getOrderViewModel().getReorderState().observe(this, this::showReorderResult);
+        getOrderReviewViewModel().getSubmissionState().removeObservers(this);
+        getOrderReviewViewModel().getSubmissionState().observe(this, this::showReviewSubmissionResult);
 
         setupPrimaryBottomNavigation(R.id.navOrders);
+    }
+
+    private void showOrderReviewDialog(OrderListItem order) {
+        if (order == null || !Order.STATUS_COMPLETED.equals(order.getStatus())) {
+            Toast.makeText(this, R.string.review_completed_only_message, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_order_review, null, false);
+        TextView title = dialogView.findViewById(R.id.tvReviewOrderTitle);
+        RatingBar ratingBar = dialogView.findViewById(R.id.rbOrderReview);
+        EditText commentInput = dialogView.findViewById(R.id.etOrderReviewComment);
+
+        if (title != null) {
+            title.setText(getString(R.string.review_order_title_format, order.getId()));
+        }
+        if (ratingBar != null) {
+            ratingBar.setRating(order.hasReview() ? order.getReviewRating() : 0);
+        }
+        if (commentInput != null) {
+            commentInput.setText(order.getReviewComment() == null ? "" : order.getReviewComment());
+        }
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(order.hasReview() ? R.string.review_dialog_edit_title : R.string.review_dialog_title)
+                .setView(dialogView)
+                .setNegativeButton(R.string.cta_cancel_profile, null)
+                .setPositiveButton(R.string.review_submit, null)
+                .create();
+        dialog.setOnShowListener(dialogInterface -> {
+            Button submit = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            if (submit != null) {
+                submit.setOnClickListener(v -> {
+                    int rating = ratingBar == null ? 0 : Math.round(ratingBar.getRating());
+                    if (rating < 1 || rating > 5) {
+                        Toast.makeText(this, R.string.review_rating_required, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    getOrderReviewViewModel().submitReview(order.getId(), rating,
+                            commentInput == null ? "" : commentInput.getText().toString());
+                    dialog.dismiss();
+                });
+            }
+        });
+        dialog.show();
+    }
+
+    private void showReviewSubmissionResult(OrderReviewViewModel.ReviewSubmissionState state) {
+        if (state == null || state.isLoading()) {
+            return;
+        }
+        Toast.makeText(this,
+                state.isSuccess() ? getString(R.string.review_saved_message) : getReviewErrorMessage(state),
+                Toast.LENGTH_SHORT).show();
+        getOrderReviewViewModel().consumeSubmissionState();
+    }
+
+    private String getReviewErrorMessage(OrderReviewViewModel.ReviewSubmissionState state) {
+        String errorMessage = state.getErrorMessage();
+        return errorMessage == null || errorMessage.trim().isEmpty()
+                ? getString(R.string.review_save_failed_message)
+                : errorMessage;
     }
 
     private void showReorderResult(OrderViewModel.ReorderState state) {
@@ -1340,6 +1409,15 @@ public class MainActivity extends AppCompatActivity {
                     .get(OrderViewModel.class);
         }
         return orderViewModel;
+    }
+
+    private OrderReviewViewModel getOrderReviewViewModel() {
+        if (orderReviewViewModel == null) {
+            orderReviewViewModel = new ViewModelProvider(this,
+                    ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
+                    .get(OrderReviewViewModel.class);
+        }
+        return orderReviewViewModel;
     }
 
     private RewardViewModel getRewardViewModel() {

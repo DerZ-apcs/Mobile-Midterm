@@ -8,6 +8,9 @@ public class OrderListItem {
     public String itemSummary;
     public String deliveryType;
     public long scheduledAt;
+    public int reviewRating;
+    public String reviewComment;
+    public long reviewUpdatedAt;
 
     public long getId() {
         return id;
@@ -35,5 +38,21 @@ public class OrderListItem {
 
     public long getScheduledAt() {
         return scheduledAt;
+    }
+
+    public int getReviewRating() {
+        return reviewRating;
+    }
+
+    public String getReviewComment() {
+        return reviewComment;
+    }
+
+    public long getReviewUpdatedAt() {
+        return reviewUpdatedAt;
+    }
+
+    public boolean hasReview() {
+        return OrderReview.isValidRating(reviewRating);
     }
 }

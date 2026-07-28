@@ -11,11 +11,12 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.example.midterm_application.data.model.CartItem;
 import com.example.midterm_application.data.model.Order;
 import com.example.midterm_application.data.model.OrderItem;
+import com.example.midterm_application.data.model.OrderReview;
 import com.example.midterm_application.data.model.RewardState;
 import com.example.midterm_application.data.model.RewardTransaction;
 
 @Database(entities = {CartItem.class, Order.class, OrderItem.class, RewardState.class,
-        RewardTransaction.class}, version = 7, exportSchema = false)
+        RewardTransaction.class, OrderReview.class}, version = 8, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase instance;
 
@@ -125,9 +126,28 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
+    private static final Migration MIGRATION_7_8 = new Migration(7, 8) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS `order_reviews` "
+                    + "(`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                    + "`orderId` INTEGER NOT NULL, "
+                    + "`rating` INTEGER NOT NULL, "
+                    + "`comment` TEXT, "
+                    + "`createdAt` INTEGER NOT NULL, "
+                    + "`updatedAt` INTEGER NOT NULL, "
+                    + "FOREIGN KEY(`orderId`) REFERENCES `orders`(`id`) "
+                    + "ON UPDATE NO ACTION ON DELETE CASCADE)");
+            database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_order_reviews_orderId` "
+                    + "ON `order_reviews` (`orderId`)");
+        }
+    };
+
     public abstract CartDao cartDao();
 
     public abstract OrderDao orderDao();
+
+    public abstract OrderReviewDao orderReviewDao();
 
     public abstract RewardDao rewardDao();
 
@@ -138,7 +158,7 @@ public abstract class AppDatabase extends RoomDatabase {
                     instance = Room.databaseBuilder(context.getApplicationContext(),
                             AppDatabase.class, "code_cup.db")
                             .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4,
-                                    MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
+                                    MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
                             .build();
                 }
             }
