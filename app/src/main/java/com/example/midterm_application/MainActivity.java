@@ -1021,10 +1021,14 @@ public class MainActivity extends AppCompatActivity {
     private void updateOrderTabs(boolean showHistory, TextView tabOngoing, TextView tabHistory,
                                  View tabOngoingIndicator, View tabHistoryIndicator) {
         if (tabOngoing != null) {
-            tabOngoing.setTextColor(getColor(showHistory ? R.color.gray_400 : R.color.order_text));
+            tabOngoing.setTextColor(getColor(showHistory
+                    ? R.color.text_secondary_on_light
+                    : R.color.text_on_light));
         }
         if (tabHistory != null) {
-            tabHistory.setTextColor(getColor(showHistory ? R.color.order_text : R.color.gray_400));
+            tabHistory.setTextColor(getColor(showHistory
+                    ? R.color.text_on_light
+                    : R.color.text_secondary_on_light));
         }
         if (tabOngoingIndicator != null) {
             tabOngoingIndicator.setVisibility(showHistory ? View.GONE : View.VISIBLE);

@@ -33,7 +33,7 @@
             android:layout_centerInParent="true"
             android:fontFamily="sans-serif-medium"
             android:text="@string/details_title"
-            android:textColor="@color/order_text"
+            android:textColor="@color/text_on_light"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -124,7 +124,7 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:text="@string/coffee_americano"
-                    android:textColor="@color/order_text"
+                    android:textColor="@color/text_on_light"
                     android:textSize="14sp" />
 
                 <LinearLayout
@@ -144,7 +144,7 @@
                         android:focusable="true"
                         android:gravity="center"
                         android:text="-"
-                        android:textColor="@color/order_text"
+                        android:textColor="@color/text_on_light"
                         android:textSize="16sp" />
 
                     <TextView
@@ -153,7 +153,7 @@
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:text="1"
-                        android:textColor="@color/order_text"
+                        android:textColor="@color/text_on_light"
                         android:textSize="14sp" />
 
                     <TextView
@@ -166,7 +166,7 @@
                         android:focusable="true"
                         android:gravity="center"
                         android:text="+"
-                        android:textColor="@color/order_text"
+                        android:textColor="@color/text_on_light"
                         android:textSize="16sp" />
 
                 </LinearLayout>
@@ -209,7 +209,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/label_shot"
-                    android:textColor="@color/order_text"
+                    android:textColor="@color/text_on_light"
                     android:textSize="14sp" />
 
                 <TextView
@@ -235,7 +235,7 @@
                     android:focusable="true"
                     android:gravity="center"
                     android:text="@string/shot_double"
-                    android:textColor="@color/gray_500"
+                    android:textColor="@color/text_secondary_on_light"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
@@ -257,7 +257,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/label_select_temp"
-                    android:textColor="@color/order_text"
+                    android:textColor="@color/text_on_light"
                     android:textSize="14sp" />
 
                 <ImageButton
@@ -301,7 +301,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/label_size"
-                    android:textColor="@color/order_text"
+                    android:textColor="@color/text_on_light"
                     android:textSize="14sp" />
 
                 <ImageButton
@@ -357,7 +357,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/label_ice"
-                    android:textColor="@color/order_text"
+                    android:textColor="@color/text_on_light"
                     android:textSize="14sp" />
 
                 <ImageButton
@@ -430,14 +430,14 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/label_total_amount"
-                android:textColor="@color/order_text"
+                android:textColor="@color/text_on_light"
                 android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/tvTotalAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_body"
+                android:textColor="@color/text_on_light"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 tools:text="$3.00" />

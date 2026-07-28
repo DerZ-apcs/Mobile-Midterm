@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/spacing_sm"
-        android:textColor="@color/gray_500"
+        android:textColor="@color/text_secondary_on_light"
         android:textSize="@dimen/text_secondary"
         android:textStyle="bold"
         tools:text="24 June | 12:30 PM" />
@@ -35,7 +35,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="@color/order_text"
+            android:textColor="@color/text_on_light"
             android:textSize="@dimen/text_toolbar_title"
             android:textStyle="bold"
             tools:text="Americano" />
@@ -44,7 +44,7 @@
             android:id="@+id/tvOrderPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/order_text"
+            android:textColor="@color/text_on_light"
             android:textSize="@dimen/text_toolbar_title"
             android:textStyle="bold"
             tools:text="$3.00" />
@@ -71,7 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:lineSpacingExtra="2sp"
-            android:textColor="@color/gray_900"
+            android:textColor="@color/text_on_light"
             android:textSize="@dimen/text_secondary"
             tools:text="3 Addersian Court Chino Hills,\nHO56824, United States" />
 
@@ -84,7 +84,7 @@
         android:layout_marginStart="@dimen/spacing_xl"
         android:layout_marginBottom="@dimen/spacing_md"
         android:lineSpacingExtra="2sp"
-        android:textColor="@color/gray_900"
+        android:textColor="@color/text_on_light"
         android:textSize="@dimen/text_secondary"
         android:visibility="gone"
         tools:text="Your rating\n★★★★★\nGreat coffee"
@@ -127,7 +127,7 @@
             android:paddingEnd="@dimen/spacing_md"
             android:paddingBottom="@dimen/spacing_sm"
             android:text="@string/cta_rate_order"
-            android:textColor="@color/navy_rewards"
+            android:textColor="@color/text_on_light"
             android:textSize="@dimen/text_secondary"
             android:textStyle="bold"
             android:visibility="gone" />

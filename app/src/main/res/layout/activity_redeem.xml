@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/redeem_title"
-            android:textColor="@color/text_primary"
+            android:textColor="@color/text_on_light"
             android:textSize="17sp"
             android:textStyle="bold" />
 

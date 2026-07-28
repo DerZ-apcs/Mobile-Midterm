@@ -28,7 +28,7 @@
             android:id="@+id/tvRedeemItemName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/text_body"
+            android:textColor="@color/text_on_light"
             android:textSize="20sp"
             android:textStyle="bold"
             tools:text="Cafe Latte" />
@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textColor="@color/gray_500"
+            android:textColor="@color/text_secondary_on_light"
             android:textSize="14sp"
             tools:text="Cost: 120 pts" />
 

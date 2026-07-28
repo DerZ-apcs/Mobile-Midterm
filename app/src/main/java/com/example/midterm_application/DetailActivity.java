@@ -375,7 +375,7 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         option.setBackgroundResource(selected ? R.drawable.bg_segment_active : R.drawable.bg_details_pill_inactive);
-        option.setTextColor(getColor(selected ? R.color.white : R.color.gray_500));
+        option.setTextColor(getColor(selected ? R.color.white : R.color.text_secondary_on_light));
     }
 
     private void updateImageOption(int viewId, boolean selected) {
