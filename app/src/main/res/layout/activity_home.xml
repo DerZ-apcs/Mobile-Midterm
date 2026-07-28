@@ -75,7 +75,7 @@
                         android:layout_gravity="top|end"
                         android:background="@drawable/bg_cart_badge"
                         android:gravity="center"
-                        android:textColor="@color/white"
+                        android:textColor="@color/text_on_dark"
                         android:textSize="11sp"
                         android:textStyle="bold"
                         android:visibility="gone"
@@ -120,7 +120,7 @@
                         android:layout_weight="1"
                         android:fontFamily="sans-serif-medium"
                         android:text="@string/loyalty_card_title"
-                        android:textColor="@color/white"
+                        android:textColor="@color/text_on_dark"
                         android:textSize="@dimen/text_body" />
 
                     <TextView
@@ -128,7 +128,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
-                        android:textColor="@color/white"
+                        android:textColor="@color/text_on_dark"
                         android:textSize="@dimen/text_body"
                         android:textStyle="bold"
                         tools:text="4" />
@@ -137,7 +137,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/stamp_total"
-                        android:textColor="@color/gray_400"
+                        android:textColor="@color/text_secondary_on_dark"
                         android:textSize="@dimen/text_body" />
 
                 </LinearLayout>
@@ -261,7 +261,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/spacing_lg"
                     android:text="@string/choose_coffee_title"
-                    android:textColor="@color/white"
+                    android:textColor="@color/text_on_dark"
                     android:textSize="@dimen/text_section_title"
                     android:textStyle="bold" />
 
@@ -276,9 +276,9 @@
                     android:paddingStart="@dimen/spacing_md"
                     android:paddingEnd="@dimen/spacing_md"
                     android:singleLine="true"
-                    android:textColor="@color/white"
+                    android:textColor="@color/text_on_dark"
                     android:textSize="@dimen/text_secondary"
-                    android:textColorHint="@color/gray_400" />
+                    android:textColorHint="@color/text_secondary_on_dark" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvCoffeeGrid"
@@ -298,7 +298,7 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="@dimen/spacing_lg"
                     android:text="@string/empty_search_results"
-                    android:textColor="@color/gray_400"
+                    android:textColor="@color/text_secondary_on_dark"
                     android:textSize="@dimen/text_secondary"
                     android:visibility="gone" />
 

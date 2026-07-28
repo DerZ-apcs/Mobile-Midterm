@@ -26,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/spacing_xl"
                 android:text="@string/rewards_title"
-                android:textColor="@color/navy_rewards"
+                android:textColor="@color/text_primary"
                 android:textSize="@dimen/text_screen_title"
                 android:textStyle="bold" />
 
@@ -53,7 +53,7 @@
             android:layout_weight="1"
             android:fontFamily="sans-serif-medium"
             android:text="@string/loyalty_card_title"
-            android:textColor="@color/white"
+            android:textColor="@color/text_on_dark"
             android:textSize="@dimen/text_body" />
 
         <TextView
@@ -61,7 +61,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0"
-            android:textColor="@color/white"
+            android:textColor="@color/text_on_dark"
             android:textSize="@dimen/text_body"
             android:textStyle="bold"
             tools:text="4" />
@@ -70,7 +70,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/stamp_total"
-            android:textColor="@color/gray_400"
+            android:textColor="@color/text_secondary_on_dark"
             android:textSize="@dimen/text_body" />
 
                 </LinearLayout>
@@ -185,7 +185,7 @@
                     android:paddingEnd="@dimen/spacing_md"
                     android:paddingBottom="@dimen/spacing_sm"
                     android:text="@string/cta_complete_loyalty"
-                    android:textColor="@color/navy_rewards"
+                    android:textColor="@color/text_on_light"
                     android:textSize="@dimen/text_secondary"
                     android:textStyle="bold" />
 
@@ -212,7 +212,7 @@
                         android:layout_marginBottom="@dimen/spacing_xs"
                         android:alpha="0.9"
                         android:text="@string/my_points_label"
-                        android:textColor="@color/white"
+                        android:textColor="@color/text_on_dark"
                         android:textSize="@dimen/text_secondary" />
 
                     <TextView
@@ -220,7 +220,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="2750"
-                        android:textColor="@color/white"
+                        android:textColor="@color/text_on_dark"
                         android:textSize="@dimen/text_screen_title"
                         android:textStyle="bold" />
 
@@ -238,7 +238,7 @@
                     android:paddingEnd="@dimen/spacing_md"
                     android:paddingBottom="@dimen/spacing_sm"
                     android:text="@string/cta_redeem_drinks"
-                    android:textColor="@color/navy_rewards"
+                    android:textColor="@color/text_on_light"
                     android:textSize="@dimen/text_secondary"
                     android:textStyle="bold" />
 
@@ -249,7 +249,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/spacing_lg"
                 android:text="@string/history_rewards_title"
-                android:textColor="@color/navy_rewards"
+                android:textColor="@color/text_primary"
                 android:textSize="@dimen/text_toolbar_title"
                 android:textStyle="bold" />
 
@@ -268,7 +268,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/spacing_md"
                 android:text="@string/empty_reward_history"
-                android:textColor="@color/text_gray_muted"
+                android:textColor="@color/text_secondary"
                 android:textSize="@dimen/text_secondary"
                 android:visibility="gone" />
 

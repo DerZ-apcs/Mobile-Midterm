@@ -59,6 +59,14 @@
     <color name="icon_selected">#204D54</color>
     <color name="icon_unselected">#9CA3AF</color>
     <color name="icon_primary">#1A2E44</color>
+    <color name="surface_light">#FFFFFFFF</color>
+    <color name="surface_dark">#32435F</color>
+    <color name="text_on_light">#1A2E44</color>
+    <color name="text_on_dark">#FFFFFFFF</color>
+    <color name="text_secondary_on_light">#7B8794</color>
+    <color name="text_secondary_on_dark">#D1D5DB</color>
+    <color name="icon_on_light">#32435F</color>
+    <color name="icon_on_dark">#FFFFFFFF</color>
     <color name="card_dark_surface">#32435F</color>
     <color name="button_primary">#204D54</color>
     <color name="search_field_surface">#22FFFFFF</color>

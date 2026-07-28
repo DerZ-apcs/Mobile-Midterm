@@ -64,7 +64,7 @@ public class CoffeeAdapter extends RecyclerView.Adapter<CoffeeAdapter.CoffeeView
                 ? android.R.drawable.btn_star_big_on
                 : android.R.drawable.btn_star_big_off);
         holder.favorite.setColorFilter(holder.itemView.getContext().getColor(
-                favorite ? R.color.amber_100 : R.color.coffee_text_muted));
+                favorite ? R.color.icon_on_light : R.color.text_secondary_on_light));
         holder.favorite.setOnClickListener(v -> favoriteClickListener.onFavoriteClicked(coffee));
         holder.itemView.setOnClickListener(v -> clickListener.onCoffeeClicked(coffee));
     }

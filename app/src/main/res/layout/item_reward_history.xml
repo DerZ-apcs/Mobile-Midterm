@@ -17,7 +17,7 @@
             android:id="@+id/tvHistoryDrinkName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/navy_rewards"
+            android:textColor="@color/text_primary"
             android:textSize="@dimen/text_body"
             android:textStyle="bold"
             tools:text="Americano" />
@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/spacing_xs"
-            android:textColor="@color/text_gray_muted"
+            android:textColor="@color/text_secondary"
             android:textSize="@dimen/text_secondary"
             tools:text="24 June | 12:30 PM" />
 
@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/row_divider_height"
             android:layout_marginTop="@dimen/spacing_md"
-            android:background="@color/gray_100" />
+            android:background="@color/divider" />
 
     </LinearLayout>
 
@@ -44,7 +44,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing_md"
-        android:textColor="@color/navy_rewards"
+        android:textColor="@color/text_primary"
         android:textSize="@dimen/text_body"
         android:textStyle="bold"
         tools:text="+ 12 Pts" />

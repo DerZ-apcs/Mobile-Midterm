@@ -22,7 +22,7 @@
         android:contentDescription="@string/favorite_coffee_desc"
         android:padding="@dimen/spacing_sm"
         android:src="@android:drawable/btn_star_big_off"
-        android:tint="@color/coffee_text_muted" />
+        android:tint="@color/text_secondary_on_light" />
 
     <ImageView
         android:id="@+id/imgCoffee"
@@ -41,7 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:fontFamily="sans-serif-medium"
-        android:textColor="@color/coffee_dark"
+        android:textColor="@color/text_on_light"
         android:textSize="@dimen/text_body"
         android:textStyle="bold"
         tools:text="Americano" />
