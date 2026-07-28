@@ -16,6 +16,8 @@ public class OrderModelTest {
         assertEquals(12.50, order.getTotalPrice(), DELTA);
         assertEquals(12.50, order.getSubtotal(), DELTA);
         assertEquals(12.50, order.getFinalTotal(), DELTA);
+        assertEquals(Order.DELIVERY_ASAP, order.getDeliveryType());
+        assertEquals(0L, order.getScheduledAt());
     }
 
     @Test
@@ -38,6 +40,26 @@ public class OrderModelTest {
         assertEquals(13.50, order.getTotalPrice(), DELTA);
         assertEquals("123 Checkout Lane", order.getDeliveryAddress());
         assertEquals(true, order.isLoyaltyRewardUsed());
+        assertEquals(Order.DELIVERY_ASAP, order.getDeliveryType());
+        assertEquals(0L, order.getScheduledAt());
+    }
+
+    @Test
+    public void scheduledOrderPersistsDeliverySnapshot() {
+        Order order = new Order(
+                2000L,
+                20.00,
+                "CODECUP10",
+                1.50,
+                5.00,
+                13.50,
+                "123 Checkout Lane",
+                true,
+                Order.DELIVERY_SCHEDULED,
+                3000L);
+
+        assertEquals(Order.DELIVERY_SCHEDULED, order.getDeliveryType());
+        assertEquals(3000L, order.getScheduledAt());
     }
 
     @Test

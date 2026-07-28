@@ -47,6 +47,8 @@ public class EnhancedCheckoutIntegrationFlowTest {
         assertEquals(1.50, order.getPromoDiscount(), DELTA);
         assertEquals(13.50, order.getFinalTotal(), DELTA);
         assertEquals(13.50, order.getTotalPrice(), DELTA);
+        assertEquals(Order.DELIVERY_ASAP, order.getDeliveryType());
+        assertEquals(0L, order.getScheduledAt());
         assertTrue(order.isLoyaltyRewardUsed());
 
         state.profileAddress = "99 New Profile Street";
@@ -118,6 +120,27 @@ public class EnhancedCheckoutIntegrationFlowTest {
         assertEquals(8, state.rewardState.getStampCount());
         assertEquals(1, state.cart.size());
         assertTrue(state.orders.isEmpty());
+
+        assertFalse(state.tryPlaceOrder("10 Profile Street", "CODECUP10", true,
+                Order.DELIVERY_SCHEDULED, 1000L));
+        assertEquals(8, state.rewardState.getStampCount());
+        assertEquals(1, state.cart.size());
+        assertTrue(state.orders.isEmpty());
+    }
+
+    @Test
+    public void scheduledPlaceOrderPersistsSchedulingSnapshot() {
+        FlowState state = new FlowState("10 Profile Street");
+        state.cart.add(customizedCartItem());
+        long scheduledAt = 2_000_000L;
+
+        assertTrue(state.tryPlaceOrder("10 Profile Street", "", false,
+                Order.DELIVERY_SCHEDULED, scheduledAt));
+
+        Order order = state.orders.get(0);
+        assertEquals(Order.DELIVERY_SCHEDULED, order.getDeliveryType());
+        assertEquals(scheduledAt, order.getScheduledAt());
+        assertTrue(state.cart.isEmpty());
     }
 
     private static CartItem customizedCartItem() {
@@ -162,7 +185,19 @@ public class EnhancedCheckoutIntegrationFlowTest {
         }
 
         boolean tryPlaceOrder(String deliveryAddress, String rawPromoCode, boolean loyaltyRequested) {
+            return tryPlaceOrder(deliveryAddress, rawPromoCode, loyaltyRequested, Order.DELIVERY_ASAP, 0L);
+        }
+
+        boolean tryPlaceOrder(String deliveryAddress, String rawPromoCode, boolean loyaltyRequested,
+                              String deliveryType, long scheduledAt) {
             if (cart.isEmpty() || deliveryAddress == null || deliveryAddress.trim().isEmpty()) {
+                return false;
+            }
+            String deliveryTypeSnapshot = Order.DELIVERY_SCHEDULED.equals(deliveryType)
+                    ? Order.DELIVERY_SCHEDULED
+                    : Order.DELIVERY_ASAP;
+            long scheduledAtSnapshot = Order.DELIVERY_SCHEDULED.equals(deliveryTypeSnapshot) ? scheduledAt : 0L;
+            if (Order.DELIVERY_SCHEDULED.equals(deliveryTypeSnapshot) && scheduledAtSnapshot <= 1000L) {
                 return false;
             }
             boolean loyaltyAvailable = RewardCalculator.canClaimStampCard(rewardState.getStampCount());
@@ -180,7 +215,7 @@ public class EnhancedCheckoutIntegrationFlowTest {
             long orderId = nextOrderId++;
             Order order = new Order(1000L, summary.getSubtotal(), summary.getPromoCode(),
                     summary.getPromoDiscount(), summary.getLoyaltyDiscount(), summary.getFinalTotal(),
-                    deliveryAddress.trim(), loyaltyRequested);
+                    deliveryAddress.trim(), loyaltyRequested, deliveryTypeSnapshot, scheduledAtSnapshot);
             order.setId(orderId);
             orders.add(order);
             for (CartItem item : cart) {

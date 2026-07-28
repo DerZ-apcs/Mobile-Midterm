@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
 
 public class CheckoutRepository {
     private static final ExecutorService databaseExecutor = Executors.newSingleThreadExecutor();
+    private static final long MIN_SCHEDULE_DELAY_MS = 15L * 60L * 1000L;
 
     private final AppDatabase database;
     private final CartDao cartDao;
@@ -75,6 +76,7 @@ public class CheckoutRepository {
     }
 
     public void placeOrder(String deliveryAddress, String rawPromoCode, boolean loyaltyRequested,
+                           String deliveryType, long scheduledAt,
                            PlaceOrderCallback callback) {
         databaseExecutor.execute(() -> {
             PlaceOrderResult result;
@@ -112,15 +114,29 @@ public class CheckoutRepository {
                             throw new CheckoutException(summary.getPromoMessage());
                         }
 
+                        String deliveryTypeSnapshot = Order.DELIVERY_SCHEDULED.equals(deliveryType)
+                                ? Order.DELIVERY_SCHEDULED
+                                : Order.DELIVERY_ASAP;
+                        long scheduledAtSnapshot = Order.DELIVERY_SCHEDULED.equals(deliveryTypeSnapshot)
+                                ? scheduledAt
+                                : 0L;
+                        if (Order.DELIVERY_SCHEDULED.equals(deliveryTypeSnapshot)
+                                && scheduledAtSnapshot < System.currentTimeMillis()
+                                + MIN_SCHEDULE_DELAY_MS) {
+                            throw new CheckoutException("Schedule at least 15 minutes from now");
+                        }
+
                         Order order = new Order(
                                 System.currentTimeMillis(),
                                 summary.getSubtotal(),
                                 summary.isPromoAccepted() ? summary.getPromoCode() : "",
                                 summary.getPromoDiscount(),
                                 summary.getLoyaltyDiscount(),
-                                summary.getFinalTotal(),
-                                addressSnapshot,
-                                loyaltyRequested);
+                                 summary.getFinalTotal(),
+                                 addressSnapshot,
+                                 loyaltyRequested,
+                                 deliveryTypeSnapshot,
+                                 scheduledAtSnapshot);
                         long insertedOrderId = orderDao.insertOrder(order);
                         List<OrderItem> orderItems = new ArrayList<>();
                         for (CartItem item : currentCartItems) {

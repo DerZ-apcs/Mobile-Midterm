@@ -6,6 +6,8 @@ public class OrderListItem {
     public double totalPrice;
     public String status;
     public String itemSummary;
+    public String deliveryType;
+    public long scheduledAt;
 
     public long getId() {
         return id;
@@ -25,5 +27,13 @@ public class OrderListItem {
 
     public String getItemSummary() {
         return itemSummary;
+    }
+
+    public String getDeliveryType() {
+        return deliveryType;
+    }
+
+    public long getScheduledAt() {
+        return scheduledAt;
     }
 }

@@ -8,6 +8,8 @@ import androidx.room.PrimaryKey;
 public class Order {
     public static final String STATUS_ONGOING = "ONGOING";
     public static final String STATUS_COMPLETED = "COMPLETED";
+    public static final String DELIVERY_ASAP = "ASAP";
+    public static final String DELIVERY_SCHEDULED = "SCHEDULED";
 
     @PrimaryKey(autoGenerate = true)
     private long id;
@@ -21,6 +23,8 @@ public class Order {
     private double finalTotal;
     private String deliveryAddress;
     private boolean loyaltyRewardUsed;
+    private String deliveryType = DELIVERY_ASAP;
+    private long scheduledAt;
 
     public Order() {
     }
@@ -34,6 +38,14 @@ public class Order {
     public Order(long createdAt, double subtotal, String promoCode, double promoDiscount,
                  double loyaltyDiscount, double finalTotal, String deliveryAddress,
                  boolean loyaltyRewardUsed) {
+        this(createdAt, subtotal, promoCode, promoDiscount, loyaltyDiscount, finalTotal,
+                deliveryAddress, loyaltyRewardUsed, DELIVERY_ASAP, 0L);
+    }
+
+    @Ignore
+    public Order(long createdAt, double subtotal, String promoCode, double promoDiscount,
+                 double loyaltyDiscount, double finalTotal, String deliveryAddress,
+                 boolean loyaltyRewardUsed, String deliveryType, long scheduledAt) {
         this.createdAt = createdAt;
         this.totalPrice = finalTotal;
         this.status = STATUS_ONGOING;
@@ -44,6 +56,8 @@ public class Order {
         this.finalTotal = finalTotal;
         this.deliveryAddress = deliveryAddress;
         this.loyaltyRewardUsed = loyaltyRewardUsed;
+        setDeliveryType(deliveryType);
+        this.scheduledAt = scheduledAt;
     }
 
     public long getId() {
@@ -132,5 +146,21 @@ public class Order {
 
     public void setLoyaltyRewardUsed(boolean loyaltyRewardUsed) {
         this.loyaltyRewardUsed = loyaltyRewardUsed;
+    }
+
+    public String getDeliveryType() {
+        return deliveryType;
+    }
+
+    public void setDeliveryType(String deliveryType) {
+        this.deliveryType = DELIVERY_SCHEDULED.equals(deliveryType) ? DELIVERY_SCHEDULED : DELIVERY_ASAP;
+    }
+
+    public long getScheduledAt() {
+        return scheduledAt;
+    }
+
+    public void setScheduledAt(long scheduledAt) {
+        this.scheduledAt = scheduledAt;
     }
 }

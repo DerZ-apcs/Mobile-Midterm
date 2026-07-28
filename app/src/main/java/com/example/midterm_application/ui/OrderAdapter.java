@@ -82,7 +82,15 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         if (summary == null || summary.isEmpty()) {
             summary = "No item summary";
         }
-        return order.getStatus() + "\n" + summary;
+        return order.getStatus() + " · " + formatDeliveryTime(order) + "\n" + summary;
+    }
+
+    private String formatDeliveryTime(OrderListItem order) {
+        if (Order.DELIVERY_SCHEDULED.equals(order.getDeliveryType()) && order.getScheduledAt() > 0L) {
+            SimpleDateFormat formatter = new SimpleDateFormat("MMM d · h:mm a", Locale.US);
+            return "Scheduled for " + formatter.format(new Date(order.getScheduledAt()));
+        }
+        return "ASAP";
     }
 
     public interface OnCompleteClickListener {

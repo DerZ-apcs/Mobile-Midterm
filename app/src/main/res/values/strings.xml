@@ -111,6 +111,11 @@
     <string name="checkout_use_free_drink">Use free drink reward</string>
     <string name="checkout_loyalty_available">Available: highest-priced drink unit will be free.</string>
     <string name="checkout_loyalty_unavailable">Available when your loyalty card has 8 stamps.</string>
+    <string name="checkout_delivery_time">Delivery time</string>
+    <string name="checkout_delivery_asap">As soon as possible</string>
+    <string name="checkout_delivery_scheduled">Schedule for later</string>
+    <string name="checkout_select_date">Select date</string>
+    <string name="checkout_select_time">Select time</string>
     <string name="checkout_order_summary">Order Summary</string>
     <string name="checkout_subtotal_format">Subtotal: $%.2f</string>
     <string name="checkout_loyalty_discount_format">Loyalty discount: -$%.2f</string>

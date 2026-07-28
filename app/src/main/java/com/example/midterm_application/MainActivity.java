@@ -1,6 +1,8 @@
 package com.example.midterm_application;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -35,6 +37,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.midterm_application.data.model.CartItem;
 import com.example.midterm_application.data.model.CheckoutSummary;
 import com.example.midterm_application.data.model.Coffee;
+import com.example.midterm_application.data.model.Order;
 import com.example.midterm_application.data.model.OrderListItem;
 import com.example.midterm_application.data.model.RewardState;
 import com.example.midterm_application.data.model.RewardTransaction;
@@ -51,6 +54,9 @@ import com.example.midterm_application.ui.OrderAdapter;
 import com.example.midterm_application.ui.RewardProductAdapter;
 import com.example.midterm_application.ui.RewardTransactionAdapter;
 import com.example.midterm_application.utils.PriceCalculator;
+import com.example.midterm_application.utils.PriceCalculator.Ice;
+import com.example.midterm_application.utils.PriceCalculator.Shot;
+import com.example.midterm_application.utils.PriceCalculator.Size;
 import com.example.midterm_application.utils.RewardCalculator;
 import com.example.midterm_application.viewmodel.CartViewModel;
 import com.example.midterm_application.viewmodel.CheckoutViewModel;
@@ -59,14 +65,13 @@ import com.example.midterm_application.viewmodel.ProfileViewModel;
 import com.example.midterm_application.viewmodel.RewardViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
-import com.example.midterm_application.utils.PriceCalculator.Ice;
-import com.example.midterm_application.utils.PriceCalculator.Shot;
-import com.example.midterm_application.utils.PriceCalculator.Size;
 
 public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_OPEN_CART = "com.example.midterm_application.EXTRA_OPEN_CART";
@@ -626,6 +631,7 @@ public class MainActivity extends AppCompatActivity {
         EditText deliveryAddress = findViewById(R.id.etDeliveryAddress);
         EditText promoCode = findViewById(R.id.etPromoCode);
         CheckBox loyaltyReward = findViewById(R.id.cbUseLoyaltyReward);
+        RadioGroup deliveryTimeGroup = findViewById(R.id.rgDeliveryTime);
 
         setClickListener(R.id.btnBack, this::goBackOrHome);
         setClickListener(R.id.btnApplyPromo, () -> {
@@ -672,6 +678,7 @@ public class MainActivity extends AppCompatActivity {
             loyaltyReward.setOnCheckedChangeListener((buttonView, isChecked) ->
                     checkoutViewModel.setLoyaltyRequested(isChecked));
         }
+        setupDeliveryTimeControls(checkoutViewModel, deliveryTimeGroup);
 
         checkoutViewModel.getDeliveryAddress().removeObservers(this);
         checkoutViewModel.getDeliveryAddress().observe(this, address -> {
@@ -708,6 +715,19 @@ public class MainActivity extends AppCompatActivity {
                 loyaltyReward.setChecked(Boolean.TRUE.equals(requested));
             }
         });
+        checkoutViewModel.getDeliveryType().removeObservers(this);
+        checkoutViewModel.getDeliveryType().observe(this, type -> {
+            updateDeliveryTypeSelection(deliveryTimeGroup, type);
+            updateScheduledControlsVisibility(type);
+            updatePlaceOrderButton();
+        });
+        checkoutViewModel.getScheduledAt().removeObservers(this);
+        checkoutViewModel.getScheduledAt().observe(this, scheduledAt -> updateScheduledDateTimeLabels(
+                scheduledAt == null ? 0L : scheduledAt));
+        checkoutViewModel.getDeliveryScheduleValid().removeObservers(this);
+        checkoutViewModel.getDeliveryScheduleValid().observe(this, valid -> updatePlaceOrderButton());
+        checkoutViewModel.getDeliveryScheduleMessage().removeObservers(this);
+        checkoutViewModel.getDeliveryScheduleMessage().observe(this, this::updateDeliveryTimeMessage);
         checkoutViewModel.getCartItems().removeObservers(this);
         checkoutViewModel.getCartItems().observe(this, items -> {
             currentCartItems = items == null ? new ArrayList<>() : new ArrayList<>(items);
@@ -732,6 +752,120 @@ public class MainActivity extends AppCompatActivity {
                 checkoutViewModel.consumePlaceOrderResult();
             }
         });
+    }
+
+    private void setupDeliveryTimeControls(CheckoutViewModel checkoutViewModel, RadioGroup deliveryTimeGroup) {
+        if (deliveryTimeGroup != null) {
+            deliveryTimeGroup.setOnCheckedChangeListener((group, checkedId) -> checkoutViewModel.setDeliveryType(
+                    checkedId == R.id.rbDeliveryScheduled ? Order.DELIVERY_SCHEDULED : Order.DELIVERY_ASAP));
+        }
+
+        TextView dateButton = findViewById(R.id.btnSelectDeliveryDate);
+        if (dateButton != null) {
+            dateButton.setOnClickListener(v -> showDeliveryDatePicker(checkoutViewModel));
+        }
+
+        TextView timeButton = findViewById(R.id.btnSelectDeliveryTime);
+        if (timeButton != null) {
+            timeButton.setOnClickListener(v -> showDeliveryTimePicker(checkoutViewModel));
+        }
+    }
+
+    private void showDeliveryDatePicker(CheckoutViewModel checkoutViewModel) {
+        Calendar calendar = getScheduledCalendar(checkoutViewModel);
+        DatePickerDialog dialog = new DatePickerDialog(this,
+                (view, year, month, dayOfMonth) -> {
+                    Calendar updated = getScheduledCalendar(checkoutViewModel);
+                    updated.set(Calendar.YEAR, year);
+                    updated.set(Calendar.MONTH, month);
+                    updated.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                    updated.set(Calendar.SECOND, 0);
+                    updated.set(Calendar.MILLISECOND, 0);
+                    checkoutViewModel.setScheduledAt(updated.getTimeInMillis());
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH));
+        dialog.getDatePicker().setMinDate(System.currentTimeMillis());
+        dialog.show();
+    }
+
+    private void showDeliveryTimePicker(CheckoutViewModel checkoutViewModel) {
+        Calendar calendar = getScheduledCalendar(checkoutViewModel);
+        TimePickerDialog dialog = new TimePickerDialog(this,
+                (view, hourOfDay, minute) -> {
+                    Calendar updated = getScheduledCalendar(checkoutViewModel);
+                    updated.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                    updated.set(Calendar.MINUTE, minute);
+                    updated.set(Calendar.SECOND, 0);
+                    updated.set(Calendar.MILLISECOND, 0);
+                    checkoutViewModel.setScheduledAt(updated.getTimeInMillis());
+                },
+                calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE),
+                false);
+        dialog.show();
+    }
+
+    private Calendar getScheduledCalendar(CheckoutViewModel checkoutViewModel) {
+        long scheduledAt = checkoutViewModel.getScheduledAtValue();
+        Calendar calendar = Calendar.getInstance();
+        long fallback = System.currentTimeMillis() + CheckoutViewModel.MIN_SCHEDULE_DELAY_MS;
+        calendar.setTimeInMillis(scheduledAt > 0L ? scheduledAt : fallback);
+        return calendar;
+    }
+
+    private void updateDeliveryTypeSelection(RadioGroup deliveryTimeGroup, String deliveryType) {
+        if (deliveryTimeGroup == null) {
+            return;
+        }
+        int expectedId = Order.DELIVERY_SCHEDULED.equals(deliveryType)
+                ? R.id.rbDeliveryScheduled
+                : R.id.rbDeliveryAsap;
+        if (deliveryTimeGroup.getCheckedRadioButtonId() != expectedId) {
+            deliveryTimeGroup.check(expectedId);
+        }
+    }
+
+    private void updateScheduledControlsVisibility(String deliveryType) {
+        View scheduledControls = findViewById(R.id.layoutScheduledControls);
+        if (scheduledControls != null) {
+            scheduledControls.setVisibility(Order.DELIVERY_SCHEDULED.equals(deliveryType)
+                    ? View.VISIBLE
+                    : View.GONE);
+        }
+    }
+
+    private void updateScheduledDateTimeLabels(long scheduledAt) {
+        TextView dateButton = findViewById(R.id.btnSelectDeliveryDate);
+        TextView timeButton = findViewById(R.id.btnSelectDeliveryTime);
+        if (scheduledAt <= 0L) {
+            if (dateButton != null) {
+                dateButton.setText(R.string.checkout_select_date);
+            }
+            if (timeButton != null) {
+                timeButton.setText(R.string.checkout_select_time);
+            }
+            return;
+        }
+
+        Date scheduledDate = new Date(scheduledAt);
+        if (dateButton != null) {
+            dateButton.setText(new SimpleDateFormat("MMM d", Locale.US).format(scheduledDate));
+        }
+        if (timeButton != null) {
+            timeButton.setText(new SimpleDateFormat("h:mm a", Locale.US).format(scheduledDate));
+        }
+    }
+
+    private void updateDeliveryTimeMessage(String message) {
+        TextView messageView = findViewById(R.id.tvDeliveryTimeMessage);
+        if (messageView == null) {
+            return;
+        }
+        boolean hasMessage = message != null && !message.trim().isEmpty();
+        messageView.setText(hasMessage ? message : "");
+        messageView.setVisibility(hasMessage ? View.VISIBLE : View.GONE);
     }
 
     private void showOrderSuccess() {
@@ -1351,7 +1485,8 @@ public class MainActivity extends AppCompatActivity {
         }
         boolean cartHasItems = currentCartItems != null && !currentCartItems.isEmpty();
         boolean hasAddress = !getEditText(R.id.etDeliveryAddress).trim().isEmpty();
-        boolean enabled = cartHasItems && hasAddress && !checkoutInProgress;
+        boolean deliveryScheduleValid = getCheckoutViewModel().isDeliveryScheduleValid();
+        boolean enabled = cartHasItems && hasAddress && deliveryScheduleValid && !checkoutInProgress;
         placeOrder.setEnabled(enabled);
         placeOrder.setAlpha(enabled ? 1.00f : 0.45f);
     }
