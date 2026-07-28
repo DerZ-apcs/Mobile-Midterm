@@ -72,6 +72,15 @@ public class RewardCalculatorTest {
     }
 
     @Test
+    public void finalTotalThirteenFiftyEarnsOneHundredThirtyFivePointsAndOneStamp() {
+        int earnedPoints = RewardCalculator.calculateEarnedPoints(13.50);
+        int stampCount = RewardCalculator.calculateStampCountAfterEarn(0);
+
+        assertEquals(135, earnedPoints);
+        assertEquals(1, stampCount);
+    }
+
+    @Test
     public void allowsRedeemOnlyWhenPointsCoverCost() {
         assertTrue(RewardCalculator.canRedeem(160, 160));
         assertTrue(RewardCalculator.canRedeem(200, 160));

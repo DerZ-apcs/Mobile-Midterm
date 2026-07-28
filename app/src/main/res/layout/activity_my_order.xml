@@ -28,36 +28,64 @@
             android:background="@color/app_background"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tabOngoing"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@drawable/bg_tab_active_border"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:paddingTop="@dimen/spacing_sm"
-                android:paddingBottom="@dimen/spacing_md"
-                android:text="@string/tab_ongoing"
-                android:textColor="@color/order_text"
-                android:textSize="@dimen/text_body"
-                android:textStyle="bold" />
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tabHistory"
+                <TextView
+                    android:id="@+id/tabOngoing"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/tab_label_vertical_padding"
+                    android:paddingBottom="@dimen/tab_label_vertical_padding"
+                    android:text="@string/tab_ongoing"
+                    android:textColor="@color/order_text"
+                    android:textSize="@dimen/text_body"
+                    android:textStyle="bold" />
+
+                <View
+                    android:id="@+id/tabOngoingIndicator"
+                    android:layout_width="@dimen/tab_indicator_width"
+                    android:layout_height="@dimen/tab_indicator_height"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/bg_tab_active_border" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:paddingTop="@dimen/spacing_sm"
-                android:paddingBottom="@dimen/spacing_md"
-                android:text="@string/tab_history"
-                android:textColor="@color/gray_400"
-                android:textSize="@dimen/text_body"
-                android:textStyle="bold" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tabHistory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/tab_label_vertical_padding"
+                    android:paddingBottom="@dimen/tab_label_vertical_padding"
+                    android:text="@string/tab_history"
+                    android:textColor="@color/gray_400"
+                    android:textSize="@dimen/text_body"
+                    android:textStyle="bold" />
+
+                <View
+                    android:id="@+id/tabHistoryIndicator"
+                    android:layout_width="@dimen/tab_indicator_width"
+                    android:layout_height="@dimen/tab_indicator_height"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/bg_tab_active_border"
+                    android:visibility="gone" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -103,12 +131,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_nav_height"
         android:layout_gravity="bottom"
-        android:paddingTop="@dimen/bottom_nav_item_padding"
-        android:paddingBottom="@dimen/bottom_nav_item_padding"
-        app:itemIconSize="@dimen/icon_md"
-        app:itemIconTint="@color/bottom_nav_item_color"
-        app:itemTextColor="@color/bottom_nav_item_color"
-        app:labelVisibilityMode="labeled"
         app:menu="@menu/menu_primary_bottom_nav" />
 
 </FrameLayout>

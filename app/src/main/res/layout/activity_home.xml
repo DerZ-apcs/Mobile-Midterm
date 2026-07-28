@@ -154,7 +154,7 @@
                         android:layout_height="@dimen/stamp_icon_height"
                         android:layout_weight="1"
                         android:contentDescription="@null"
-                        android:src="@drawable/coffee_cup_blue" />
+                        android:src="@drawable/coffee_cup_white" />
 
                     <ImageView
                         android:id="@+id/imgStamp2"
@@ -163,7 +163,7 @@
                         android:layout_marginStart="@dimen/stamp_icon_gap"
                         android:layout_weight="1"
                         android:contentDescription="@null"
-                        android:src="@drawable/coffee_cup_blue" />
+                        android:src="@drawable/coffee_cup_white" />
 
                     <ImageView
                         android:id="@+id/imgStamp3"
@@ -172,7 +172,7 @@
                         android:layout_marginStart="@dimen/stamp_icon_gap"
                         android:layout_weight="1"
                         android:contentDescription="@null"
-                        android:src="@drawable/coffee_cup_blue" />
+                        android:src="@drawable/coffee_cup_white" />
 
                     <ImageView
                         android:id="@+id/imgStamp4"
@@ -181,7 +181,7 @@
                         android:layout_marginStart="@dimen/stamp_icon_gap"
                         android:layout_weight="1"
                         android:contentDescription="@null"
-                        android:src="@drawable/coffee_cup_blue" />
+                        android:src="@drawable/coffee_cup_white" />
 
                     <ImageView
                         android:id="@+id/imgStamp5"
@@ -190,7 +190,7 @@
                         android:layout_marginStart="@dimen/stamp_icon_gap"
                         android:layout_weight="1"
                         android:contentDescription="@null"
-                        android:src="@drawable/coffee_cup_blue" />
+                        android:src="@drawable/coffee_cup_white" />
 
                     <ImageView
                         android:id="@+id/imgStamp6"
@@ -199,7 +199,7 @@
                         android:layout_marginStart="@dimen/stamp_icon_gap"
                         android:layout_weight="1"
                         android:contentDescription="@null"
-                        android:src="@drawable/coffee_cup_blue" />
+                        android:src="@drawable/coffee_cup_white" />
 
                     <ImageView
                         android:id="@+id/imgStamp7"
@@ -208,7 +208,7 @@
                         android:layout_marginStart="@dimen/stamp_icon_gap"
                         android:layout_weight="1"
                         android:contentDescription="@null"
-                        android:src="@drawable/coffee_cup_blue" />
+                        android:src="@drawable/coffee_cup_white" />
 
                     <ImageView
                         android:id="@+id/imgStamp8"
@@ -217,7 +217,7 @@
                         android:layout_marginStart="@dimen/stamp_icon_gap"
                         android:layout_weight="1"
                         android:contentDescription="@null"
-                        android:src="@drawable/coffee_cup_blue" />
+                        android:src="@drawable/coffee_cup_white" />
 
                 </LinearLayout>
 
@@ -291,12 +291,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_nav_height"
         android:layout_gravity="bottom"
-        android:paddingTop="@dimen/bottom_nav_item_padding"
-        android:paddingBottom="@dimen/bottom_nav_item_padding"
-        app:itemIconSize="@dimen/icon_md"
-        app:itemIconTint="@color/bottom_nav_item_color"
-        app:itemTextColor="@color/bottom_nav_item_color"
-        app:labelVisibilityMode="labeled"
         app:menu="@menu/menu_primary_bottom_nav" />
 
 </FrameLayout>

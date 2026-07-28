@@ -461,14 +461,19 @@ public class MainActivity extends AppCompatActivity {
 
         TextView tabOngoing = findViewById(R.id.tabOngoing);
         TextView tabHistory = findViewById(R.id.tabHistory);
+        View tabOngoingIndicator = findViewById(R.id.tabOngoingIndicator);
+        View tabHistoryIndicator = findViewById(R.id.tabHistoryIndicator);
         TextView emptyOrders = findViewById(R.id.tvEmptyOrders);
         if (tabOngoing != null) {
-            tabOngoing.setOnClickListener(v -> showOrderTab(false, orderAdapter, emptyOrders, tabOngoing, tabHistory));
+            tabOngoing.setOnClickListener(v -> showOrderTab(false, orderAdapter, emptyOrders,
+                    tabOngoing, tabHistory, tabOngoingIndicator, tabHistoryIndicator));
         }
         if (tabHistory != null) {
-            tabHistory.setOnClickListener(v -> showOrderTab(true, orderAdapter, emptyOrders, tabOngoing, tabHistory));
+            tabHistory.setOnClickListener(v -> showOrderTab(true, orderAdapter, emptyOrders,
+                    tabOngoing, tabHistory, tabOngoingIndicator, tabHistoryIndicator));
         }
-        showOrderTab(showingHistoryOrders, orderAdapter, emptyOrders, tabOngoing, tabHistory);
+        showOrderTab(showingHistoryOrders, orderAdapter, emptyOrders,
+                tabOngoing, tabHistory, tabOngoingIndicator, tabHistoryIndicator);
 
         getOrderViewModel().getReorderState().removeObservers(this);
         getOrderViewModel().getReorderState().observe(this, this::showReorderResult);
@@ -491,9 +496,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showOrderTab(boolean showHistory, OrderAdapter adapter, TextView emptyOrders,
-                              TextView tabOngoing, TextView tabHistory) {
+                              TextView tabOngoing, TextView tabHistory,
+                              View tabOngoingIndicator, View tabHistoryIndicator) {
         showingHistoryOrders = showHistory;
-        updateOrderTabs(showHistory, tabOngoing, tabHistory);
+        updateOrderTabs(showHistory, tabOngoing, tabHistory, tabOngoingIndicator, tabHistoryIndicator);
         getOrderViewModel().getOngoingOrders().removeObservers(this);
         getOrderViewModel().getCompletedOrders().removeObservers(this);
         if (showHistory) {
@@ -505,14 +511,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void updateOrderTabs(boolean showHistory, TextView tabOngoing, TextView tabHistory) {
+    private void updateOrderTabs(boolean showHistory, TextView tabOngoing, TextView tabHistory,
+                                 View tabOngoingIndicator, View tabHistoryIndicator) {
         if (tabOngoing != null) {
-            tabOngoing.setBackgroundResource(showHistory ? 0 : R.drawable.bg_tab_active_border);
             tabOngoing.setTextColor(getColor(showHistory ? R.color.gray_400 : R.color.order_text));
         }
         if (tabHistory != null) {
-            tabHistory.setBackgroundResource(showHistory ? R.drawable.bg_tab_active_border : 0);
             tabHistory.setTextColor(getColor(showHistory ? R.color.order_text : R.color.gray_400));
+        }
+        if (tabOngoingIndicator != null) {
+            tabOngoingIndicator.setVisibility(showHistory ? View.GONE : View.VISIBLE);
+        }
+        if (tabHistoryIndicator != null) {
+            tabHistoryIndicator.setVisibility(showHistory ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -590,8 +601,8 @@ public class MainActivity extends AppCompatActivity {
             ImageView stamp = findViewById(stampIds[index]);
             if (stamp != null) {
                 stamp.setImageResource(index < stampCount
-                        ? R.drawable.coffee_cup_white
-                        : R.drawable.coffee_cup_blue);
+                        ? R.drawable.coffee_cup_blue
+                        : R.drawable.coffee_cup_white);
             }
         }
     }

@@ -1,19 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item>
-        <shape android:shape="rectangle">
-            <solid android:color="@android:color/transparent" />
-            <padding
-                android:bottom="@dimen/tab_indicator_height"
-                android:left="0dp"
-                android:right="0dp"
-                android:top="0dp" />
-        </shape>
-    </item>
-    <item android:gravity="bottom">
-        <shape android:shape="rectangle">
-            <solid android:color="@color/selected" />
-            <size android:height="@dimen/tab_indicator_height" />
-        </shape>
-    </item>
-</layer-list>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/selected" />
+    <corners android:radius="2dp" />
+</shape>

@@ -14,6 +14,30 @@ public class OrderModelTest {
         assertEquals(Order.STATUS_ONGOING, order.getStatus());
         assertEquals(1000L, order.getCreatedAt());
         assertEquals(12.50, order.getTotalPrice(), DELTA);
+        assertEquals(12.50, order.getSubtotal(), DELTA);
+        assertEquals(12.50, order.getFinalTotal(), DELTA);
+    }
+
+    @Test
+    public void enhancedCheckoutOrderPersistsSnapshotFields() {
+        Order order = new Order(
+                2000L,
+                20.00,
+                "CODECUP10",
+                1.50,
+                5.00,
+                13.50,
+                "123 Checkout Lane",
+                true);
+
+        assertEquals(20.00, order.getSubtotal(), DELTA);
+        assertEquals("CODECUP10", order.getPromoCode());
+        assertEquals(1.50, order.getPromoDiscount(), DELTA);
+        assertEquals(5.00, order.getLoyaltyDiscount(), DELTA);
+        assertEquals(13.50, order.getFinalTotal(), DELTA);
+        assertEquals(13.50, order.getTotalPrice(), DELTA);
+        assertEquals("123 Checkout Lane", order.getDeliveryAddress());
+        assertEquals(true, order.isLoyaltyRewardUsed());
     }
 
     @Test

@@ -59,9 +59,18 @@
     <style name="Widget_CodeCup_BottomNavigation">
         <item name="android:background">@drawable/bg_nav_floating_card</item>
         <item name="android:elevation">12dp</item>
+        <item name="android:paddingTop">@dimen/bottom_nav_item_padding</item>
+        <item name="android:paddingBottom">@dimen/bottom_nav_item_padding</item>
         <item name="itemIconSize">@dimen/icon_md</item>
         <item name="itemIconTint">@color/bottom_nav_item_color</item>
         <item name="itemTextColor">@color/bottom_nav_item_color</item>
+        <item name="itemTextAppearanceActive">@style/TextAppearance_CodeCup_BottomNavigation</item>
+        <item name="itemTextAppearanceInactive">@style/TextAppearance_CodeCup_BottomNavigation</item>
         <item name="labelVisibilityMode">labeled</item>
+    </style>
+
+    <style name="TextAppearance_CodeCup_BottomNavigation">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">@dimen/bottom_nav_text_size</item>
     </style>
 </resources>
