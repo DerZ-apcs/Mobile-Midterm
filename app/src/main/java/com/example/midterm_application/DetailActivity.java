@@ -38,6 +38,7 @@ public class DetailActivity extends AppCompatActivity {
 
     private DetailViewModel detailViewModel;
     private CartViewModel cartViewModel;
+    private boolean hotSelected = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,6 +134,14 @@ public class DetailActivity extends AppCompatActivity {
             detailViewModel.setSelectedShot(Shot.DOUBLE);
             refreshCustomizationUi(coffee);
         });
+        setClickListener(R.id.btnHot, () -> {
+            hotSelected = true;
+            refreshCustomizationUi(coffee);
+        });
+        setClickListener(R.id.btnCold, () -> {
+            hotSelected = false;
+            refreshCustomizationUi(coffee);
+        });
         setClickListener(R.id.btnSizeSmall, () -> {
             detailViewModel.setSelectedSize(Size.SMALL);
             refreshCustomizationUi(coffee);
@@ -174,6 +183,8 @@ public class DetailActivity extends AppCompatActivity {
 
         updateShotOption(R.id.btnShotSingle, detailViewModel.getSelectedShot() == Shot.SINGLE);
         updateShotOption(R.id.btnShotDouble, detailViewModel.getSelectedShot() == Shot.DOUBLE);
+        updateImageOption(R.id.btnHot, hotSelected);
+        updateImageOption(R.id.btnCold, !hotSelected);
         updateImageOption(R.id.btnSizeSmall, detailViewModel.getSelectedSize() == Size.SMALL);
         updateImageOption(R.id.btnSizeMedium, detailViewModel.getSelectedSize() == Size.MEDIUM);
         updateImageOption(R.id.btnSizeLarge, detailViewModel.getSelectedSize() == Size.LARGE);
