@@ -4,6 +4,7 @@
     <string name="greeting_morning">Good morning,</string>
     <string name="loyalty_card_title">Loyalty card</string>
     <string name="stamp_total"> / 8</string>
+    <string name="favorites_title">Favorites</string>
     <string name="choose_coffee_title">Choose your coffee</string>
     <string name="cart_desc">Shopping cart</string>
     <string name="profile_desc">User profile</string>

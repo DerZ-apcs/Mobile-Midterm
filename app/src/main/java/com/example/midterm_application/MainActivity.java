@@ -44,6 +44,7 @@ import com.example.midterm_application.data.repository.CoffeeRepository;
 import com.example.midterm_application.data.repository.ThemeRepository;
 import com.example.midterm_application.ui.CartAdapter;
 import com.example.midterm_application.ui.CoffeeAdapter;
+import com.example.midterm_application.ui.FavoriteCoffeeAdapter;
 import com.example.midterm_application.ui.OrderAdapter;
 import com.example.midterm_application.ui.RewardProductAdapter;
 import com.example.midterm_application.ui.RewardTransactionAdapter;
@@ -276,8 +277,11 @@ public class MainActivity extends AppCompatActivity {
         EditText searchInput = findViewById(R.id.etCoffeeSearch);
         TextView emptyResults = findViewById(R.id.tvEmptyCoffeeResults);
         RecyclerView coffeeGrid = findViewById(R.id.rvCoffeeGrid);
+        RecyclerView favoriteList = findViewById(R.id.rvFavoriteCoffees);
+        View favoritesSection = findViewById(R.id.layoutFavoritesSection);
         Set<Integer> favoriteCoffeeIds = getFavoriteRepository().getFavoriteCoffeeIds();
         final CoffeeAdapter[] adapterRef = new CoffeeAdapter[1];
+        final FavoriteCoffeeAdapter[] favoriteAdapterRef = new FavoriteCoffeeAdapter[1];
         CoffeeAdapter coffeeAdapter = new CoffeeAdapter(
                 CoffeeRepository.searchByName(coffeeSearchQuery),
                 favoriteCoffeeIds,
@@ -285,11 +289,26 @@ public class MainActivity extends AppCompatActivity {
                 coffee -> {
                     Set<Integer> updatedFavorites = getFavoriteRepository().toggleFavorite(coffee.getId());
                     adapterRef[0].setFavoriteCoffeeIds(updatedFavorites);
+                    refreshFavoritesSection(favoriteAdapterRef[0], favoritesSection, updatedFavorites);
                 });
         adapterRef[0] = coffeeAdapter;
+        FavoriteCoffeeAdapter favoriteAdapter = new FavoriteCoffeeAdapter(
+                resolveFavoriteCoffees(favoriteCoffeeIds),
+                coffee -> openCoffeeDetails(coffee.getId()),
+                coffee -> {
+                    Set<Integer> updatedFavorites = getFavoriteRepository().toggleFavorite(coffee.getId());
+                    adapterRef[0].setFavoriteCoffeeIds(updatedFavorites);
+                    refreshFavoritesSection(favoriteAdapterRef[0], favoritesSection, updatedFavorites);
+                });
+        favoriteAdapterRef[0] = favoriteAdapter;
         if (coffeeGrid != null) {
             coffeeGrid.setAdapter(coffeeAdapter);
         }
+        if (favoriteList != null) {
+            favoriteList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+            favoriteList.setAdapter(favoriteAdapter);
+        }
+        updateFavoritesSectionVisibility(favoritesSection, favoriteAdapter.getItemCount());
         updateCoffeeEmptyState(CoffeeRepository.searchByName(coffeeSearchQuery), emptyResults);
         if (searchInput != null) {
             searchInput.setText(coffeeSearchQuery);
@@ -331,6 +350,36 @@ public class MainActivity extends AppCompatActivity {
         if (emptyResults != null) {
             boolean isEmpty = coffees == null || coffees.isEmpty();
             emptyResults.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    private List<Coffee> resolveFavoriteCoffees(Set<Integer> favoriteCoffeeIds) {
+        List<Coffee> favoriteCoffees = new ArrayList<>();
+        if (favoriteCoffeeIds == null || favoriteCoffeeIds.isEmpty()) {
+            return favoriteCoffees;
+        }
+
+        for (Coffee coffee : CoffeeRepository.getAllCoffees()) {
+            if (favoriteCoffeeIds.contains(coffee.getId())) {
+                favoriteCoffees.add(coffee);
+            }
+        }
+        return favoriteCoffees;
+    }
+
+    private void refreshFavoritesSection(FavoriteCoffeeAdapter favoriteAdapter,
+                                         View favoritesSection,
+                                         Set<Integer> favoriteCoffeeIds) {
+        List<Coffee> favoriteCoffees = resolveFavoriteCoffees(favoriteCoffeeIds);
+        if (favoriteAdapter != null) {
+            favoriteAdapter.submitCoffees(favoriteCoffees);
+        }
+        updateFavoritesSectionVisibility(favoritesSection, favoriteCoffees.size());
+    }
+
+    private void updateFavoritesSectionVisibility(View favoritesSection, int favoriteCount) {
+        if (favoritesSection != null) {
+            favoritesSection.setVisibility(favoriteCount > 0 ? View.VISIBLE : View.GONE);
         }
     }
 

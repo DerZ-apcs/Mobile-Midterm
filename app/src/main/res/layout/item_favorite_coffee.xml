@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="112dp"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="12dp"
+    android:background="@drawable/bg_card_white_rounded"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <ImageButton
+        android:id="@+id/btnFavoriteCoffee"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="end"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/favorite_coffee_desc"
+        android:padding="7dp"
+        android:src="@android:drawable/btn_star_big_on"
+        android:tint="@color/icon_on_light" />
+
+    <ImageView
+        android:id="@+id/imgFavoriteCoffee"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_gravity="center_horizontal"
+        android:contentDescription="@string/coffee_image_desc"
+        android:padding="8dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_cup_outline" />
+
+    <TextView
+        android:id="@+id/tvFavoriteCoffeeName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textColor="@color/text_on_light"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        tools:text="Americano" />
+
+</LinearLayout>
