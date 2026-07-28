@@ -36,6 +36,9 @@
     <string name="cart_empty_message">Your cart is empty</string>
     <string name="cart_preview_title">Cart Preview</string>
     <string name="cart_preview_close">Close</string>
+    <string name="cart_added_snackbar_format">%1$s added to cart</string>
+    <string name="cart_add_failed_message">Could not add item to cart</string>
+    <string name="cta_view_cart">VIEW CART</string>
     <string name="edit_cart_item_title">Edit cart item</string>
     <string name="edit_cart_item_desc">Edit cart item</string>
     <string name="cart_edit_missing_coffee">Could not edit this cart item</string>

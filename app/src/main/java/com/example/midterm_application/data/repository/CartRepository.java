@@ -1,6 +1,8 @@
 package com.example.midterm_application.data.repository;
 
 import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.lifecycle.LiveData;
 
@@ -17,6 +19,7 @@ public class CartRepository {
 
     private final CartDao cartDao;
     private final LiveData<List<CartItem>> cartItems;
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     public CartRepository(Application application) {
         AppDatabase database = AppDatabase.getInstance(application);
@@ -29,7 +32,29 @@ public class CartRepository {
     }
 
     public void insertCartItem(CartItem item) {
-        databaseExecutor.execute(() -> cartDao.insert(item));
+        insertCartItem(item, null);
+    }
+
+    public void insertCartItem(CartItem item, InsertCartCallback callback) {
+        databaseExecutor.execute(() -> {
+            boolean successful = false;
+            String errorMessage = null;
+            try {
+                long insertedId = cartDao.insert(item);
+                successful = insertedId > 0L;
+                if (!successful) {
+                    errorMessage = "Could not add item to cart";
+                }
+            } catch (Exception exception) {
+                errorMessage = "Could not add item to cart";
+            }
+
+            if (callback != null) {
+                boolean result = successful;
+                String message = errorMessage;
+                mainHandler.post(() -> callback.onInsertComplete(result, message));
+            }
+        });
     }
 
     public void updateCartItem(CartItem item) {
@@ -42,5 +67,9 @@ public class CartRepository {
 
     public void clearCart() {
         databaseExecutor.execute(cartDao::clearCart);
+    }
+
+    public interface InsertCartCallback {
+        void onInsertComplete(boolean successful, String errorMessage);
     }
 }

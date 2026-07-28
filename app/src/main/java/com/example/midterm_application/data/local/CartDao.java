@@ -20,7 +20,7 @@ public interface CartDao {
     List<CartItem> getAllCartItemsSync();
 
     @Insert
-    void insert(CartItem item);
+    long insert(CartItem item);
 
     @Insert
     void insertAll(List<CartItem> items);

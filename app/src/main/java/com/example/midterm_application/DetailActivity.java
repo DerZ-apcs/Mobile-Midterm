@@ -32,6 +32,7 @@ import com.example.midterm_application.utils.PriceCalculator.Size;
 import com.example.midterm_application.utils.PriceCalculator;
 import com.example.midterm_application.viewmodel.CartViewModel;
 import com.example.midterm_application.viewmodel.DetailViewModel;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 import java.util.Locale;
@@ -42,6 +43,7 @@ public class DetailActivity extends AppCompatActivity {
     private DetailViewModel detailViewModel;
     private CartViewModel cartViewModel;
     private boolean hotSelected = true;
+    private boolean addToCartInProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -220,6 +222,10 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void addCurrentCoffeeToCart(Coffee coffee) {
+        if (addToCartInProgress) {
+            return;
+        }
+
         double unitPrice = PriceCalculator.calculateTotal(
                 coffee.getBasePrice(),
                 detailViewModel.getSelectedShot(),
@@ -239,7 +245,61 @@ public class DetailActivity extends AppCompatActivity {
                 totalPrice,
                 detailViewModel.getNote());
 
-        cartViewModel.insertCartItem(cartItem);
+        addToCartInProgress = true;
+        setAddToCartEnabled(false);
+        cartViewModel.insertCartItem(cartItem, (successful, errorMessage) -> {
+            addToCartInProgress = false;
+            setAddToCartEnabled(true);
+            if (successful) {
+                showAddedToCartSnackbar(coffee.getName());
+            } else {
+                showCartInsertError(errorMessage);
+            }
+        });
+    }
+
+    private void setAddToCartEnabled(boolean enabled) {
+        View addToCart = findViewById(R.id.btnAddToCart);
+        if (addToCart != null) {
+            addToCart.setEnabled(enabled);
+            addToCart.setAlpha(enabled ? 1.00f : 0.55f);
+        }
+    }
+
+    private void showAddedToCartSnackbar(String coffeeName) {
+        View root = findViewById(R.id.detailsRoot);
+        if (root == null) {
+            return;
+        }
+
+        Snackbar snackbar = Snackbar.make(root,
+                getString(R.string.cart_added_snackbar_format, coffeeName),
+                Snackbar.LENGTH_LONG);
+        View addToCart = findViewById(R.id.btnAddToCart);
+        if (addToCart != null) {
+            snackbar.setAnchorView(addToCart);
+        }
+        snackbar.setAction(R.string.cta_view_cart, v -> openCartFromDetails());
+        snackbar.show();
+    }
+
+    private void showCartInsertError(String errorMessage) {
+        View root = findViewById(R.id.detailsRoot);
+        if (root == null) {
+            return;
+        }
+
+        Snackbar snackbar = Snackbar.make(root,
+                errorMessage == null ? getString(R.string.cart_add_failed_message) : errorMessage,
+                Snackbar.LENGTH_SHORT);
+        View addToCart = findViewById(R.id.btnAddToCart);
+        if (addToCart != null) {
+            snackbar.setAnchorView(addToCart);
+        }
+        snackbar.show();
+    }
+
+    private void openCartFromDetails() {
         Intent result = new Intent();
         result.putExtra(MainActivity.EXTRA_OPEN_CART, true);
         setResult(RESULT_OK, result);
