@@ -1,5 +1,6 @@
 package com.example.midterm_application;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -14,6 +15,7 @@ import android.view.Window;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,6 +50,7 @@ import com.example.midterm_application.ui.FavoriteCoffeeAdapter;
 import com.example.midterm_application.ui.OrderAdapter;
 import com.example.midterm_application.ui.RewardProductAdapter;
 import com.example.midterm_application.ui.RewardTransactionAdapter;
+import com.example.midterm_application.utils.PriceCalculator;
 import com.example.midterm_application.utils.RewardCalculator;
 import com.example.midterm_application.viewmodel.CartViewModel;
 import com.example.midterm_application.viewmodel.CheckoutViewModel;
@@ -60,6 +63,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+
+import com.example.midterm_application.utils.PriceCalculator.Ice;
+import com.example.midterm_application.utils.PriceCalculator.Shot;
+import com.example.midterm_application.utils.PriceCalculator.Size;
 
 public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_OPEN_CART = "com.example.midterm_application.EXTRA_OPEN_CART";
@@ -405,7 +412,7 @@ public class MainActivity extends AppCompatActivity {
             checkout.setOnClickListener(v -> navigateTo(SCREEN_CHECKOUT));
         }
 
-        CartAdapter cartAdapter = new CartAdapter();
+        CartAdapter cartAdapter = new CartAdapter(this::showEditCartItemDialog);
         RecyclerView cartItems = findViewById(R.id.rvCartItems);
         if (cartItems != null) {
             cartItems.setLayoutManager(new LinearLayoutManager(this));
@@ -422,6 +429,194 @@ public class MainActivity extends AppCompatActivity {
 
         checkoutInProgress = false;
         updateCartSummary(currentCartItems);
+    }
+
+    private void showEditCartItemDialog(CartItem item) {
+        if (item == null) {
+            return;
+        }
+
+        Coffee coffee = CoffeeRepository.getCoffeeById(item.getCoffeeId());
+        if (coffee == null) {
+            Toast.makeText(this, R.string.cart_edit_missing_coffee, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_edit_cart_item, null, false);
+        TextView name = dialogView.findViewById(R.id.tvEditCartItemName);
+        TextView quantityText = dialogView.findViewById(R.id.tvEditQuantity);
+        TextView totalText = dialogView.findViewById(R.id.tvEditCartTotal);
+        TextView decreaseQuantity = dialogView.findViewById(R.id.btnEditDecreaseQty);
+        TextView increaseQuantity = dialogView.findViewById(R.id.btnEditIncreaseQty);
+        RadioGroup shotGroup = dialogView.findViewById(R.id.rgEditShot);
+        RadioGroup sizeGroup = dialogView.findViewById(R.id.rgEditSize);
+        RadioGroup iceGroup = dialogView.findViewById(R.id.rgEditIce);
+        EditText noteInput = dialogView.findViewById(R.id.etEditOrderNote);
+
+        final int[] quantity = {PriceCalculator.normalizeQuantity(item.getQuantity())};
+        final Shot[] selectedShot = {parseShot(item.getShot())};
+        final Size[] selectedSize = {parseSize(item.getSize())};
+        final Ice[] selectedIce = {parseIce(item.getIce())};
+
+        if (name != null) {
+            name.setText(item.getCoffeeName());
+        }
+        if (noteInput != null) {
+            noteInput.setText(item.getNote() == null ? "" : item.getNote());
+        }
+
+        checkShot(shotGroup, selectedShot[0]);
+        checkSize(sizeGroup, selectedSize[0]);
+        checkIce(iceGroup, selectedIce[0]);
+
+        Runnable refreshPrice = () -> updateEditCartPrice(
+                coffee.getBasePrice(), selectedShot[0], selectedSize[0], selectedIce[0], quantity[0],
+                quantityText, totalText);
+        refreshPrice.run();
+
+        if (decreaseQuantity != null) {
+            decreaseQuantity.setOnClickListener(v -> {
+                quantity[0] = PriceCalculator.normalizeQuantity(quantity[0] - 1);
+                refreshPrice.run();
+            });
+        }
+        if (increaseQuantity != null) {
+            increaseQuantity.setOnClickListener(v -> {
+                quantity[0] = PriceCalculator.normalizeQuantity(quantity[0] + 1);
+                refreshPrice.run();
+            });
+        }
+        if (shotGroup != null) {
+            shotGroup.setOnCheckedChangeListener((group, checkedId) -> {
+                selectedShot[0] = checkedId == R.id.rbEditShotDouble ? Shot.DOUBLE : Shot.SINGLE;
+                refreshPrice.run();
+            });
+        }
+        if (sizeGroup != null) {
+            sizeGroup.setOnCheckedChangeListener((group, checkedId) -> {
+                if (checkedId == R.id.rbEditSizeLarge) {
+                    selectedSize[0] = Size.LARGE;
+                } else if (checkedId == R.id.rbEditSizeMedium) {
+                    selectedSize[0] = Size.MEDIUM;
+                } else {
+                    selectedSize[0] = Size.SMALL;
+                }
+                refreshPrice.run();
+            });
+        }
+        if (iceGroup != null) {
+            iceGroup.setOnCheckedChangeListener((group, checkedId) -> {
+                if (checkedId == R.id.rbEditIceNone) {
+                    selectedIce[0] = Ice.NO_ICE;
+                } else if (checkedId == R.id.rbEditIceLight) {
+                    selectedIce[0] = Ice.LESS_ICE;
+                } else {
+                    selectedIce[0] = Ice.NORMAL;
+                }
+                refreshPrice.run();
+            });
+        }
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.edit_cart_item_title)
+                .setView(dialogView)
+                .setNegativeButton(R.string.cta_cancel_profile, null)
+                .setPositiveButton(R.string.cta_save_profile, null)
+                .create();
+        dialog.setOnShowListener(dialogInterface -> dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                .setOnClickListener(v -> {
+                    CartItem updatedItem = copyEditedCartItem(item, coffee, selectedShot[0], selectedSize[0],
+                            selectedIce[0], quantity[0], noteInput);
+                    getCartViewModel().updateCartItem(updatedItem);
+                    dialog.dismiss();
+                }));
+        dialog.show();
+    }
+
+    private void updateEditCartPrice(double basePrice, Shot shot, Size size, Ice ice, int quantity,
+                                     TextView quantityText, TextView totalText) {
+        double totalPrice = PriceCalculator.calculateTotal(basePrice, shot, size, ice, quantity);
+        if (quantityText != null) {
+            quantityText.setText(String.valueOf(quantity));
+        }
+        if (totalText != null) {
+            totalText.setText(String.format(Locale.US, "$%.2f", totalPrice));
+        }
+    }
+
+    private CartItem copyEditedCartItem(CartItem item, Coffee coffee, Shot shot, Size size, Ice ice,
+                                        int quantity, EditText noteInput) {
+        double unitPrice = PriceCalculator.calculateTotal(coffee.getBasePrice(), shot, size, ice, 1);
+        double totalPrice = PriceCalculator.calculateTotal(coffee.getBasePrice(), shot, size, ice, quantity);
+        CartItem updatedItem = new CartItem(
+                item.getCoffeeId(),
+                item.getCoffeeName(),
+                item.getImageResId(),
+                shot.name(),
+                size.name(),
+                ice.name(),
+                quantity,
+                unitPrice,
+                totalPrice,
+                noteInput == null ? "" : noteInput.getText().toString());
+        updatedItem.setId(item.getId());
+        return updatedItem;
+    }
+
+    private Shot parseShot(String value) {
+        try {
+            return Shot.valueOf(value == null ? "" : value);
+        } catch (IllegalArgumentException ignored) {
+            return Shot.SINGLE;
+        }
+    }
+
+    private Size parseSize(String value) {
+        try {
+            return Size.valueOf(value == null ? "" : value);
+        } catch (IllegalArgumentException ignored) {
+            return Size.SMALL;
+        }
+    }
+
+    private Ice parseIce(String value) {
+        try {
+            return Ice.valueOf(value == null ? "" : value);
+        } catch (IllegalArgumentException ignored) {
+            return Ice.NORMAL;
+        }
+    }
+
+    private void checkShot(RadioGroup shotGroup, Shot shot) {
+        if (shotGroup != null) {
+            shotGroup.check(shot == Shot.DOUBLE ? R.id.rbEditShotDouble : R.id.rbEditShotSingle);
+        }
+    }
+
+    private void checkSize(RadioGroup sizeGroup, Size size) {
+        if (sizeGroup == null) {
+            return;
+        }
+        if (size == Size.LARGE) {
+            sizeGroup.check(R.id.rbEditSizeLarge);
+        } else if (size == Size.MEDIUM) {
+            sizeGroup.check(R.id.rbEditSizeMedium);
+        } else {
+            sizeGroup.check(R.id.rbEditSizeSmall);
+        }
+    }
+
+    private void checkIce(RadioGroup iceGroup, Ice ice) {
+        if (iceGroup == null) {
+            return;
+        }
+        if (ice == Ice.NO_ICE) {
+            iceGroup.check(R.id.rbEditIceNone);
+        } else if (ice == Ice.LESS_ICE) {
+            iceGroup.check(R.id.rbEditIceLight);
+        } else {
+            iceGroup.check(R.id.rbEditIceNormal);
+        }
     }
 
     private void showCheckout() {

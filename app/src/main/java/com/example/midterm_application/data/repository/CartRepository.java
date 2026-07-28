@@ -32,6 +32,10 @@ public class CartRepository {
         databaseExecutor.execute(() -> cartDao.insert(item));
     }
 
+    public void updateCartItem(CartItem item) {
+        databaseExecutor.execute(() -> cartDao.update(item));
+    }
+
     public void deleteCartItem(CartItem item) {
         databaseExecutor.execute(() -> cartDao.delete(item));
     }

@@ -3,6 +3,7 @@ package com.example.midterm_application.ui;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,6 +19,11 @@ import java.util.Locale;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder> {
     private final List<CartItem> items = new ArrayList<>();
+    private final OnEditClickListener editClickListener;
+
+    public CartAdapter(OnEditClickListener editClickListener) {
+        this.editClickListener = editClickListener;
+    }
 
     public void submitItems(List<CartItem> cartItems) {
         items.clear();
@@ -51,6 +57,11 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         holder.quantity.setText(String.format(Locale.US, "x %d", item.getQuantity()));
         holder.price.setText(String.format(Locale.US, "$%.2f", item.getTotalPrice()));
         bindNote(holder.note, item.getNote());
+        holder.edit.setOnClickListener(v -> {
+            if (editClickListener != null) {
+                editClickListener.onEditClicked(item);
+            }
+        });
     }
 
     @Override
@@ -82,8 +93,13 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         noteView.setVisibility(View.VISIBLE);
     }
 
+    public interface OnEditClickListener {
+        void onEditClicked(CartItem item);
+    }
+
     static class CartViewHolder extends RecyclerView.ViewHolder {
         final ImageView image;
+        final ImageButton edit;
         final TextView name;
         final TextView variant;
         final TextView quantity;
@@ -93,6 +109,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         CartViewHolder(@NonNull View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.imgCartItem);
+            edit = itemView.findViewById(R.id.btnEditCartItem);
             name = itemView.findViewById(R.id.tvCartItemName);
             variant = itemView.findViewById(R.id.tvCartItemVariant);
             quantity = itemView.findViewById(R.id.tvCartItemQty);

@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.example.midterm_application.data.model.CartItem;
 
@@ -23,6 +24,9 @@ public interface CartDao {
 
     @Insert
     void insertAll(List<CartItem> items);
+
+    @Update
+    void update(CartItem item);
 
     @Delete
     void delete(CartItem item);
