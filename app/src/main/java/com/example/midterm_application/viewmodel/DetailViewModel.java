@@ -14,6 +14,7 @@ public class DetailViewModel extends ViewModel {
     private Shot selectedShot = Shot.SINGLE;
     private Size selectedSize = Size.SMALL;
     private Ice selectedIce = Ice.NORMAL;
+    private boolean hotSelected = true;
     private String note = "";
 
     public int getQuantity() {
@@ -56,6 +57,14 @@ public class DetailViewModel extends ViewModel {
 
     public double calculateTotal(double basePrice) {
         return PriceCalculator.calculateTotal(basePrice, selectedShot, selectedSize, selectedIce, quantity);
+    }
+
+    public boolean isHotSelected() {
+        return hotSelected;
+    }
+
+    public void setHotSelected(boolean hotSelected) {
+        this.hotSelected = hotSelected;
     }
 
     public String getNote() {

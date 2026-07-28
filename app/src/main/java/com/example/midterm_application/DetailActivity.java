@@ -42,7 +42,6 @@ public class DetailActivity extends AppCompatActivity {
 
     private DetailViewModel detailViewModel;
     private CartViewModel cartViewModel;
-    private boolean hotSelected = true;
     private boolean addToCartInProgress;
 
     @Override
@@ -163,11 +162,11 @@ public class DetailActivity extends AppCompatActivity {
             refreshCustomizationUi(coffee);
         });
         setClickListener(R.id.btnHot, () -> {
-            hotSelected = true;
+            detailViewModel.setHotSelected(true);
             refreshCustomizationUi(coffee);
         });
         setClickListener(R.id.btnCold, () -> {
-            hotSelected = false;
+            detailViewModel.setHotSelected(false);
             refreshCustomizationUi(coffee);
         });
         setClickListener(R.id.btnSizeSmall, () -> {
@@ -211,8 +210,8 @@ public class DetailActivity extends AppCompatActivity {
 
         updateShotOption(R.id.btnShotSingle, detailViewModel.getSelectedShot() == Shot.SINGLE);
         updateShotOption(R.id.btnShotDouble, detailViewModel.getSelectedShot() == Shot.DOUBLE);
-        updateImageOption(R.id.btnHot, hotSelected);
-        updateImageOption(R.id.btnCold, !hotSelected);
+        updateImageOption(R.id.btnHot, detailViewModel.isHotSelected());
+        updateImageOption(R.id.btnCold, !detailViewModel.isHotSelected());
         updateImageOption(R.id.btnSizeSmall, detailViewModel.getSelectedSize() == Size.SMALL);
         updateImageOption(R.id.btnSizeMedium, detailViewModel.getSelectedSize() == Size.MEDIUM);
         updateImageOption(R.id.btnSizeLarge, detailViewModel.getSelectedSize() == Size.LARGE);

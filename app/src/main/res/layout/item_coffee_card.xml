@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cardCoffeeItem"
     android:layout_width="match_parent"
@@ -22,7 +23,7 @@
         android:contentDescription="@string/favorite_coffee_desc"
         android:padding="@dimen/spacing_sm"
         android:src="@android:drawable/btn_star_big_off"
-        android:tint="@color/text_secondary_on_light" />
+        app:tint="@color/text_secondary_on_light" />
 
     <ImageView
         android:id="@+id/imgCoffee"

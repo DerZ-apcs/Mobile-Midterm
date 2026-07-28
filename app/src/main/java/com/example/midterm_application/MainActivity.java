@@ -24,6 +24,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -140,10 +141,20 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        setupBackNavigation();
         showScreen(currentScreen);
         if (shouldShowBrandedSplash) {
             showBrandedSplashOverlay();
         }
+    }
+
+    private void setupBackNavigation() {
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                MainActivity.this.handleBackPressed();
+            }
+        });
     }
 
     private void showBrandedSplashOverlay() {
@@ -195,8 +206,7 @@ public class MainActivity extends AppCompatActivity {
         outState.putString(STATE_COFFEE_SEARCH_QUERY, coffeeSearchQuery);
     }
 
-    @Override
-    public void onBackPressed() {
+    private void handleBackPressed() {
         if (currentScreen == SCREEN_PROFILE) {
             profileEditMode = false;
         }
@@ -211,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        super.onBackPressed();
+        finish();
     }
 
     private void navigateTo(int screen) {
@@ -330,6 +340,9 @@ public class MainActivity extends AppCompatActivity {
         }
         updateFavoritesSectionVisibility(favoritesSection, favoriteAdapter.getItemCount());
         updateCoffeeEmptyState(displayedCatalogCoffees, emptyResults);
+        getProfileViewModel().getProfile().removeObservers(this);
+        getProfileViewModel().getProfile().observe(this, this::updateHomeProfileName);
+        getProfileViewModel().reloadProfile();
         if (searchInput != null) {
             searchInput.setText(coffeeSearchQuery);
             searchInput.addTextChangedListener(new TextWatcher() {
@@ -358,6 +371,16 @@ public class MainActivity extends AppCompatActivity {
         setClickListener(R.id.btnCart, () -> navigateTo(SCREEN_CART));
         setClickListener(R.id.btnProfile, () -> navigateTo(SCREEN_PROFILE));
         setupPrimaryBottomNavigation(R.id.navHome);
+    }
+
+    private void updateHomeProfileName(UserProfile profile) {
+        TextView userName = findViewById(R.id.tvUserName);
+        if (userName == null || profile == null) {
+            return;
+        }
+
+        String fullName = profile.getFullName();
+        userName.setText(fullName == null ? "" : fullName.trim());
     }
 
     private List<Coffee> getDisplayedCatalogCoffees() {

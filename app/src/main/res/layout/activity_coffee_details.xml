@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/detailsRoot"
     android:layout_width="match_parent"
@@ -25,7 +26,7 @@
             android:focusable="true"
             android:padding="@dimen/back_icon_padding"
             android:src="@drawable/arrow_left"
-            android:tint="@color/icon_primary" />
+            app:tint="@color/icon_primary" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -53,7 +54,7 @@
                 android:focusable="true"
                 android:padding="@dimen/back_icon_padding"
                 android:src="@drawable/ic_cart"
-                android:tint="@color/icon_primary" />
+                app:tint="@color/icon_primary" />
 
             <TextView
                 android:id="@+id/tvCartBadge"
@@ -269,7 +270,7 @@
                     android:padding="10dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_hot"
-                    android:tint="@color/brand_dark" />
+                    app:tint="@color/brand_dark" />
 
                 <ImageButton
                     android:id="@+id/btnCold"
@@ -281,7 +282,7 @@
                     android:padding="10dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/cold"
-                    android:tint="@color/gray_400" />
+                    app:tint="@color/gray_400" />
 
             </LinearLayout>
 
@@ -313,7 +314,7 @@
                     android:padding="12dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/size_123"
-                    android:tint="@color/brand_dark" />
+                    app:tint="@color/brand_dark" />
 
                 <ImageButton
                     android:id="@+id/btnSizeMedium"
@@ -325,7 +326,7 @@
                     android:padding="10dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/size_123"
-                    android:tint="@color/gray_400" />
+                    app:tint="@color/gray_400" />
 
                 <ImageButton
                     android:id="@+id/btnSizeLarge"
@@ -337,7 +338,7 @@
                     android:padding="8dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/size_123"
-                    android:tint="@color/gray_400" />
+                    app:tint="@color/gray_400" />
 
             </LinearLayout>
 
