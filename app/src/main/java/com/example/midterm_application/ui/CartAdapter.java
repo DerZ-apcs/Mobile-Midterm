@@ -57,8 +57,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         holder.quantity.setText(String.format(Locale.US, "x %d", item.getQuantity()));
         holder.price.setText(String.format(Locale.US, "$%.2f", item.getTotalPrice()));
         bindNote(holder.note, item.getNote());
+        holder.edit.setVisibility(item.isRewardItem() ? View.GONE : View.VISIBLE);
         holder.edit.setOnClickListener(v -> {
-            if (editClickListener != null) {
+            if (!item.isRewardItem() && editClickListener != null) {
                 editClickListener.onEditClicked(item);
             }
         });
@@ -70,6 +71,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     }
 
     private String formatVariant(CartItem item) {
+        if (item.isRewardItem()) {
+            return "Reward item";
+        }
         return formatOption(item.getShot()) + " | "
                 + formatOption(item.getSize()) + " | "
                 + formatOption(item.getIce());

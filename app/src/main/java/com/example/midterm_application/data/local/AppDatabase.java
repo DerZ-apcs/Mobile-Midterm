@@ -16,7 +16,7 @@ import com.example.midterm_application.data.model.RewardState;
 import com.example.midterm_application.data.model.RewardTransaction;
 
 @Database(entities = {CartItem.class, Order.class, OrderItem.class, RewardState.class,
-        RewardTransaction.class, OrderReview.class}, version = 8, exportSchema = false)
+        RewardTransaction.class, OrderReview.class}, version = 9, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase instance;
 
@@ -143,6 +143,14 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
+    private static final Migration MIGRATION_8_9 = new Migration(8, 9) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE `cart_items` ADD COLUMN `rewardSource` TEXT DEFAULT 'NONE'");
+            database.execSQL("ALTER TABLE `order_items` ADD COLUMN `rewardSource` TEXT DEFAULT 'NONE'");
+        }
+    };
+
     public abstract CartDao cartDao();
 
     public abstract OrderDao orderDao();
@@ -158,7 +166,8 @@ public abstract class AppDatabase extends RoomDatabase {
                     instance = Room.databaseBuilder(context.getApplicationContext(),
                             AppDatabase.class, "code_cup.db")
                             .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4,
-                                    MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
+                                    MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8,
+                                    MIGRATION_8_9)
                             .build();
                 }
             }

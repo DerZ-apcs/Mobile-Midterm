@@ -40,6 +40,7 @@ public class CartRepository {
             boolean successful = false;
             String errorMessage = null;
             try {
+                normalizeRewardItem(item);
                 long insertedId = cartDao.insert(item);
                 successful = insertedId > 0L;
                 if (!successful) {
@@ -58,7 +59,10 @@ public class CartRepository {
     }
 
     public void updateCartItem(CartItem item) {
-        databaseExecutor.execute(() -> cartDao.update(item));
+        databaseExecutor.execute(() -> {
+            normalizeRewardItem(item);
+            cartDao.update(item);
+        });
     }
 
     public void deleteCartItem(CartItem item) {
@@ -71,5 +75,14 @@ public class CartRepository {
 
     public interface InsertCartCallback {
         void onInsertComplete(boolean successful, String errorMessage);
+    }
+
+    private void normalizeRewardItem(CartItem item) {
+        if (item == null || !item.isRewardItem()) {
+            return;
+        }
+        item.setQuantity(1);
+        item.setUnitPrice(0.00);
+        item.setTotalPrice(0.00);
     }
 }

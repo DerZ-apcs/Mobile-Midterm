@@ -14,10 +14,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.RadioGroup;
 import android.widget.Switch;
@@ -69,6 +70,7 @@ import com.example.midterm_application.viewmodel.OrderReviewViewModel;
 import com.example.midterm_application.viewmodel.ProfileViewModel;
 import com.example.midterm_application.viewmodel.RewardViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -475,6 +477,10 @@ public class MainActivity extends AppCompatActivity {
         if (item == null) {
             return;
         }
+        if (item.isRewardItem()) {
+            Toast.makeText(this, R.string.reward_item_edit_blocked, Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         Coffee coffee = CoffeeRepository.getCoffeeById(item.getCoffeeId());
         if (coffee == null) {
@@ -598,7 +604,8 @@ public class MainActivity extends AppCompatActivity {
                 quantity,
                 unitPrice,
                 totalPrice,
-                noteInput == null ? "" : noteInput.getText().toString());
+                noteInput == null ? "" : noteInput.getText().toString(),
+                item.getRewardSource());
         updatedItem.setId(item.getId());
         return updatedItem;
     }
@@ -665,7 +672,6 @@ public class MainActivity extends AppCompatActivity {
         CheckoutViewModel checkoutViewModel = getCheckoutViewModel();
         EditText deliveryAddress = findViewById(R.id.etDeliveryAddress);
         EditText promoCode = findViewById(R.id.etPromoCode);
-        CheckBox loyaltyReward = findViewById(R.id.cbUseLoyaltyReward);
         RadioGroup deliveryTimeGroup = findViewById(R.id.rgDeliveryTime);
 
         setClickListener(R.id.btnBack, this::goBackOrHome);
@@ -709,10 +715,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-        if (loyaltyReward != null) {
-            loyaltyReward.setOnCheckedChangeListener((buttonView, isChecked) ->
-                    checkoutViewModel.setLoyaltyRequested(isChecked));
-        }
         setupDeliveryTimeControls(checkoutViewModel, deliveryTimeGroup);
 
         checkoutViewModel.getDeliveryAddress().removeObservers(this);
@@ -727,27 +729,6 @@ public class MainActivity extends AppCompatActivity {
         checkoutViewModel.getPromoCode().observe(this, code -> {
             if (promoCode != null && code != null && !code.contentEquals(promoCode.getText())) {
                 promoCode.setText(code);
-            }
-        });
-        checkoutViewModel.getLoyaltyAvailable().removeObservers(this);
-        checkoutViewModel.getLoyaltyAvailable().observe(this, available -> {
-            boolean enabled = Boolean.TRUE.equals(available);
-            if (loyaltyReward != null) {
-                loyaltyReward.setEnabled(enabled);
-                loyaltyReward.setAlpha(enabled ? 1.00f : 0.45f);
-            }
-            TextView hint = findViewById(R.id.tvLoyaltyRewardHint);
-            if (hint != null) {
-                hint.setText(enabled
-                        ? R.string.checkout_loyalty_available
-                        : R.string.checkout_loyalty_unavailable);
-            }
-        });
-        checkoutViewModel.getLoyaltyRequested().removeObservers(this);
-        checkoutViewModel.getLoyaltyRequested().observe(this, requested -> {
-            if (loyaltyReward != null
-                    && loyaltyReward.isChecked() != Boolean.TRUE.equals(requested)) {
-                loyaltyReward.setChecked(Boolean.TRUE.equals(requested));
             }
         });
         checkoutViewModel.getDeliveryType().removeObservers(this);
@@ -1087,15 +1068,60 @@ public class MainActivity extends AppCompatActivity {
         }
         View claimCard = findViewById(R.id.btnClaimLoyalty);
         if (claimCard != null) {
-            claimCard.setOnClickListener(v -> getRewardViewModel().claimFullStampCard());
+            claimCard.setOnClickListener(v -> showStampRewardChooser());
         }
 
         getRewardViewModel().getRewardState().removeObservers(this);
         getRewardViewModel().getRewardTransactions().removeObservers(this);
+        getRewardViewModel().getRedemptionResult().removeObservers(this);
         getRewardViewModel().getRewardState().observe(this, this::updateRewardState);
         getRewardViewModel().getRewardTransactions().observe(this,
                 transactions -> updateRewardHistory(transactions, rewardAdapter));
+        getRewardViewModel().getRedemptionResult().observe(this, this::showRedemptionResult);
         setupPrimaryBottomNavigation(R.id.navRewards);
+    }
+
+    private void showStampRewardChooser() {
+        List<Coffee> coffees = CoffeeRepository.getAllCoffees();
+        if (coffees == null || coffees.isEmpty()) {
+            Toast.makeText(this, R.string.reward_no_coffee_available, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ArrayAdapter<Coffee> adapter = new ArrayAdapter<Coffee>(this,
+                android.R.layout.simple_list_item_1, coffees) {
+            @NonNull
+            @Override
+            public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+                Coffee coffee = getItem(position);
+                LinearLayout row = new LinearLayout(getContext());
+                row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+                row.setOrientation(LinearLayout.HORIZONTAL);
+                row.setPadding(24, 14, 24, 14);
+
+                ImageView image = new ImageView(getContext());
+                image.setImageResource(coffee == null ? R.drawable.ic_cup_outline : coffee.getImageResId());
+                LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(56, 56);
+                imageParams.setMarginEnd(18);
+                row.addView(image, imageParams);
+
+                TextView name = new TextView(getContext());
+                name.setText(coffee == null ? "" : coffee.getName());
+                name.setTextColor(MainActivity.this.getColor(R.color.text_primary));
+                name.setTextSize(16);
+                row.addView(name, new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT));
+                return row;
+            }
+        };
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.choose_coffee_title)
+                .setAdapter(adapter, (dialog, which) -> getRewardViewModel()
+                        .claimStampReward(coffees.get(which)))
+                .setNegativeButton(R.string.cta_cancel_profile, null)
+                .show();
     }
 
     private void updateRewardState(RewardState rewardState) {
@@ -1196,8 +1222,23 @@ public class MainActivity extends AppCompatActivity {
         if (result == null) {
             return;
         }
-        Toast.makeText(this, result.getMessage(), Toast.LENGTH_SHORT).show();
+        if (result.isSuccessful()) {
+            showRewardAddedSnackbar(result.getMessage());
+        } else {
+            Toast.makeText(this, result.getMessage(), Toast.LENGTH_SHORT).show();
+        }
         getRewardViewModel().clearRedemptionResult();
+    }
+
+    private void showRewardAddedSnackbar(String message) {
+        View root = findViewById(android.R.id.content);
+        if (root == null) {
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Snackbar.make(root, message, Snackbar.LENGTH_LONG)
+                .setAction(R.string.cta_view_cart, v -> navigateTo(SCREEN_CART))
+                .show();
     }
 
     private void showProfile() {
@@ -1619,7 +1660,12 @@ public class MainActivity extends AppCompatActivity {
                 int position = viewHolder.getBindingAdapterPosition();
                 CartItem item = cartAdapter.getItemAt(position);
                 if (item != null) {
-                    getCartViewModel().deleteCartItem(item);
+                    if (item.isRewardItem()) {
+                        cartAdapter.notifyItemChanged(position);
+                        confirmDeleteRewardItem(item);
+                    } else {
+                        getCartViewModel().deleteCartItem(item);
+                    }
                 } else if (position != RecyclerView.NO_POSITION) {
                     cartAdapter.notifyItemChanged(position);
                 }
@@ -1636,6 +1682,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         helper.attachToRecyclerView(recyclerView);
+    }
+
+    private void confirmDeleteRewardItem(CartItem item) {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.remove_reward_item_title)
+                .setMessage(R.string.remove_reward_item_message)
+                .setNegativeButton(R.string.cta_cancel_profile, null)
+                .setPositiveButton(android.R.string.ok,
+                        (dialog, which) -> getCartViewModel().deleteCartItem(item))
+                .show();
     }
 
     private void drawSwipeDeleteIndicator(Canvas canvas, View itemView, float dX) {

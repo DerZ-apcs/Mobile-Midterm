@@ -16,7 +16,6 @@ import com.example.midterm_application.data.model.PromoCode;
 import com.example.midterm_application.data.model.RewardState;
 import com.example.midterm_application.data.model.UserProfile;
 import com.example.midterm_application.utils.CheckoutPriceCalculator;
-import com.example.midterm_application.utils.RewardCalculator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,10 +68,8 @@ public class CheckoutRepository {
                                             String rawPromoCode, boolean loyaltyRequested) {
         String normalizedCode = promoRepository.normalizeCode(rawPromoCode);
         PromoCode promoCode = promoRepository.findPromoCode(normalizedCode);
-        boolean loyaltyAvailable = state != null
-                && RewardCalculator.canClaimStampCard(state.getStampCount());
         return CheckoutPriceCalculator.calculate(items, promoCode, normalizedCode,
-                loyaltyRequested, loyaltyAvailable);
+                false, false);
     }
 
     public void placeOrder(String deliveryAddress, String rawPromoCode, boolean loyaltyRequested,
@@ -95,12 +92,7 @@ public class CheckoutRepository {
                         }
 
                         rewardDao.insertRewardState(RewardState.initial());
-                        RewardState currentRewardState = rewardDao.getRewardStateSync();
-                        boolean loyaltyAvailable = currentRewardState != null
-                                && RewardCalculator.canClaimStampCard(currentRewardState.getStampCount());
-                        if (loyaltyRequested && !loyaltyAvailable) {
-                            throw new CheckoutException("Free drink reward is no longer available");
-                        }
+                        rewardDao.getRewardStateSync();
 
                         String normalizedPromoCode = promoRepository.normalizeCode(rawPromoCode);
                         PromoCode promoCode = promoRepository.findPromoCode(normalizedPromoCode);
@@ -108,8 +100,8 @@ public class CheckoutRepository {
                                 currentCartItems,
                                 promoCode,
                                 normalizedPromoCode,
-                                loyaltyRequested,
-                                loyaltyAvailable);
+                                false,
+                                false);
                         if (!normalizedPromoCode.isEmpty() && !summary.isPromoAccepted()) {
                             throw new CheckoutException(summary.getPromoMessage());
                         }
@@ -130,11 +122,11 @@ public class CheckoutRepository {
                                 System.currentTimeMillis(),
                                 summary.getSubtotal(),
                                 summary.isPromoAccepted() ? summary.getPromoCode() : "",
-                                summary.getPromoDiscount(),
-                                summary.getLoyaltyDiscount(),
-                                 summary.getFinalTotal(),
-                                 addressSnapshot,
-                                 loyaltyRequested,
+                                 summary.getPromoDiscount(),
+                                  0.00,
+                                  summary.getFinalTotal(),
+                                  addressSnapshot,
+                                  false,
                                  deliveryTypeSnapshot,
                                  scheduledAtSnapshot);
                         long insertedOrderId = orderDao.insertOrder(order);
@@ -148,19 +140,13 @@ public class CheckoutRepository {
                                     item.getShot(),
                                     item.getSize(),
                                     item.getIce(),
-                                    item.getQuantity(),
-                                    item.getUnitPrice(),
-                                    item.getTotalPrice(),
-                                    item.getNote()));
+                                     item.getQuantity(),
+                                     item.getUnitPrice(),
+                                     item.getTotalPrice(),
+                                     item.getNote(),
+                                     item.getRewardSource()));
                         }
                         orderDao.insertOrderItems(orderItems);
-
-                        if (loyaltyRequested) {
-                            int updatedRows = rewardDao.claimFullStampCard();
-                            if (updatedRows != 1) {
-                                throw new CheckoutException("Free drink reward could not be consumed");
-                            }
-                        }
 
                         cartDao.clearCart();
                         return insertedOrderId;

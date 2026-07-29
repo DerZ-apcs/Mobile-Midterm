@@ -6,6 +6,10 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "cart_items")
 public class CartItem {
+    public static final String REWARD_SOURCE_NONE = "NONE";
+    public static final String REWARD_SOURCE_POINTS = "POINTS";
+    public static final String REWARD_SOURCE_STAMP_CARD = "STAMP_CARD";
+
     @PrimaryKey(autoGenerate = true)
     private int id;
     private int coffeeId;
@@ -18,6 +22,7 @@ public class CartItem {
     private double unitPrice;
     private double totalPrice;
     private String note;
+    private String rewardSource = REWARD_SOURCE_NONE;
 
     public CartItem() {
     }
@@ -31,6 +36,14 @@ public class CartItem {
     @Ignore
     public CartItem(int coffeeId, String coffeeName, int imageResId, String shot, String size,
                     String ice, int quantity, double unitPrice, double totalPrice, String note) {
+        this(coffeeId, coffeeName, imageResId, shot, size, ice, quantity, unitPrice, totalPrice,
+                note, REWARD_SOURCE_NONE);
+    }
+
+    @Ignore
+    public CartItem(int coffeeId, String coffeeName, int imageResId, String shot, String size,
+                    String ice, int quantity, double unitPrice, double totalPrice, String note,
+                    String rewardSource) {
         this.coffeeId = coffeeId;
         this.coffeeName = coffeeName;
         this.imageResId = imageResId;
@@ -41,6 +54,7 @@ public class CartItem {
         this.unitPrice = unitPrice;
         this.totalPrice = totalPrice;
         this.note = note;
+        setRewardSource(rewardSource);
     }
 
     public int getId() {
@@ -129,5 +143,22 @@ public class CartItem {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public String getRewardSource() {
+        return rewardSource == null ? REWARD_SOURCE_NONE : rewardSource;
+    }
+
+    public void setRewardSource(String rewardSource) {
+        if (REWARD_SOURCE_POINTS.equals(rewardSource)
+                || REWARD_SOURCE_STAMP_CARD.equals(rewardSource)) {
+            this.rewardSource = rewardSource;
+            return;
+        }
+        this.rewardSource = REWARD_SOURCE_NONE;
+    }
+
+    public boolean isRewardItem() {
+        return !REWARD_SOURCE_NONE.equals(getRewardSource());
     }
 }

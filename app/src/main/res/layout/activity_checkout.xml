@@ -118,24 +118,6 @@
                 android:textSize="@dimen/text_caption"
                 tools:text="Promo applied" />
 
-            <CheckBox
-                android:id="@+id/cbUseLoyaltyReward"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/spacing_xs"
-                android:text="@string/checkout_use_free_drink"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/text_body" />
-
-            <TextView
-                android:id="@+id/tvLoyaltyRewardHint"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/spacing_xl"
-                android:text="@string/checkout_loyalty_unavailable"
-                android:textColor="@color/text_secondary"
-                android:textSize="@dimen/text_caption" />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

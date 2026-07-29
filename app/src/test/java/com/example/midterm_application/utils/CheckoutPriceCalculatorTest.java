@@ -31,35 +31,35 @@ public class CheckoutPriceCalculatorTest {
     }
 
     @Test
-    public void scenarioB_freeDrinkAppliesBeforeFinalTotal() {
+    public void scenarioB_checkoutLoyaltyNoLongerAppliesFreeDrinkDiscount() {
         CheckoutSummary summary = calculate(Collections.singletonList(item("Latte", 5.00, 4)),
                 "", true, true);
 
         assertEquals(20.00, summary.getSubtotal(), DELTA);
-        assertEquals(5.00, summary.getLoyaltyDiscount(), DELTA);
+        assertEquals(0.00, summary.getLoyaltyDiscount(), DELTA);
         assertEquals(0.00, summary.getPromoDiscount(), DELTA);
-        assertEquals(15.00, summary.getFinalTotal(), DELTA);
+        assertEquals(20.00, summary.getFinalTotal(), DELTA);
     }
 
     @Test
-    public void scenarioC_codeCup10AppliesToSubtotalAfterLoyaltyDiscount() {
+    public void scenarioC_codeCup10AppliesToPaidSubtotalWithoutCheckoutLoyalty() {
         CheckoutSummary summary = calculate(Collections.singletonList(item("Latte", 5.00, 4)),
                 "CODECUP10", true, true);
 
         assertEquals(20.00, summary.getSubtotal(), DELTA);
-        assertEquals(5.00, summary.getLoyaltyDiscount(), DELTA);
-        assertEquals(1.50, summary.getPromoDiscount(), DELTA);
-        assertEquals(13.50, summary.getFinalTotal(), DELTA);
+        assertEquals(0.00, summary.getLoyaltyDiscount(), DELTA);
+        assertEquals(2.00, summary.getPromoDiscount(), DELTA);
+        assertEquals(18.00, summary.getFinalTotal(), DELTA);
     }
 
     @Test
-    public void scenarioD_quantityTwoDiscountsOnlyOneUnit() {
+    public void scenarioD_quantityTwoReceivesNoCheckoutFreeUnit() {
         CheckoutSummary summary = calculate(Collections.singletonList(item("Americano", 4.50, 2)),
                 "", true, true);
 
         assertEquals(9.00, summary.getSubtotal(), DELTA);
-        assertEquals(4.50, summary.getLoyaltyDiscount(), DELTA);
-        assertEquals(4.50, summary.getFinalTotal(), DELTA);
+        assertEquals(0.00, summary.getLoyaltyDiscount(), DELTA);
+        assertEquals(9.00, summary.getFinalTotal(), DELTA);
     }
 
     @Test
@@ -73,15 +73,15 @@ public class CheckoutPriceCalculatorTest {
     }
 
     @Test
-    public void highestEligibleUnitPriceIsSelectedForFreeDrink() {
+    public void rewardCartItemsContributeZeroToTotals() {
         CheckoutSummary summary = calculate(Arrays.asList(
                         item("Americano", 4.50, 2),
-                        item("Mocha", 6.25, 1),
+                        rewardItem("Mocha"),
                         item("Flat White", 5.00, 3)),
                 "", true, true);
 
-        assertEquals(30.25, summary.getSubtotal(), DELTA);
-        assertEquals(6.25, summary.getLoyaltyDiscount(), DELTA);
+        assertEquals(24.00, summary.getSubtotal(), DELTA);
+        assertEquals(0.00, summary.getLoyaltyDiscount(), DELTA);
         assertEquals(24.00, summary.getFinalTotal(), DELTA);
     }
 
@@ -151,5 +151,10 @@ public class CheckoutPriceCalculatorTest {
     private static CartItem item(String name, double unitPrice, int quantity) {
         return new CartItem(1, name, 0, "SINGLE", "SMALL", "NORMAL", quantity,
                 unitPrice, unitPrice * quantity, "");
+    }
+
+    private static CartItem rewardItem(String name) {
+        return new CartItem(1, name, 0, "SINGLE", "SMALL", "NORMAL", 1,
+                0.00, 0.00, "", CartItem.REWARD_SOURCE_POINTS);
     }
 }

@@ -11,12 +11,10 @@ public final class CheckoutPriceCalculator {
     }
 
     public static CheckoutSummary calculate(List<CartItem> cartItems, PromoCode promoCode,
-                                            String normalizedPromoCode, boolean loyaltyRequested,
-                                            boolean loyaltyAvailable) {
+                                             String normalizedPromoCode, boolean loyaltyRequested,
+                                             boolean loyaltyAvailable) {
         double subtotal = calculateSubtotal(cartItems);
-        double loyaltyDiscount = loyaltyRequested && loyaltyAvailable
-                ? calculateHighestUnitPrice(cartItems)
-                : 0.00;
+        double loyaltyDiscount = 0.00;
         double eligibleSubtotal = Math.max(0.00, subtotal - loyaltyDiscount);
         PromoResult promoResult = calculatePromoDiscount(promoCode, normalizedPromoCode, eligibleSubtotal);
         double finalTotal = Math.max(0.00, subtotal - loyaltyDiscount - promoResult.discount);
@@ -40,18 +38,6 @@ public final class CheckoutPriceCalculator {
             }
         }
         return subtotal;
-    }
-
-    private static double calculateHighestUnitPrice(List<CartItem> cartItems) {
-        double highestUnitPrice = 0.00;
-        if (cartItems != null) {
-            for (CartItem item : cartItems) {
-                if (item != null && item.getQuantity() > 0) {
-                    highestUnitPrice = Math.max(highestUnitPrice, Math.max(0.00, item.getUnitPrice()));
-                }
-            }
-        }
-        return highestUnitPrice;
     }
 
     private static PromoResult calculatePromoDiscount(PromoCode promoCode, String normalizedPromoCode,

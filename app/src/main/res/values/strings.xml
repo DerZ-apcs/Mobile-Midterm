@@ -52,6 +52,10 @@
     <string name="label_total_price">Total Price</string>
     <string name="cta_checkout">Checkout</string>
     <string name="delete_desc">Delete item</string>
+    <string name="remove_reward_item_title">Remove reward item?</string>
+    <string name="remove_reward_item_message">Remove this reward item? The redeemed reward will not be refunded.</string>
+    <string name="reward_item_edit_blocked">Reward items cannot be edited</string>
+    <string name="reward_no_coffee_available">No coffee rewards available</string>
     <string name="qty_format">x %1$d</string>
     <string name="my_order_title">My Order</string>
     <string name="tab_ongoing">On going</string>
@@ -65,7 +69,7 @@
     <string name="rewards_title">Rewards</string>
     <string name="my_points_label">My Points:</string>
     <string name="cta_redeem_drinks">Redeem drinks</string>
-    <string name="cta_claim_loyalty">Claim card</string>
+    <string name="cta_claim_loyalty">Claim free drink</string>
     <string name="cta_complete_loyalty">8 stamps to claim</string>
     <string name="history_rewards_title">History Rewards</string>
     <string name="empty_reward_history">No reward history yet</string>

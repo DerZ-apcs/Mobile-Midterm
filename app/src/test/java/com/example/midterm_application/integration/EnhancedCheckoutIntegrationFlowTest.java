@@ -29,27 +29,29 @@ public class EnhancedCheckoutIntegrationFlowTest {
         FlowState state = new FlowState("10 Profile Street");
         state.rewardState.setStampCount(8);
         state.cart.add(customizedCartItem());
+        assertTrue(state.claimStampReward(rewardCartItem("Cappuccino", CartItem.REWARD_SOURCE_STAMP_CARD)));
+        assertEquals(0, state.rewardState.getStampCount());
+        assertEquals(2, state.cart.size());
 
         CheckoutSummary preview = state.preview("CODECUP10", true);
         assertEquals(20.00, state.cartTotal(), DELTA);
         assertEquals(20.00, preview.getSubtotal(), DELTA);
-        assertEquals(5.00, preview.getLoyaltyDiscount(), DELTA);
-        assertEquals(1.50, preview.getPromoDiscount(), DELTA);
-        assertEquals(13.50, preview.getFinalTotal(), DELTA);
+        assertEquals(0.00, preview.getLoyaltyDiscount(), DELTA);
+        assertEquals(2.00, preview.getPromoDiscount(), DELTA);
+        assertEquals(18.00, preview.getFinalTotal(), DELTA);
 
         Order order = state.placeOrder("10 Profile Street", " codecup10 ", true);
-        assertEquals(0, state.rewardState.getStampCount());
         assertTrue(state.cart.isEmpty());
         assertEquals("10 Profile Street", order.getDeliveryAddress());
         assertEquals(20.00, order.getSubtotal(), DELTA);
         assertEquals("CODECUP10", order.getPromoCode());
-        assertEquals(5.00, order.getLoyaltyDiscount(), DELTA);
-        assertEquals(1.50, order.getPromoDiscount(), DELTA);
-        assertEquals(13.50, order.getFinalTotal(), DELTA);
-        assertEquals(13.50, order.getTotalPrice(), DELTA);
+        assertEquals(0.00, order.getLoyaltyDiscount(), DELTA);
+        assertEquals(2.00, order.getPromoDiscount(), DELTA);
+        assertEquals(18.00, order.getFinalTotal(), DELTA);
+        assertEquals(18.00, order.getTotalPrice(), DELTA);
         assertEquals(Order.DELIVERY_ASAP, order.getDeliveryType());
         assertEquals(0L, order.getScheduledAt());
-        assertTrue(order.isLoyaltyRewardUsed());
+        assertFalse(order.isLoyaltyRewardUsed());
 
         state.profileAddress = "99 New Profile Street";
         assertEquals("10 Profile Street", state.orders.get(0).getDeliveryAddress());
@@ -63,19 +65,30 @@ public class EnhancedCheckoutIntegrationFlowTest {
         assertEquals(5.00, orderItem.getUnitPrice(), DELTA);
         assertEquals(20.00, orderItem.getTotalPrice(), DELTA);
         assertEquals("No sugar", orderItem.getNote());
+        assertEquals(CartItem.REWARD_SOURCE_NONE, orderItem.getRewardSource());
+
+        OrderItem rewardOrderItem = state.orderItems.get(1);
+        assertEquals("Cappuccino", rewardOrderItem.getCoffeeName());
+        assertEquals(1, rewardOrderItem.getQuantity());
+        assertEquals(0.00, rewardOrderItem.getUnitPrice(), DELTA);
+        assertEquals(0.00, rewardOrderItem.getTotalPrice(), DELTA);
+        assertEquals(CartItem.REWARD_SOURCE_STAMP_CARD, rewardOrderItem.getRewardSource());
 
         assertTrue(state.orderHistoryValid());
         assertTrue(state.completeOrder(order.getId()));
         assertEquals(Order.STATUS_COMPLETED, order.getStatus());
         assertEquals(1, state.rewardState.getStampCount());
-        assertEquals(135, state.rewardState.getTotalPoints());
+        assertEquals(180, state.rewardState.getTotalPoints());
         assertEquals(1, state.countRewardTransactions(RewardTransaction.TYPE_EARN));
-        assertEquals(135, state.rewardTransactions.get(0).getPoints());
+        assertEquals(180, state.rewardTransactions.get(0).getPoints());
 
-        RewardProduct rewardProduct = new RewardProduct(1, "Free Mocha", 0, 120);
+        RewardProduct rewardProduct = new RewardProduct(3, "Mocha", 0, 120);
         assertTrue(state.redeem(rewardProduct));
-        assertEquals(15, state.rewardState.getTotalPoints());
+        assertEquals(60, state.rewardState.getTotalPoints());
         assertEquals(1, state.rewardState.getStampCount());
+        assertEquals(1, state.cart.size());
+        assertEquals(CartItem.REWARD_SOURCE_POINTS, state.cart.get(0).getRewardSource());
+        assertEquals(0.00, state.cart.get(0).getTotalPrice(), DELTA);
         assertEquals(1, state.countRewardTransactions(RewardTransaction.TYPE_REDEEM));
         assertTrue(state.rewardHistoryValid());
 
@@ -83,10 +96,12 @@ public class EnhancedCheckoutIntegrationFlowTest {
         assertEquals(1, restarted.orders.size());
         assertEquals("10 Profile Street", restarted.orders.get(0).getDeliveryAddress());
         assertEquals(Order.STATUS_COMPLETED, restarted.orders.get(0).getStatus());
-        assertEquals(13.50, restarted.orders.get(0).getFinalTotal(), DELTA);
-        assertEquals(15, restarted.rewardState.getTotalPoints());
+        assertEquals(18.00, restarted.orders.get(0).getFinalTotal(), DELTA);
+        assertEquals(60, restarted.rewardState.getTotalPoints());
         assertEquals(1, restarted.rewardState.getStampCount());
         assertEquals(2, restarted.rewardTransactions.size());
+        assertEquals(1, restarted.cart.size());
+        assertEquals(CartItem.REWARD_SOURCE_POINTS, restarted.cart.get(0).getRewardSource());
     }
 
     @Test
@@ -96,7 +111,7 @@ public class EnhancedCheckoutIntegrationFlowTest {
         state.cart.add(customizedCartItem());
 
         CheckoutSummary preview = state.preview("", true);
-        assertEquals(5.00, preview.getLoyaltyDiscount(), DELTA);
+        assertEquals(0.00, preview.getLoyaltyDiscount(), DELTA);
 
         state.cancelCheckout();
 
@@ -148,6 +163,11 @@ public class EnhancedCheckoutIntegrationFlowTest {
                 4, 5.00, 20.00, "No sugar");
     }
 
+    private static CartItem rewardCartItem(String coffeeName, String rewardSource) {
+        return new CartItem(2, coffeeName, 102, "SINGLE", "SMALL", "NORMAL",
+                1, 0.00, 0.00, "", rewardSource);
+    }
+
     private static class FlowState {
         private final PromoRepository promoRepository = new PromoRepository();
         private String profileAddress;
@@ -173,8 +193,7 @@ public class EnhancedCheckoutIntegrationFlowTest {
         CheckoutSummary preview(String rawPromoCode, boolean loyaltyRequested) {
             String normalizedCode = promoRepository.normalizeCode(rawPromoCode);
             PromoCode promoCode = promoRepository.findPromoCode(normalizedCode);
-            return CheckoutPriceCalculator.calculate(cart, promoCode, normalizedCode,
-                    loyaltyRequested, RewardCalculator.canClaimStampCard(rewardState.getStampCount()));
+            return CheckoutPriceCalculator.calculate(cart, promoCode, normalizedCode, false, false);
         }
 
         Order placeOrder(String deliveryAddress, String rawPromoCode, boolean loyaltyRequested) {
@@ -200,14 +219,10 @@ public class EnhancedCheckoutIntegrationFlowTest {
             if (Order.DELIVERY_SCHEDULED.equals(deliveryTypeSnapshot) && scheduledAtSnapshot <= 1000L) {
                 return false;
             }
-            boolean loyaltyAvailable = RewardCalculator.canClaimStampCard(rewardState.getStampCount());
-            if (loyaltyRequested && !loyaltyAvailable) {
-                return false;
-            }
             String normalizedCode = promoRepository.normalizeCode(rawPromoCode);
             PromoCode promoCode = promoRepository.findPromoCode(normalizedCode);
             CheckoutSummary summary = CheckoutPriceCalculator.calculate(cart, promoCode, normalizedCode,
-                    loyaltyRequested, loyaltyAvailable);
+                    false, false);
             if (!normalizedCode.isEmpty() && !summary.isPromoAccepted()) {
                 return false;
             }
@@ -215,16 +230,14 @@ public class EnhancedCheckoutIntegrationFlowTest {
             long orderId = nextOrderId++;
             Order order = new Order(1000L, summary.getSubtotal(), summary.getPromoCode(),
                     summary.getPromoDiscount(), summary.getLoyaltyDiscount(), summary.getFinalTotal(),
-                    deliveryAddress.trim(), loyaltyRequested, deliveryTypeSnapshot, scheduledAtSnapshot);
+                    deliveryAddress.trim(), false, deliveryTypeSnapshot, scheduledAtSnapshot);
             order.setId(orderId);
             orders.add(order);
             for (CartItem item : cart) {
                 orderItems.add(new OrderItem(orderId, item.getCoffeeId(), item.getCoffeeName(),
                         item.getImageResId(), item.getShot(), item.getSize(), item.getIce(),
-                        item.getQuantity(), item.getUnitPrice(), item.getTotalPrice(), item.getNote()));
-            }
-            if (loyaltyRequested) {
-                rewardState.setStampCount(RewardCalculator.calculateStampCountAfterClaim(rewardState.getStampCount()));
+                        item.getQuantity(), item.getUnitPrice(), item.getTotalPrice(), item.getNote(),
+                        item.getRewardSource()));
             }
             cart.clear();
             return true;
@@ -260,6 +273,19 @@ public class EnhancedCheckoutIntegrationFlowTest {
                     rewardState.getTotalPoints(), product.getPointCost()));
             rewardTransactions.add(new RewardTransaction(null, 3000L,
                     RewardTransaction.TYPE_REDEEM, -product.getPointCost(), product.getName()));
+            cart.add(new CartItem(product.getId(), product.getName(), product.getImageResId(),
+                    "SINGLE", "SMALL", "NORMAL", 1, 0.00, 0.00, "",
+                    CartItem.REWARD_SOURCE_POINTS));
+            return true;
+        }
+
+        boolean claimStampReward(CartItem rewardItem) {
+            if (!RewardCalculator.canClaimStampCard(rewardState.getStampCount())) {
+                return false;
+            }
+            rewardState.setStampCount(RewardCalculator.calculateStampCountAfterClaim(
+                    rewardState.getStampCount()));
+            cart.add(rewardItem);
             return true;
         }
 
@@ -286,6 +312,7 @@ public class EnhancedCheckoutIntegrationFlowTest {
             copy.nextOrderId = nextOrderId;
             copy.orders.addAll(orders);
             copy.orderItems.addAll(orderItems);
+            copy.cart.addAll(cart);
             copy.rewardTransactions.addAll(rewardTransactions);
             copy.rewardState.setStampCount(rewardState.getStampCount());
             copy.rewardState.setTotalPoints(rewardState.getTotalPoints());

@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.midterm_application.data.model.Coffee;
 import com.example.midterm_application.data.model.RewardProduct;
 import com.example.midterm_application.data.model.RewardState;
 import com.example.midterm_application.data.model.RewardTransaction;
@@ -32,10 +33,6 @@ public class RewardViewModel extends AndroidViewModel {
         return repository.getRewardTransactions();
     }
 
-    public void claimFullStampCard() {
-        repository.claimFullStampCard();
-    }
-
     public LiveData<Boolean> getRedemptionInProgress() {
         return redemptionInProgress;
     }
@@ -50,6 +47,17 @@ public class RewardViewModel extends AndroidViewModel {
         }
         redemptionInProgress.setValue(true);
         repository.redeemReward(product, result -> {
+            redemptionResult.postValue(result);
+            redemptionInProgress.postValue(false);
+        });
+    }
+
+    public void claimStampReward(Coffee coffee) {
+        if (Boolean.TRUE.equals(redemptionInProgress.getValue())) {
+            return;
+        }
+        redemptionInProgress.setValue(true);
+        repository.claimStampReward(coffee, result -> {
             redemptionResult.postValue(result);
             redemptionInProgress.postValue(false);
         });

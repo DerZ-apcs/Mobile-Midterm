@@ -14,7 +14,6 @@ import com.example.midterm_application.data.model.Order;
 import com.example.midterm_application.data.model.RewardState;
 import com.example.midterm_application.data.model.UserProfile;
 import com.example.midterm_application.data.repository.CheckoutRepository;
-import com.example.midterm_application.utils.RewardCalculator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,11 +50,8 @@ public class CheckoutViewModel extends AndroidViewModel {
         });
         summary.addSource(repository.getRewardState(), state -> {
             latestRewardState = state;
-            boolean available = state != null && RewardCalculator.canClaimStampCard(state.getStampCount());
-            loyaltyAvailable.setValue(available);
-            if (!available && Boolean.TRUE.equals(loyaltyRequested.getValue())) {
-                loyaltyRequested.setValue(false);
-            }
+            loyaltyAvailable.setValue(false);
+            loyaltyRequested.setValue(false);
             recalculateSummary();
         });
         recalculateSummary();
@@ -115,8 +111,7 @@ public class CheckoutViewModel extends AndroidViewModel {
     }
 
     public void setLoyaltyRequested(boolean requested) {
-        boolean available = Boolean.TRUE.equals(loyaltyAvailable.getValue());
-        loyaltyRequested.setValue(requested && available);
+        loyaltyRequested.setValue(false);
         recalculateSummary();
     }
 
@@ -155,7 +150,7 @@ public class CheckoutViewModel extends AndroidViewModel {
         repository.placeOrder(
                 deliveryAddress.getValue(),
                 promoCode.getValue(),
-                Boolean.TRUE.equals(loyaltyRequested.getValue()),
+                false,
                 deliveryType.getValue(),
                 getScheduledAtValue(),
                 result -> {
@@ -177,7 +172,7 @@ public class CheckoutViewModel extends AndroidViewModel {
                 latestCartItems,
                 latestRewardState,
                 promoCode.getValue(),
-                Boolean.TRUE.equals(loyaltyRequested.getValue()));
+                false);
         summary.setValue(checkoutSummary);
     }
 
