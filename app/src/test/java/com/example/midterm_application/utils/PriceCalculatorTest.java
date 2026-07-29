@@ -27,4 +27,18 @@ public class PriceCalculatorTest {
     public void calculatesWithDifferentBasePrice() {
         assertEquals(11.00, PriceCalculator.calculateTotal(4.50, DOUBLE, MEDIUM, NORMAL, 2), DELTA);
     }
+
+    @Test
+    public void rewardBaseDrinkIsFreeAtDefaultConfiguration() {
+        assertEquals(0.00, PriceCalculator.calculateRewardUnitPrice(3.00, 3.00,
+                SINGLE, SMALL, NORMAL), DELTA);
+    }
+
+    @Test
+    public void rewardChargesOnlyConfiguredUpgradeModifiers() {
+        assertEquals(0.50, PriceCalculator.calculateRewardUnitPrice(3.00, 3.00,
+                DOUBLE, SMALL, NORMAL), DELTA);
+        assertEquals(1.50, PriceCalculator.calculateRewardUnitPrice(3.00, 3.00,
+                DOUBLE, LARGE, NORMAL), DELTA);
+    }
 }

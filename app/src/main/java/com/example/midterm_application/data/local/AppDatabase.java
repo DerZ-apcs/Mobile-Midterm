@@ -16,7 +16,7 @@ import com.example.midterm_application.data.model.RewardState;
 import com.example.midterm_application.data.model.RewardTransaction;
 
 @Database(entities = {CartItem.class, Order.class, OrderItem.class, RewardState.class,
-        RewardTransaction.class, OrderReview.class}, version = 9, exportSchema = false)
+        RewardTransaction.class, OrderReview.class}, version = 10, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase instance;
 
@@ -151,6 +151,22 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
+    private static final Migration MIGRATION_9_10 = new Migration(9, 10) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE `cart_items` ADD COLUMN `rewardCoveredAmount` REAL NOT NULL DEFAULT 0");
+            database.execSQL("ALTER TABLE `order_items` ADD COLUMN `rewardCoveredAmount` REAL NOT NULL DEFAULT 0");
+            database.execSQL("UPDATE `cart_items` SET `rewardCoveredAmount` = "
+                    + "CASE `coffeeId` WHEN 1 THEN 3.00 WHEN 2 THEN 4.00 "
+                    + "WHEN 3 THEN 4.50 WHEN 4 THEN 4.00 ELSE `rewardCoveredAmount` END "
+                    + "WHERE `rewardSource` IS NOT NULL AND `rewardSource` != 'NONE'");
+            database.execSQL("UPDATE `order_items` SET `rewardCoveredAmount` = "
+                    + "CASE `coffeeId` WHEN 1 THEN 3.00 WHEN 2 THEN 4.00 "
+                    + "WHEN 3 THEN 4.50 WHEN 4 THEN 4.00 ELSE `rewardCoveredAmount` END "
+                    + "WHERE `rewardSource` IS NOT NULL AND `rewardSource` != 'NONE'");
+        }
+    };
+
     public abstract CartDao cartDao();
 
     public abstract OrderDao orderDao();
@@ -167,7 +183,7 @@ public abstract class AppDatabase extends RoomDatabase {
                             AppDatabase.class, "code_cup.db")
                             .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4,
                                     MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8,
-                                    MIGRATION_8_9)
+                                    MIGRATION_8_9, MIGRATION_9_10)
                             .build();
                 }
             }

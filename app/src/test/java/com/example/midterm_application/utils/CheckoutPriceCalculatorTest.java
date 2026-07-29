@@ -86,6 +86,17 @@ public class CheckoutPriceCalculatorTest {
     }
 
     @Test
+    public void rewardUpgradeChargesContributePayableAmountOnly() {
+        CheckoutSummary summary = calculate(Arrays.asList(
+                        item("Cappuccino", 3.50, 1),
+                        rewardUpgradeItem("Americano", 1.50)),
+                "", false, false);
+
+        assertEquals(5.00, summary.getSubtotal(), DELTA);
+        assertEquals(5.00, summary.getFinalTotal(), DELTA);
+    }
+
+    @Test
     public void promoCodeMatchingIsCaseInsensitiveAndTrimsWhitespace() {
         CheckoutSummary summary = calculate(Collections.singletonList(item("Latte", 10.00, 2)),
                 "  codecup10  ", false, false);
@@ -155,6 +166,11 @@ public class CheckoutPriceCalculatorTest {
 
     private static CartItem rewardItem(String name) {
         return new CartItem(1, name, 0, "SINGLE", "SMALL", "NORMAL", 1,
-                0.00, 0.00, "", CartItem.REWARD_SOURCE_POINTS);
+                0.00, 0.00, "", CartItem.REWARD_SOURCE_POINTS, 4.50);
+    }
+
+    private static CartItem rewardUpgradeItem(String name, double upgradePrice) {
+        return new CartItem(1, name, 0, "DOUBLE", "LARGE", "NORMAL", 1,
+                upgradePrice, upgradePrice, "", CartItem.REWARD_SOURCE_POINTS, 3.00);
     }
 }

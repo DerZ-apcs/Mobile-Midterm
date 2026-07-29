@@ -14,6 +14,7 @@ import com.example.midterm_application.data.model.RewardState;
 import com.example.midterm_application.data.model.RewardTransaction;
 import com.example.midterm_application.data.repository.PromoRepository;
 import com.example.midterm_application.utils.CheckoutPriceCalculator;
+import com.example.midterm_application.utils.PriceCalculator;
 import com.example.midterm_application.utils.RewardCalculator;
 
 import org.junit.Test;
@@ -73,6 +74,7 @@ public class EnhancedCheckoutIntegrationFlowTest {
         assertEquals(0.00, rewardOrderItem.getUnitPrice(), DELTA);
         assertEquals(0.00, rewardOrderItem.getTotalPrice(), DELTA);
         assertEquals(CartItem.REWARD_SOURCE_STAMP_CARD, rewardOrderItem.getRewardSource());
+        assertEquals(4.00, rewardOrderItem.getRewardCoveredAmount(), DELTA);
 
         assertTrue(state.orderHistoryValid());
         assertTrue(state.completeOrder(order.getId()));
@@ -88,6 +90,7 @@ public class EnhancedCheckoutIntegrationFlowTest {
         assertEquals(1, state.rewardState.getStampCount());
         assertEquals(1, state.cart.size());
         assertEquals(CartItem.REWARD_SOURCE_POINTS, state.cart.get(0).getRewardSource());
+        assertEquals(4.50, state.cart.get(0).getRewardCoveredAmount(), DELTA);
         assertEquals(0.00, state.cart.get(0).getTotalPrice(), DELTA);
         assertEquals(1, state.countRewardTransactions(RewardTransaction.TYPE_REDEEM));
         assertTrue(state.rewardHistoryValid());
@@ -102,6 +105,22 @@ public class EnhancedCheckoutIntegrationFlowTest {
         assertEquals(2, restarted.rewardTransactions.size());
         assertEquals(1, restarted.cart.size());
         assertEquals(CartItem.REWARD_SOURCE_POINTS, restarted.cart.get(0).getRewardSource());
+        assertEquals(4.50, restarted.cart.get(0).getRewardCoveredAmount(), DELTA);
+    }
+
+    @Test
+    public void rewardCustomizationChargesOnlyUpgradesAndKeepsQuantityOne() {
+        CartItem rewardItem = new CartItem(1, "Americano", 101, "SINGLE", "SMALL", "NORMAL",
+                1, 0.00, 0.00, "", CartItem.REWARD_SOURCE_POINTS, 3.00);
+
+        applyRewardCustomization(rewardItem, "DOUBLE", "LARGE", "LESS_ICE", 5, "No sugar");
+
+        assertEquals(1, rewardItem.getQuantity());
+        assertEquals(1.50, rewardItem.getUnitPrice(), DELTA);
+        assertEquals(1.50, rewardItem.getTotalPrice(), DELTA);
+        assertEquals("No sugar", rewardItem.getNote());
+        assertEquals(CartItem.REWARD_SOURCE_POINTS, rewardItem.getRewardSource());
+        assertEquals(3.00, rewardItem.getRewardCoveredAmount(), DELTA);
     }
 
     @Test
@@ -165,7 +184,23 @@ public class EnhancedCheckoutIntegrationFlowTest {
 
     private static CartItem rewardCartItem(String coffeeName, String rewardSource) {
         return new CartItem(2, coffeeName, 102, "SINGLE", "SMALL", "NORMAL",
-                1, 0.00, 0.00, "", rewardSource);
+                1, 0.00, 0.00, "", rewardSource, 4.00);
+    }
+
+    private static void applyRewardCustomization(CartItem item, String shot, String size, String ice,
+                                                 int requestedQuantity, String note) {
+        PriceCalculator.Shot parsedShot = PriceCalculator.Shot.valueOf(shot);
+        PriceCalculator.Size parsedSize = PriceCalculator.Size.valueOf(size);
+        PriceCalculator.Ice parsedIce = PriceCalculator.Ice.valueOf(ice);
+        double unitPrice = PriceCalculator.calculateRewardUnitPrice(3.00, item.getRewardCoveredAmount(),
+                parsedShot, parsedSize, parsedIce);
+        item.setShot(shot);
+        item.setSize(size);
+        item.setIce(ice);
+        item.setQuantity(1);
+        item.setUnitPrice(unitPrice);
+        item.setTotalPrice(unitPrice);
+        item.setNote(note);
     }
 
     private static class FlowState {
@@ -237,7 +272,7 @@ public class EnhancedCheckoutIntegrationFlowTest {
                 orderItems.add(new OrderItem(orderId, item.getCoffeeId(), item.getCoffeeName(),
                         item.getImageResId(), item.getShot(), item.getSize(), item.getIce(),
                         item.getQuantity(), item.getUnitPrice(), item.getTotalPrice(), item.getNote(),
-                        item.getRewardSource()));
+                        item.getRewardSource(), item.getRewardCoveredAmount()));
             }
             cart.clear();
             return true;
@@ -275,8 +310,18 @@ public class EnhancedCheckoutIntegrationFlowTest {
                     RewardTransaction.TYPE_REDEEM, -product.getPointCost(), product.getName()));
             cart.add(new CartItem(product.getId(), product.getName(), product.getImageResId(),
                     "SINGLE", "SMALL", "NORMAL", 1, 0.00, 0.00, "",
-                    CartItem.REWARD_SOURCE_POINTS));
+                    CartItem.REWARD_SOURCE_POINTS, rewardBasePrice(product.getId())));
             return true;
+        }
+
+        double rewardBasePrice(int coffeeId) {
+            if (coffeeId == 3) {
+                return 4.50;
+            }
+            if (coffeeId == 2 || coffeeId == 4) {
+                return 4.00;
+            }
+            return 3.00;
         }
 
         boolean claimStampReward(CartItem rewardItem) {

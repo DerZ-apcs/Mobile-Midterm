@@ -57,9 +57,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         holder.quantity.setText(String.format(Locale.US, "x %d", item.getQuantity()));
         holder.price.setText(String.format(Locale.US, "$%.2f", item.getTotalPrice()));
         bindNote(holder.note, item.getNote());
-        holder.edit.setVisibility(item.isRewardItem() ? View.GONE : View.VISIBLE);
+        holder.edit.setVisibility(View.VISIBLE);
         holder.edit.setOnClickListener(v -> {
-            if (!item.isRewardItem() && editClickListener != null) {
+            if (editClickListener != null) {
                 editClickListener.onEditClicked(item);
             }
         });
@@ -71,12 +71,23 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     }
 
     private String formatVariant(CartItem item) {
-        if (item.isRewardItem()) {
-            return "Reward item";
-        }
-        return formatOption(item.getShot()) + " | "
+        String variant = formatOption(item.getShot()) + " | "
                 + formatOption(item.getSize()) + " | "
                 + formatOption(item.getIce());
+        if (item.isRewardItem()) {
+            return variant + "\nReward - " + formatRewardSource(item.getRewardSource());
+        }
+        return variant;
+    }
+
+    private String formatRewardSource(String rewardSource) {
+        if (CartItem.REWARD_SOURCE_STAMP_CARD.equals(rewardSource)) {
+            return "Stamp Card";
+        }
+        if (CartItem.REWARD_SOURCE_POINTS.equals(rewardSource)) {
+            return "Points";
+        }
+        return "Reward";
     }
 
     private String formatOption(String value) {

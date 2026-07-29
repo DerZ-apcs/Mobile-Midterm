@@ -156,7 +156,8 @@ public class RewardRepository {
                 0.00,
                 0.00,
                 "",
-                rewardSource);
+                rewardSource,
+                coffee.getBasePrice());
     }
 
     public interface RedemptionCallback {

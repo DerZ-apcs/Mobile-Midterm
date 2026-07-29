@@ -82,7 +82,5 @@ public class CartRepository {
             return;
         }
         item.setQuantity(1);
-        item.setUnitPrice(0.00);
-        item.setTotalPrice(0.00);
     }
 }

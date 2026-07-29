@@ -13,8 +13,17 @@ public final class PriceCalculator {
 
     public static double calculateTotal(double basePrice, Shot shot, Size size, Ice ice, int quantity) {
         int normalizedQuantity = normalizeQuantity(quantity);
-        return (basePrice + getShotModifier(shot) + getSizeModifier(size) + getIceModifier(ice))
-                * normalizedQuantity;
+        return calculateUnitPrice(basePrice, shot, size, ice) * normalizedQuantity;
+    }
+
+    public static double calculateUnitPrice(double basePrice, Shot shot, Size size, Ice ice) {
+        return basePrice + getShotModifier(shot) + getSizeModifier(size) + getIceModifier(ice);
+    }
+
+    public static double calculateRewardUnitPrice(double basePrice, double rewardCoveredAmount,
+                                                  Shot shot, Size size, Ice ice) {
+        return Math.max(0.00, calculateUnitPrice(basePrice, shot, size, ice)
+                - Math.max(0.00, rewardCoveredAmount));
     }
 
     public static int normalizeQuantity(int quantity) {

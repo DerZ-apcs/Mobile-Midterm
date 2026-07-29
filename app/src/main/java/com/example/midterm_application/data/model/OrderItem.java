@@ -31,6 +31,7 @@ public class OrderItem {
     private double totalPrice;
     private String note;
     private String rewardSource = REWARD_SOURCE_NONE;
+    private double rewardCoveredAmount;
 
     public OrderItem() {
     }
@@ -55,6 +56,15 @@ public class OrderItem {
     public OrderItem(long orderId, int coffeeId, String coffeeName, int imageResId,
                      String shot, String size, String ice, int quantity,
                      double unitPrice, double totalPrice, String note, String rewardSource) {
+        this(orderId, coffeeId, coffeeName, imageResId, shot, size, ice, quantity,
+                unitPrice, totalPrice, note, rewardSource, 0.00);
+    }
+
+    @Ignore
+    public OrderItem(long orderId, int coffeeId, String coffeeName, int imageResId,
+                     String shot, String size, String ice, int quantity,
+                     double unitPrice, double totalPrice, String note, String rewardSource,
+                     double rewardCoveredAmount) {
         this.orderId = orderId;
         this.coffeeId = coffeeId;
         this.coffeeName = coffeeName;
@@ -67,6 +77,7 @@ public class OrderItem {
         this.totalPrice = totalPrice;
         this.note = note;
         setRewardSource(rewardSource);
+        setRewardCoveredAmount(rewardCoveredAmount);
     }
 
     public long getId() {
@@ -180,5 +191,13 @@ public class OrderItem {
 
     public boolean isRewardItem() {
         return !REWARD_SOURCE_NONE.equals(getRewardSource());
+    }
+
+    public double getRewardCoveredAmount() {
+        return rewardCoveredAmount;
+    }
+
+    public void setRewardCoveredAmount(double rewardCoveredAmount) {
+        this.rewardCoveredAmount = Math.max(0.00, rewardCoveredAmount);
     }
 }

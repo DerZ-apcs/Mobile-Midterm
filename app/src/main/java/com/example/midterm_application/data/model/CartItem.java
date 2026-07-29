@@ -23,6 +23,7 @@ public class CartItem {
     private double totalPrice;
     private String note;
     private String rewardSource = REWARD_SOURCE_NONE;
+    private double rewardCoveredAmount;
 
     public CartItem() {
     }
@@ -44,6 +45,14 @@ public class CartItem {
     public CartItem(int coffeeId, String coffeeName, int imageResId, String shot, String size,
                     String ice, int quantity, double unitPrice, double totalPrice, String note,
                     String rewardSource) {
+        this(coffeeId, coffeeName, imageResId, shot, size, ice, quantity, unitPrice, totalPrice,
+                note, rewardSource, 0.00);
+    }
+
+    @Ignore
+    public CartItem(int coffeeId, String coffeeName, int imageResId, String shot, String size,
+                    String ice, int quantity, double unitPrice, double totalPrice, String note,
+                    String rewardSource, double rewardCoveredAmount) {
         this.coffeeId = coffeeId;
         this.coffeeName = coffeeName;
         this.imageResId = imageResId;
@@ -55,6 +64,7 @@ public class CartItem {
         this.totalPrice = totalPrice;
         this.note = note;
         setRewardSource(rewardSource);
+        setRewardCoveredAmount(rewardCoveredAmount);
     }
 
     public int getId() {
@@ -160,5 +170,13 @@ public class CartItem {
 
     public boolean isRewardItem() {
         return !REWARD_SOURCE_NONE.equals(getRewardSource());
+    }
+
+    public double getRewardCoveredAmount() {
+        return rewardCoveredAmount;
+    }
+
+    public void setRewardCoveredAmount(double rewardCoveredAmount) {
+        this.rewardCoveredAmount = Math.max(0.00, rewardCoveredAmount);
     }
 }

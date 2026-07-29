@@ -144,7 +144,8 @@ public class CheckoutRepository {
                                      item.getUnitPrice(),
                                      item.getTotalPrice(),
                                      item.getNote(),
-                                     item.getRewardSource()));
+                                     item.getRewardSource(),
+                                     item.getRewardCoveredAmount()));
                         }
                         orderDao.insertOrderItems(orderItems);
 

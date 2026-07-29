@@ -477,10 +477,6 @@ public class MainActivity extends AppCompatActivity {
         if (item == null) {
             return;
         }
-        if (item.isRewardItem()) {
-            Toast.makeText(this, R.string.reward_item_edit_blocked, Toast.LENGTH_SHORT).show();
-            return;
-        }
 
         Coffee coffee = CoffeeRepository.getCoffeeById(item.getCoffeeId());
         if (coffee == null) {
@@ -499,7 +495,8 @@ public class MainActivity extends AppCompatActivity {
         RadioGroup iceGroup = dialogView.findViewById(R.id.rgEditIce);
         EditText noteInput = dialogView.findViewById(R.id.etEditOrderNote);
 
-        final int[] quantity = {PriceCalculator.normalizeQuantity(item.getQuantity())};
+        final boolean rewardItem = item.isRewardItem();
+        final int[] quantity = {rewardItem ? 1 : PriceCalculator.normalizeQuantity(item.getQuantity())};
         final Shot[] selectedShot = {parseShot(item.getShot())};
         final Size[] selectedSize = {parseSize(item.getSize())};
         final Ice[] selectedIce = {parseIce(item.getIce())};
@@ -516,18 +513,28 @@ public class MainActivity extends AppCompatActivity {
         checkIce(iceGroup, selectedIce[0]);
 
         Runnable refreshPrice = () -> updateEditCartPrice(
-                coffee.getBasePrice(), selectedShot[0], selectedSize[0], selectedIce[0], quantity[0],
-                quantityText, totalText);
+                coffee.getBasePrice(), item.getRewardCoveredAmount(), rewardItem, selectedShot[0],
+                selectedSize[0], selectedIce[0], quantity[0], quantityText, totalText);
         refreshPrice.run();
 
         if (decreaseQuantity != null) {
+            decreaseQuantity.setEnabled(!rewardItem);
+            decreaseQuantity.setAlpha(rewardItem ? 0.35f : 1.00f);
             decreaseQuantity.setOnClickListener(v -> {
+                if (rewardItem) {
+                    return;
+                }
                 quantity[0] = PriceCalculator.normalizeQuantity(quantity[0] - 1);
                 refreshPrice.run();
             });
         }
         if (increaseQuantity != null) {
+            increaseQuantity.setEnabled(!rewardItem);
+            increaseQuantity.setAlpha(rewardItem ? 0.35f : 1.00f);
             increaseQuantity.setOnClickListener(v -> {
+                if (rewardItem) {
+                    return;
+                }
                 quantity[0] = PriceCalculator.normalizeQuantity(quantity[0] + 1);
                 refreshPrice.run();
             });
@@ -579,11 +586,16 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void updateEditCartPrice(double basePrice, Shot shot, Size size, Ice ice, int quantity,
-                                     TextView quantityText, TextView totalText) {
-        double totalPrice = PriceCalculator.calculateTotal(basePrice, shot, size, ice, quantity);
+    private void updateEditCartPrice(double basePrice, double rewardCoveredAmount, boolean rewardItem,
+                                     Shot shot, Size size, Ice ice, int quantity, TextView quantityText,
+                                     TextView totalText) {
+        int effectiveQuantity = rewardItem ? 1 : quantity;
+        double unitPrice = rewardItem
+                ? PriceCalculator.calculateRewardUnitPrice(basePrice, rewardCoveredAmount, shot, size, ice)
+                : PriceCalculator.calculateUnitPrice(basePrice, shot, size, ice);
+        double totalPrice = unitPrice * effectiveQuantity;
         if (quantityText != null) {
-            quantityText.setText(String.valueOf(quantity));
+            quantityText.setText(String.valueOf(effectiveQuantity));
         }
         if (totalText != null) {
             totalText.setText(String.format(Locale.US, "$%.2f", totalPrice));
@@ -592,8 +604,13 @@ public class MainActivity extends AppCompatActivity {
 
     private CartItem copyEditedCartItem(CartItem item, Coffee coffee, Shot shot, Size size, Ice ice,
                                         int quantity, EditText noteInput) {
-        double unitPrice = PriceCalculator.calculateTotal(coffee.getBasePrice(), shot, size, ice, 1);
-        double totalPrice = PriceCalculator.calculateTotal(coffee.getBasePrice(), shot, size, ice, quantity);
+        boolean rewardItem = item.isRewardItem();
+        int effectiveQuantity = rewardItem ? 1 : PriceCalculator.normalizeQuantity(quantity);
+        double unitPrice = rewardItem
+                ? PriceCalculator.calculateRewardUnitPrice(coffee.getBasePrice(),
+                item.getRewardCoveredAmount(), shot, size, ice)
+                : PriceCalculator.calculateUnitPrice(coffee.getBasePrice(), shot, size, ice);
+        double totalPrice = unitPrice * effectiveQuantity;
         CartItem updatedItem = new CartItem(
                 item.getCoffeeId(),
                 item.getCoffeeName(),
@@ -601,11 +618,12 @@ public class MainActivity extends AppCompatActivity {
                 shot.name(),
                 size.name(),
                 ice.name(),
-                quantity,
+                effectiveQuantity,
                 unitPrice,
                 totalPrice,
                 noteInput == null ? "" : noteInput.getText().toString(),
-                item.getRewardSource());
+                item.getRewardSource(),
+                item.getRewardCoveredAmount());
         updatedItem.setId(item.getId());
         return updatedItem;
     }

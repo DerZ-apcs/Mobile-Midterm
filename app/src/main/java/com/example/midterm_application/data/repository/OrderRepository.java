@@ -85,8 +85,9 @@ public class OrderRepository {
                                      item.getQuantity(),
                                      item.getUnitPrice(),
                                      item.getTotalPrice(),
-                                      item.getNote(),
-                                      item.getRewardSource()));
+                                     item.getNote(),
+                                      item.getRewardSource(),
+                                      item.getRewardCoveredAmount()));
                         }
 
                         orderDao.insertOrderItems(orderItems);
@@ -161,7 +162,8 @@ public class OrderRepository {
                 unitPrice,
                 totalPrice,
                 orderItem.getNote(),
-                CartItem.REWARD_SOURCE_NONE);
+                CartItem.REWARD_SOURCE_NONE,
+                0.00);
     }
 
     private Shot parseShot(String value) {
