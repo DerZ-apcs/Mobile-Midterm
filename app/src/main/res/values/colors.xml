@@ -65,6 +65,8 @@
     <color name="text_on_dark">#FFFFFFFF</color>
     <color name="text_secondary_on_light">#7B8794</color>
     <color name="text_secondary_on_dark">#D1D5DB</color>
+    <color name="divider_on_dark">#4B5F7B</color>
+    <color name="order_primary_action_bg">#134E5E</color>
     <color name="icon_on_light">#32435F</color>
     <color name="icon_on_dark">#FFFFFFFF</color>
     <color name="card_dark_surface">#32435F</color>

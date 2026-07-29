@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/app_background">
+    android:background="@color/surface_dark">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,14 +18,14 @@
             android:paddingTop="@dimen/spacing_xl"
             android:paddingBottom="@dimen/spacing_lg"
             android:text="@string/my_order_title"
-            android:textColor="@color/text_on_light"
+            android:textColor="@color/text_on_dark"
             android:textSize="@dimen/text_section_title"
             android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/app_background"
+            android:background="@color/surface_dark"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -44,7 +44,7 @@
                     android:paddingTop="@dimen/tab_label_vertical_padding"
                     android:paddingBottom="@dimen/tab_label_vertical_padding"
                     android:text="@string/tab_ongoing"
-                    android:textColor="@color/text_on_light"
+                    android:textColor="@color/text_on_dark"
                     android:textSize="@dimen/text_body"
                     android:textStyle="bold" />
 
@@ -73,7 +73,7 @@
                     android:paddingTop="@dimen/tab_label_vertical_padding"
                     android:paddingBottom="@dimen/tab_label_vertical_padding"
                     android:text="@string/tab_history"
-                    android:textColor="@color/text_secondary_on_light"
+                    android:textColor="@color/text_secondary_on_dark"
                     android:textSize="@dimen/text_body"
                     android:textStyle="bold" />
 
@@ -92,7 +92,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="@dimen/row_divider_height"
-            android:background="@color/gray_100" />
+            android:background="@color/divider_on_dark" />
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -116,7 +116,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:textColor="@color/text_secondary_on_light"
+                android:textColor="@color/text_secondary_on_dark"
                 android:textSize="@dimen/text_body"
                 android:visibility="gone"
                 tools:text="No ongoing orders" />
