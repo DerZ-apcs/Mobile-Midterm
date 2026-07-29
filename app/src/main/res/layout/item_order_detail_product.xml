@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/spacing_md"
+    android:background="@drawable/bg_card_white_shadow"
+    android:orientation="horizontal"
+    android:padding="@dimen/spacing_md">
+
+    <ImageView
+        android:id="@+id/imgOrderDetailItem"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginEnd="@dimen/spacing_md"
+        android:contentDescription="@string/coffee_image_desc"
+        android:padding="@dimen/spacing_sm"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_cup_outline" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvOrderDetailItemName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/text_secondary"
+                android:textStyle="bold"
+                tools:text="Americano x1" />
+
+            <TextView
+                android:id="@+id/tvOrderDetailItemPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/text_secondary"
+                android:textStyle="bold"
+                tools:text="$1.50" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvOrderDetailRewardLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:background="@drawable/bg_redeem_pill"
+            android:paddingStart="@dimen/spacing_sm"
+            android:paddingTop="@dimen/spacing_xs"
+            android:paddingEnd="@dimen/spacing_sm"
+            android:paddingBottom="@dimen/spacing_xs"
+            android:textColor="@color/text_on_light"
+            android:textSize="@dimen/text_caption"
+            android:textStyle="bold"
+            android:visibility="gone"
+            tools:text="Loyalty Reward"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tvOrderDetailItemCustomization"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/text_caption"
+            tools:text="Double · Large · Less Ice" />
+
+        <TextView
+            android:id="@+id/tvOrderDetailRewardDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:text="@string/order_detail_reward_description"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/text_caption"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tvOrderDetailItemNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/text_caption"
+            android:visibility="gone"
+            tools:text="Note: No sugar"
+            tools:visibility="visible" />
+
+    </LinearLayout>
+
+</LinearLayout>

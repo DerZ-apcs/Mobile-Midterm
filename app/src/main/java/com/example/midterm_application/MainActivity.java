@@ -917,7 +917,8 @@ public class MainActivity extends AppCompatActivity {
         OrderAdapter orderAdapter = new OrderAdapter(
                 order -> getOrderViewModel().completeOrder(order.getId()),
                 order -> getOrderViewModel().reorderCompletedOrder(order.getId()),
-                this::showOrderReviewDialog);
+                this::showOrderReviewDialog,
+                this::openOrderDetails);
         RecyclerView orderList = findViewById(R.id.rvOrderList);
         if (orderList != null) {
             orderList.setLayoutManager(new LinearLayoutManager(this));
@@ -946,6 +947,15 @@ public class MainActivity extends AppCompatActivity {
         getOrderReviewViewModel().getSubmissionState().observe(this, this::showReviewSubmissionResult);
 
         setupPrimaryBottomNavigation(R.id.navOrders);
+    }
+
+    private void openOrderDetails(OrderListItem order) {
+        if (order == null) {
+            return;
+        }
+        Intent intent = new Intent(this, OrderDetailActivity.class);
+        intent.putExtra(OrderDetailActivity.EXTRA_ORDER_ID, order.getId());
+        startActivity(intent);
     }
 
     private void showOrderReviewDialog(OrderListItem order) {

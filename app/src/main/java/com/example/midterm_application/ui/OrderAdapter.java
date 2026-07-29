@@ -23,13 +23,16 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     private final OnCompleteClickListener completeClickListener;
     private final OnReorderClickListener reorderClickListener;
     private final OnReviewClickListener reviewClickListener;
+    private final OnOrderClickListener orderClickListener;
 
     public OrderAdapter(OnCompleteClickListener completeClickListener,
                         OnReorderClickListener reorderClickListener,
-                        OnReviewClickListener reviewClickListener) {
+                        OnReviewClickListener reviewClickListener,
+                        OnOrderClickListener orderClickListener) {
         this.completeClickListener = completeClickListener;
         this.reorderClickListener = reorderClickListener;
         this.reviewClickListener = reviewClickListener;
+        this.orderClickListener = orderClickListener;
     }
 
     public void submitOrders(List<OrderListItem> orderItems) {
@@ -55,6 +58,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         holder.name.setText(String.format(Locale.US, "Order #%d", order.getId()));
         holder.price.setText(String.format(Locale.US, "$%.2f", order.getTotalPrice()));
         holder.details.setText(formatDetails(order));
+        holder.itemView.setOnClickListener(v -> orderClickListener.onOrderClicked(order));
 
         boolean canComplete = Order.STATUS_ONGOING.equals(order.getStatus());
         boolean canReorder = Order.STATUS_COMPLETED.equals(order.getStatus());
@@ -139,6 +143,10 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
 
     public interface OnReviewClickListener {
         void onReviewClicked(OrderListItem order);
+    }
+
+    public interface OnOrderClickListener {
+        void onOrderClicked(OrderListItem order);
     }
 
     static class OrderViewHolder extends RecyclerView.ViewHolder {

@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.midterm_application.data.model.OrderDetails;
 import com.example.midterm_application.data.model.OrderListItem;
 import com.example.midterm_application.data.repository.OrderRepository;
 
@@ -16,8 +17,10 @@ public class OrderViewModel extends AndroidViewModel {
     private final OrderRepository repository;
     private final MutableLiveData<CheckoutState> checkoutState = new MutableLiveData<>(CheckoutState.idle());
     private final MutableLiveData<ReorderState> reorderState = new MutableLiveData<>();
+    private final MutableLiveData<OrderDetailsState> orderDetailsState = new MutableLiveData<>();
     private volatile boolean checkoutInProgress;
     private volatile boolean reorderInProgress;
+    private volatile boolean orderDetailsInProgress;
 
     public OrderViewModel(@NonNull Application application) {
         super(application);
@@ -30,6 +33,10 @@ public class OrderViewModel extends AndroidViewModel {
 
     public LiveData<ReorderState> getReorderState() {
         return reorderState;
+    }
+
+    public LiveData<OrderDetailsState> getOrderDetailsState() {
+        return orderDetailsState;
     }
 
     public LiveData<List<OrderListItem>> getOngoingOrders() {
@@ -83,6 +90,23 @@ public class OrderViewModel extends AndroidViewModel {
 
     public void consumeReorderResult() {
         reorderState.setValue(null);
+    }
+
+    public void loadOrderDetails(long orderId) {
+        if (orderDetailsInProgress) {
+            return;
+        }
+
+        orderDetailsInProgress = true;
+        orderDetailsState.setValue(OrderDetailsState.loading());
+        repository.getOrderDetails(orderId, result -> {
+            orderDetailsInProgress = false;
+            if (result.isSuccessful()) {
+                orderDetailsState.postValue(OrderDetailsState.success(result.getDetails()));
+            } else {
+                orderDetailsState.postValue(OrderDetailsState.error(result.getErrorMessage()));
+            }
+        });
     }
 
     public static class CheckoutState {
@@ -156,6 +180,42 @@ public class OrderViewModel extends AndroidViewModel {
 
         public int getAddedItems() {
             return addedItems;
+        }
+
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+    }
+
+    public static class OrderDetailsState {
+        private final boolean loading;
+        private final OrderDetails details;
+        private final String errorMessage;
+
+        private OrderDetailsState(boolean loading, OrderDetails details, String errorMessage) {
+            this.loading = loading;
+            this.details = details;
+            this.errorMessage = errorMessage;
+        }
+
+        public static OrderDetailsState loading() {
+            return new OrderDetailsState(true, null, null);
+        }
+
+        public static OrderDetailsState success(OrderDetails details) {
+            return new OrderDetailsState(false, details, null);
+        }
+
+        public static OrderDetailsState error(String errorMessage) {
+            return new OrderDetailsState(false, null, errorMessage);
+        }
+
+        public boolean isLoading() {
+            return loading;
+        }
+
+        public OrderDetails getDetails() {
+            return details;
         }
 
         public String getErrorMessage() {

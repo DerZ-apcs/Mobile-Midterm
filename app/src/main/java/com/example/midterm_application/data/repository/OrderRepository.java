@@ -7,12 +7,15 @@ import androidx.lifecycle.LiveData;
 import com.example.midterm_application.data.local.AppDatabase;
 import com.example.midterm_application.data.local.CartDao;
 import com.example.midterm_application.data.local.OrderDao;
+import com.example.midterm_application.data.local.OrderReviewDao;
 import com.example.midterm_application.data.local.RewardDao;
 import com.example.midterm_application.data.model.CartItem;
 import com.example.midterm_application.data.model.Coffee;
 import com.example.midterm_application.data.model.Order;
+import com.example.midterm_application.data.model.OrderDetails;
 import com.example.midterm_application.data.model.OrderItem;
 import com.example.midterm_application.data.model.OrderListItem;
+import com.example.midterm_application.data.model.OrderReview;
 import com.example.midterm_application.data.model.RewardState;
 import com.example.midterm_application.data.model.RewardTransaction;
 import com.example.midterm_application.utils.PriceCalculator;
@@ -33,6 +36,7 @@ public class OrderRepository {
     private final AppDatabase database;
     private final CartDao cartDao;
     private final OrderDao orderDao;
+    private final OrderReviewDao orderReviewDao;
     private final RewardDao rewardDao;
     private final LiveData<List<OrderListItem>> ongoingOrders;
     private final LiveData<List<OrderListItem>> completedOrders;
@@ -41,6 +45,7 @@ public class OrderRepository {
         database = AppDatabase.getInstance(application);
         cartDao = database.cartDao();
         orderDao = database.orderDao();
+        orderReviewDao = database.orderReviewDao();
         rewardDao = database.rewardDao();
         ongoingOrders = orderDao.getOngoingOrders();
         completedOrders = orderDao.getCompletedOrders();
@@ -52,6 +57,32 @@ public class OrderRepository {
 
     public LiveData<List<OrderListItem>> getCompletedOrders() {
         return completedOrders;
+    }
+
+    public void getOrderDetails(long orderId, OrderDetailsCallback callback) {
+        databaseExecutor.execute(() -> {
+            OrderDetailsResult result;
+            try {
+                if (orderId <= 0L) {
+                    result = OrderDetailsResult.failure("Order not found");
+                } else {
+                    Order order = orderDao.getOrderByIdSync(orderId);
+                    if (order == null) {
+                        result = OrderDetailsResult.failure("Order not found");
+                    } else {
+                        List<OrderItem> items = orderDao.getOrderItemsByOrderIdSync(orderId);
+                        OrderReview review = orderReviewDao.getReviewForOrderSync(orderId);
+                        result = OrderDetailsResult.success(new OrderDetails(order, items, review));
+                    }
+                }
+            } catch (Exception exception) {
+                result = OrderDetailsResult.failure("Could not load order details");
+            }
+
+            if (callback != null) {
+                callback.onOrderDetailsLoaded(result);
+            }
+        });
     }
 
     public void checkout(CheckoutCallback callback) {
@@ -106,6 +137,40 @@ public class OrderRepository {
 
     public interface CheckoutCallback {
         void onCheckoutComplete(long orderId, String errorMessage);
+    }
+
+    public interface OrderDetailsCallback {
+        void onOrderDetailsLoaded(OrderDetailsResult result);
+    }
+
+    public static class OrderDetailsResult {
+        private final OrderDetails details;
+        private final String errorMessage;
+
+        private OrderDetailsResult(OrderDetails details, String errorMessage) {
+            this.details = details;
+            this.errorMessage = errorMessage;
+        }
+
+        public static OrderDetailsResult success(OrderDetails details) {
+            return new OrderDetailsResult(details, null);
+        }
+
+        public static OrderDetailsResult failure(String errorMessage) {
+            return new OrderDetailsResult(null, errorMessage);
+        }
+
+        public boolean isSuccessful() {
+            return details != null && errorMessage == null;
+        }
+
+        public OrderDetails getDetails() {
+            return details;
+        }
+
+        public String getErrorMessage() {
+            return errorMessage;
+        }
     }
 
     public void reorderCompletedOrder(long orderId, ReorderCallback callback) {
