@@ -1054,13 +1054,13 @@ public class MainActivity extends AppCompatActivity {
                                  View tabOngoingIndicator, View tabHistoryIndicator) {
         if (tabOngoing != null) {
             tabOngoing.setTextColor(getColor(showHistory
-                    ? R.color.text_secondary_on_dark
-                    : R.color.text_on_dark));
+                    ? R.color.text_secondary
+                    : R.color.primary));
         }
         if (tabHistory != null) {
             tabHistory.setTextColor(getColor(showHistory
-                    ? R.color.text_on_dark
-                    : R.color.text_secondary_on_dark));
+                    ? R.color.primary
+                    : R.color.text_secondary));
         }
         if (tabOngoingIndicator != null) {
             tabOngoingIndicator.setVisibility(showHistory ? View.GONE : View.VISIBLE);
